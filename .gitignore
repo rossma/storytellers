@@ -1,0 +1,10 @@
+.idea
+**/node_modules/*
+**/.firebaserc
+*/npm-debug.log
+.DS_Store
+**/dist/
+**/yarn-error.log
+**/*.iml
+*/package-lock.json
+**/.idea
