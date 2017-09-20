@@ -4,6 +4,7 @@ require('./assets/main.css')
 import Vue from 'vue'
 import App from './App.vue'
 import VueRouter from 'vue-router'
+import 'bootstrap'
 import { firebaseApp } from './firebaseApp'
 
 var config = require('config');

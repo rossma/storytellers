@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
       <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -31,12 +31,16 @@
             <a href="#" class="nav-link">{{ $store.state.user.email }}</a>
           </li>
           <li class="nav-item">
-            <button class="btn btn-outline-success " @click="signOut">Sign Out</button>
+            <button class="btn btn-outline-success" @click="signOut">Sign Out</button>
           </li>
         </ul>
       </div>
     </nav>
-    <router-view></router-view>
+    <div class="container">
+      <div class="starter-template">
+        <router-view></router-view>
+      </div>
+    </div><!-- /.container -->
   </div>
 </template>
 
