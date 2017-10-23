@@ -1,16 +1,19 @@
-import Vue from 'vue'
 import Vuex from 'vuex'
 import { mutations } from './mutations'
+// import * as types from './mutation-types.js'
+
 import * as actions from './actions'
 
-Vue.use(Vuex)
-
-const state  = {
+export const state = () => ({
   user: {}
+})
+
+const createStore = () => {
+  return new Vuex.Store({
+    state: state,
+    mutations: mutations,
+    actions: actions
+  })
 }
 
-export default new Vuex.Store({
-  state,
-  mutations,
-  actions
-})
+export default createStore

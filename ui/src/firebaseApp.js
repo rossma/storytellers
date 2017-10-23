@@ -1,6 +1,6 @@
 import firebase from 'firebase'
 
-var env = require('config');
+import env from 'config'
 
 const config = {
   apiKey: env.FIREBASE.API_KEY,
@@ -9,6 +9,6 @@ const config = {
   projectId: env.FIREBASE.PROJECT_ID,
   storageBucket: `${env.FIREBASE.BUCKET}.appspot.com`,
   messagingSenderId: env.FIREBASE.SENDER_ID
-};
+}
 
-export const firebaseApp = firebase.initializeApp(config);
+export default !firebase.apps.length ? firebase.initializeApp(config) : firebase.app()
