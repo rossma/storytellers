@@ -4,7 +4,7 @@ module.exports = {
   ** Headers of the page
   */
   head: {
-    title: 'StoryTellers',
+    title: 'Storytellers',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -47,7 +47,10 @@ module.exports = {
         config.resolve.alias['config'] = '~/config/production'
       }
     }
-  }
+  },
+  modules: [
+    '~/modules/material-design-icons'
+  ]
   /*,
   *router: {
   *  middleware: 'check-auth'

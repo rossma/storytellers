@@ -37,3 +37,6 @@ The authenticated.js file takes a function with the following parameters:
     ...
   }
 ```
+
+For more information on 'pages middleware' please refer to this link: 
+https://nuxtjs.org/api/pages-middleware/

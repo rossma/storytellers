@@ -1,66 +1,11 @@
 <template>
-  <v-layout column justify-center align-center>
-    <v-flex xs12 sm8 md6>
-      <div class="text-xs-center">
-        blah blah
-      </div>
-
-    </v-flex>
-  </v-layout>
-</template>
-
-<template>
-  <v-container fluid grid-list-md>
+  <v-container grid-list-md>
     <v-layout row wrap>
-      <v-flex d-flex xs12 sm6 md4>
-        <v-card class="purple" dark>
-          <v-card-title primary class="title">Lorem</v-card-title>
-          <v-card-text
-              v-text="lorem">
-          </v-card-text>
-        </v-card>
-      </v-flex>
-      <v-flex d-flex xs12 sm6 md3>
-        <v-layout row wrap>
-          <v-flex d-flex>
-            <v-card class="indigo" dark>
-              <v-card-text
-                  v-text="lorem.slice(0, 70)">
-              </v-card-text>
-            </v-card>
-          </v-flex>
-          <v-flex d-flex>
-            <v-layout row wrap>
-              <v-flex d-flex
-                      v-for="n in 2"
-                      :key="n"
-                      xs12
-              >
-                <v-card
-                    class="red lighten-2"
-                    dark
-                >
-                  <v-card-text
-                      v-text="lorem.slice(0, 40)">
-                  </v-card-text>
-                </v-card>
-              </v-flex>
-            </v-layout>
-          </v-flex>
-        </v-layout>
-      </v-flex>
-      <v-flex d-flex xs12 sm6 md2 child-flex>
-        <v-card class="green lighten-2" dark>
-          <v-card-text
-              v-text="lorem.slice(0, 90)">
-          </v-card-text>
-        </v-card>
-      </v-flex>
-      <v-flex d-flex xs12 sm6 md3>
-        <v-card class="blue lighten-2 lighten-2" dark>
-          <v-card-text
-              v-text="lorem.slice(0, 100)">
-          </v-card-text>
+      <v-flex d-flex xs12 sm6 md4 v-for="(preview, key, index) in previews" >
+        <v-card>
+          <v-card-title primary class="title">Key: {{ key }}</v-card-title>
+          <img class="card-img-top img-fluid" :src="preview.ref" alt="Card image cap">
+          <v-card-text>Owner: {{ preview.owner }}</v-card-text>
         </v-card>
       </v-flex>
     </v-layout>
@@ -68,11 +13,26 @@
 </template>
 
 <script>
+  import firebaseApp from '~/firebaseApp'
+
+  const database = firebaseApp.database()
+
   export default {
-    middleware: 'authenticated',
     data () {
       return {
-        lorem: 'Lorem ipsum dolor sit amet, mel at clita quando. Te sit oratio vituperatoribus, nam ad ipsum posidonium mediocritatem, explicari dissentiunt cu mea. Repudiare disputationi vim in, mollis iriure nec cu, alienum argumentum ius ad. Pri eu justo aeque torquatos.'
+        previews: []
+      }
+    },
+    mounted: function () {
+      // var database = firebaseApp.database()
+      this.readContent()
+    },
+    methods: {
+      readContent () {
+        var previewsRef = database.ref('previews')
+        previewsRef.on('value', function (snapshot) {
+          this.previews = snapshot.val()
+        }.bind(this))
       }
     }
   }

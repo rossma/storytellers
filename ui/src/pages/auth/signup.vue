@@ -36,6 +36,7 @@
   import firebaseApp from '~/firebaseApp'
 
   export default {
+    layout: 'auth',
     data () {
       return {
         showPassword: false,

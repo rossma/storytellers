@@ -13,6 +13,7 @@ export default function ({ req, error, isServer, isClient, store, route, redirec
 
     if (isServer && (!req.session || !req.session.user)) {
       console.log('[AUTHENTICATED MIDDLEWARE] isServer - user not set')
+      // TODO - uncomment for prod
       redirect('/auth/signin')
     }
   } else if (isClient) {

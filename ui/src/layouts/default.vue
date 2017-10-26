@@ -1,36 +1,61 @@
+<!-- This template is very authenticated users only -->
 <template>
   <v-app id="example-1" toolbar footer dark>
-    <v-navigation-drawer
-        persistent
-        v-model="drawer"
-        light
-        enable-resize-watcher
-        absolute
-        dark
-    >
+    <v-navigation-drawer persistent v-model="drawer" light enable-resize-watcher absolute dark>
       <v-list dense>
-        <v-list-tile @click="">
+        <v-list-tile @click="home">
           <v-list-tile-action>
             <v-icon>home</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title>Home</v-list-tile-title>
+            <v-list-tile-title>Storytellers</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar dark fixed>
+    <v-toolbar dark>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-      <v-toolbar-title>
-        <nuxt-link to="/">Home</nuxt-link>
-        <v-btn v-on:click="signout">SignOut</v-btn>
+      <v-toolbar-title class="home-title">
+        <nuxt-link to="/">Storytellers</nuxt-link>
       </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-tooltip left>
+        <v-btn fab dark small slot="activator" to="/create">
+          <v-icon>mdi mdi-feather</v-icon>
+        </v-btn>
+        <span>Create Story</span>
+      </v-tooltip>
+      <v-speed-dial v-model="profile.fab" :bottom="false" :direction="profile.direction" :hover="profile.hover"
+                    :transition="profile.transition">
+        <v-btn slot="activator" color="darken-2" dark fab small hover v-model="profile.fab">
+          <v-icon>account_circle</v-icon>
+          <v-icon>close</v-icon>
+        </v-btn>
+        <v-tooltip left>
+          <v-btn fab dark small slot="activator">
+            <v-icon>mdi mdi-account-edit</v-icon>
+          </v-btn>
+          <span>User Profile</span>
+        </v-tooltip>
+        <v-tooltip left>
+          <v-btn fab dark small slot="activator" v-on:click="signout">
+            <v-icon>mdi mdi-logout</v-icon>
+          </v-btn>
+          <span>SignOut</span>
+        </v-tooltip>
+      </v-speed-dial>
+      <!--<v-tooltip left v-show="!loggedIn">-->
+        <!--<v-btn fab dark small slot="activator" to="/auth/signin">-->
+          <!--<v-icon>mdi mdi-login</v-icon>-->
+        <!--</v-btn>-->
+        <!--<span>Sign In</span>-->
+      <!--</v-tooltip>-->
     </v-toolbar>
     <main>
-      <v-container fluid>
+      <v-container>
         <nuxt/>
       </v-container>
-    </main>
+     </main>
     <v-footer dark>
       <span class="white--text">© 2017</span>
     </v-footer>
@@ -39,19 +64,27 @@
 </template>
 
 <script>
-  // import env from 'config'
-  // console.log('env:' + JSON.stringify(env))
   import firebaseApp from '~/firebaseApp'
 
-  // https://nuxtjs.org/api/pages-middleware/
-  // meta can be passed as in: vue-router - middleware: https://github.com/nuxt/nuxt.js/issues/1687
   export default {
-    // middleware: 'authenticated',
+    middleware: 'authenticated',
     data () {
       return {
         clipped: false,
         drawer: true,
         fixed: false,
+        profile: {
+          direction: 'bottom',
+          fab: false,
+          fling: false,
+          hover: false,
+          tabs: null,
+          top: false,
+          right: true,
+          bottom: true,
+          left: false,
+          transition: 'slide-y-reverse-transition'
+        },
         items: [
           {to: '/', title: 'Welcome', icon: 'apps'},
           {to: '/inspire', title: 'Inspire', icon: 'bubble_chart'}
@@ -62,10 +95,10 @@
         title: 'Vuetify.js'
       }
     },
-    created () {
-      console.log('in created')
-    },
     methods: {
+      home () {
+        this.$router.push('/')
+      },
       signout () {
         console.log('signing out')
         firebaseApp.auth().signOut()
@@ -92,4 +125,8 @@
     }
   }
 </script>
-
+<style>
+  .home-title a {
+    text-decoration: none
+  }
+</style>

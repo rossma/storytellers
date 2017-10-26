@@ -14,8 +14,9 @@
     "express": "^4.15.4",
     "express-session": "^1.15.5",
     "firebase": "^4.1.2",
+    "mdi": "^2.0.46",
     "nuxt": "^1.0.0-rc6",
-    "vuetify": "^0.15.7",
+    "vuetify": "0.16.9",
     "vuex": "^2.3.1",
     "whatwg-fetch": "^2.0.3"
   },

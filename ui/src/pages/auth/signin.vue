@@ -1,6 +1,5 @@
 <template>
   <v-layout column align-center>
-
     <v-btn primary flat nuxt to="/auth/signup">Not already a user? Sign up</v-btn>
 
     <v-flex xs12 sm10 md8 lg6>
@@ -37,6 +36,7 @@
   import firebaseApp from '~/firebaseApp'
 
   export default {
+    layout: 'auth',
     data () {
       return {
         showPassword: false,

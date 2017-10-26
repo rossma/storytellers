@@ -1,6 +1,7 @@
 import jwtDecode from 'jwt-decode'
 import Cookie from 'js-cookie'
 
+/* deprecated - only here for info */
 const getQueryParams = () => {
   const params = {}
   window.location.href.replace(/([^(?|#)=&]+)(=([^&]*))?/g, ($0, $1, $2, $3) => {
