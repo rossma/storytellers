@@ -1,11 +1,11 @@
 <template>
   <v-container grid-list-md>
     <v-layout row wrap>
-      <v-flex d-flex xs12 sm6 md4 v-for="(preview, key, index) in previews" >
+      <v-flex d-flex xs12 sm6 md4 v-for="(preview, key, index) in previews" :key="preview.id" >
         <v-card>
           <v-card-title primary class="title">Key: {{ key }}</v-card-title>
-          <img class="card-img-top img-fluid" :src="preview.ref" alt="Card image cap">
-          <v-card-text>Owner: {{ preview.owner }}</v-card-text>
+          <img class="card-img-top img-fluid" :src="preview.data().ref" alt="Card image cap">
+          <v-card-text>ID: {{ preview.id }} Owner: {{ preview.data().owner }}</v-card-text>
         </v-card>
       </v-flex>
     </v-layout>
@@ -15,7 +15,7 @@
 <script>
   import firebaseApp from '~/firebaseApp'
 
-  const database = firebaseApp.database()
+  const db = firebaseApp.firestore()
 
   export default {
     data () {
@@ -24,15 +24,19 @@
       }
     },
     mounted: function () {
-      // var database = firebaseApp.database()
       this.readContent()
     },
     methods: {
       readContent () {
-        var previewsRef = database.ref('previews')
-        previewsRef.on('value', function (snapshot) {
-          this.previews = snapshot.val()
+        db.collection('previews').get().then(function (querySnapshot) {
+          this.previews = querySnapshot.docs
         }.bind(this))
+        // db.collection('previews').get().then(function (querySnapshot) {
+        //   querySnapshot.forEach((doc) => {
+        //     console.log(`Doc: ${doc.id} => ${JSON.stringify(doc.data())}`)
+        //   })
+        //   this.previews = querySnapshot.docs
+        // }.bind(this))
       }
     }
   }

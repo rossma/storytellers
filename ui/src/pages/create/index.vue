@@ -26,7 +26,7 @@
   import UploadButton from '~/components/UploadButton'
   import firebaseApp from '~/firebaseApp'
 
-  const database = firebaseApp.database()
+  const db = firebaseApp.firestore()
 
   export default {
     components: {
@@ -64,11 +64,17 @@
         })
       },
       writeContentData (id, userId, imageUrl) {
-        database.ref('previews/' + id).set({
+        db.collection('previews').add({
           owner: userId,
           type: 'img',
           ref: imageUrl
         })
+          .then(function (docRef) {
+            console.log('Document written with ID: ', docRef.id)
+          })
+          .catch(function (error) {
+            console.error('Error adding document: ', error)
+          })
       }
     }
   }
