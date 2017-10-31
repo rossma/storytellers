@@ -1,8 +1,12 @@
 <!-- Taken from https://github.com/jannhama/vuetify-upload-btn -->
 <template>
-  <v-btn dark class="btn--dark-flat-focused jbtn-file">
-    {{ title }}<input id="selectFile" type="file" v-on:change="fileSelected">
-  </v-btn>
+  <v-tooltip top>
+    <v-btn flat icon slot="activator" color="white" class="btn--dark-flat-focused jbtn-file">
+      <v-icon>{{ icon }}</v-icon>
+      <input id="selectFile" type="file" v-on:change="fileSelected">
+    </v-btn>
+    <span>{{ tooltip }}</span>
+  </v-tooltip>
 </template>
 
 <script>
@@ -10,7 +14,8 @@
     name: 'upload-button',
     props: {
       selectedCallback: Function,
-      title: String
+      tooltip: String,
+      icon: String
     },
     methods: {
       fileSelected (e) {

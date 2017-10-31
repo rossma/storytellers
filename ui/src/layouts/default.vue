@@ -20,7 +20,7 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-tooltip left>
-        <v-btn fab dark small slot="activator" to="/create">
+        <v-btn fab dark small slot="activator" to="/story/create">
           <v-icon>mdi mdi-feather</v-icon>
         </v-btn>
         <span>Create Story</span>
@@ -32,7 +32,7 @@
           <v-icon>close</v-icon>
         </v-btn>
         <v-tooltip left>
-          <v-btn fab dark small slot="activator">
+          <v-btn fab dark small slot="activator" v-on:click="userProfile">
             <v-icon>mdi mdi-account-edit</v-icon>
           </v-btn>
           <span>User Profile</span>
@@ -98,6 +98,9 @@
     methods: {
       home () {
         this.$router.push('/')
+      },
+      userProfile () {
+        this.$router.push('/user/profile')
       },
       signout () {
         console.log('signing out')

@@ -4,8 +4,8 @@
       <v-flex d-flex xs12 sm6 md4 v-for="(preview, key, index) in previews" :key="preview.id" >
         <v-card>
           <v-card-title primary class="title">Key: {{ key }}</v-card-title>
-          <img class="card-img-top img-fluid" :src="preview.data().ref" alt="Card image cap">
-          <v-card-text>ID: {{ preview.id }} Owner: {{ preview.data().owner }}</v-card-text>
+          <img class="card-img-top img-fluid" :src="preview.data().coverRef" alt="no image">
+          <v-card-text>author: {{ preview.data().userDisplayName }}</v-card-text>
         </v-card>
       </v-flex>
     </v-layout>
@@ -28,6 +28,7 @@
     },
     methods: {
       readContent () {
+        console.log('user:', firebaseApp.auth().currentUser.displayName)
         db.collection('previews').get().then(function (querySnapshot) {
           this.previews = querySnapshot.docs
         }.bind(this))

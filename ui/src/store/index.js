@@ -12,7 +12,12 @@ const createStore = () => {
   return new Vuex.Store({
     state: state,
     mutations: mutations,
-    actions: actions
+    actions: actions,
+    getters: {
+      story: state => {
+        return state.story
+      }
+    }
   })
 }
 

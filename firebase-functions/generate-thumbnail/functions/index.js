@@ -26,8 +26,8 @@
 const functions = require('firebase-functions');
 const mkdirp = require('mkdirp-promise');
 // Include a Service Account Key to use a Signed URL
-// const gcs = require('@google-cloud/storage')({keyFilename: 'service-account-credentials.json'});
-const gcs = require('@google-cloud/storage')();
+const gcs = require('@google-cloud/storage')({keyFilename: 'service-account-credentials.json'});
+// const gcs = require('@google-cloud/storage')();
 
 // The Firebase Admin SDK to access the Firebase Realtime Database. 
 const admin = require('firebase-admin');
@@ -116,7 +116,9 @@ exports.generateThumbnail = functions.storage.object().onChange(event => {
     const thumbFileUrl = thumbResult[0];
     const fileUrl = originalResult[0];
     // Add the URLs to the Database
-    return admin.database().ref('images').push({path: fileUrl, thumbnail: thumbFileUrl});
+    // return admin.database().ref('images').push({path: fileUrl, thumbnail: thumbFileUrl});
+    return admin.firestore().collection('images').add({path: fileUrl, thumbnail: thumbFileUrl});
+
   }).then(() => console.log('Thumbnail URLs saved to database.'));
 });
   

@@ -15,3 +15,6 @@
 
 # Nuxt generate
 **/dist
+
+# Firebase functions
+service-account-credentials.json
