@@ -29,13 +29,11 @@
 
 <script>
   import firebaseApp from '~/firebaseApp'
-
   const db = firebaseApp.firestore()
 
   export default {
     data () {
       return {
-        lol: firebaseApp.auth().currentUser,
         valid: true,
         story: {
           id: null,

@@ -89,7 +89,6 @@
         // Push to child path.
         // [START oncomplete]
         storageRef.child('images/' + file.name).put(file, metadata).then(function (snapshot) {
-          console.log('ffff', this.$data.fileImageUrl)
           console.log('Uploaded', snapshot.totalBytes, 'bytes.')
           console.log('Metadata:', snapshot.metadata)
           console.log('downloadURL:', snapshot.downloadURL)
@@ -109,7 +108,7 @@
       writeContentData (storyId, imageUrl) {
         this.imageRef = imageUrl
         db.collection('stories/' + storyId + '/chapters/' + this.chapter + '/pages').doc(this.page.toString()).set({
-          ref: imageUrl,
+          imageRef: imageUrl,
           type: 'img',
           created: Date.now(),
           public: false
@@ -123,6 +122,7 @@
 
         db.collection('previews').add({
           storyOid: this.story.id,
+          chapter: this.chapter,
           page: this.page,
           title: this.story.title,
           uid: firebaseApp.auth().currentUser.uid,

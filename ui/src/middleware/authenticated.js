@@ -7,9 +7,9 @@
 import firebaseApp from '~/firebaseApp'
 
 export default function ({ req, error, isServer, isClient, store, route, redirect }) {
-  console.log('[AUTHENTICATED MIDDLEWARE] Route:' + JSON.stringify(route))
+  console.log('[AUTHENTICATED MIDDLEWARE] Route:', route)
   if (isServer) {
-    console.log('[AUTHENTICATED MIDDLEWARE] Server:' + isServer + '-req:' + req.session)
+    console.log(`[AUTHENTICATED MIDDLEWARE] Server: ${isServer} -req:`, req.session)
 
     if (isServer && (!req.session || !req.session.user)) {
       console.log('[AUTHENTICATED MIDDLEWARE] isServer - user not set')

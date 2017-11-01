@@ -9,6 +9,10 @@ export const mutations = {
   //   state.user = {}
   // }
 
+  [types.SAVE_USER] (state, userPayload) {
+    state.user = userPayload
+  },
+
   [types.SAVE_STORY] (state, storyPayload) {
     state.story = storyPayload
   }

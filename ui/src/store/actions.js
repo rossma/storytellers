@@ -26,6 +26,10 @@ export const nuxtServerInit = ({ commit }, { req }) => {
 //   commit(types.SIGN_OUT)
 // }
 
+export const saveUser = ({commit}, userPayload) => {
+  commit(types.SAVE_USER, userPayload)
+}
+
 export const saveStory = ({commit}, storyPayload) => {
   commit(types.SAVE_STORY, storyPayload)
 }

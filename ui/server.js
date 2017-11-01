@@ -19,7 +19,7 @@ app.use(session({
 // POST /api/login to add user to the session
 // user onAuthStateChanged is handled in the check-auth.js script
 app.post('/api/login', function (req, res) {
-  console.log('[SERVER.JS] - in server.js api/login:' + JSON.stringify(req.body.user))
+  console.log('[SERVER.JS] - in server.js api/login:', req.body.user)
   // set the firebase user in session. Maybe don't need to set the whole thing.
   req.session.user = req.body.user
   return res.json({status: 'success'})

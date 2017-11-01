@@ -14,6 +14,9 @@ const createStore = () => {
     mutations: mutations,
     actions: actions,
     getters: {
+      user: state => {
+        return state.user
+      },
       story: state => {
         return state.story
       }
