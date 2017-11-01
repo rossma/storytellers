@@ -15,12 +15,12 @@
                     <v-layout row>
                       <v-flex xs12>
                         <v-tooltip top>
-                          <v-avatar class="indigo jbtn-file" v-show="!user.photoUrl" slot="activator">
+                          <v-avatar class="indigo jbtn-file" v-show="!photoUrl" slot="activator">
                               <v-icon dark>account_circle</v-icon>
                               <input type="file" v-on:change="profileImageSelected">
                           </v-avatar>
-                          <v-avatar class="jbtn-file" v-show="user.photoUrl" slot="activator">
-                            <img :src="user.photoUrl" alt="no photo">
+                          <v-avatar class="jbtn-file" v-show="photoUrl" slot="activator">
+                            <img :src="photoUrl" alt="no photo">
                             <input type="file" v-on:change="profileImageSelected">
                           </v-avatar>
                           <span>Upload Profile</span>
@@ -42,7 +42,8 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
+  import { mapGetters, mapActions } from 'vuex'
+
   import firebaseApp from '~/firebaseApp'
 
   const db = firebaseApp.firestore()
@@ -61,13 +62,21 @@
           colour: 'success'
         },
         valid: true,
-        // displayName: '',
+        photoUrl: null,
         nameRules: [
           (v) => !!v || 'Name is required'
         ]
       }
     },
+    mounted: function () {
+      this.$nextTick(function () {
+        this.photoUrl = this.user.photoUrl
+      })
+    },
     methods: {
+      ...mapActions([
+        'saveUser'
+      ]),
       profileImageSelected (e) {
         if (e.target.files[0]) {
           console.log('profile image selected')
@@ -81,7 +90,7 @@
               console.log('Uploaded', snapshot.totalBytes, 'bytes.')
               console.log('Metadata:', snapshot.metadata)
               console.log('downloadURL:', snapshot.downloadURL)
-              this.user.photoUrl = snapshot.downloadURL
+              this.photoUrl = snapshot.downloadURL
             }.bind(this)).catch(function (error) {
               console.error('Upload failed:', error)
             })
@@ -94,17 +103,17 @@
         if (this.$refs.form.validate()) {
           console.log('valid')
           let firebaseUser = firebaseApp.auth().currentUser
-
           firebaseUser.updateProfile({
             displayName: this.user.displayName,
-            photoURL: this.user.photoUrl
+            photoURL: this.photoUrl
           }).then(function () {
             db.collection('users').doc(firebaseUser.uid).set({
               displayName: this.user.displayName,
-              photoUrl: this.user.photoUrl
+              photoUrl: this.photoUrl
             }, { merge: true }).then(function () {
+              this.user.photoUrl = this.photoUrl
               console.log('user:', this.user)
-              this.$store.dispatch('saveUser', this.user)
+              this.saveUser(this.user)
               this.raiseAlert('success', 'Profile successfully updated')
             }.bind(this)).catch(function (error) {
               console.error('Error adding user document', error)

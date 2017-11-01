@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 import * as types from './mutation-types'
 
 export const mutations = {
@@ -10,7 +12,8 @@ export const mutations = {
   // }
 
   [types.SAVE_USER] (state, userPayload) {
-    state.user = userPayload
+    // https://vuejs.org/v2/api/#Vue-set
+    Vue.set(state.user, userPayload)
   },
 
   [types.SAVE_STORY] (state, storyPayload) {
