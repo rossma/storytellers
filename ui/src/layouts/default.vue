@@ -13,7 +13,7 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar dark>
+    <v-toolbar dark fixed app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title class="home-title">
         <nuxt-link to="/">Storytellers</nuxt-link>

@@ -28,6 +28,8 @@
 </template>
 
 <script>
+  import { mapActions } from 'vuex'
+
   import firebaseApp from '~/firebaseApp'
   const db = firebaseApp.firestore()
 
@@ -44,6 +46,9 @@
       }
     },
     methods: {
+      ...mapActions([
+        'saveStory'
+      ]),
       submit () {
         if (this.$refs.form.validate()) {
           console.log('submiting form:', this.story)
@@ -56,7 +61,7 @@
             .then(function (docRef) {
               console.log('Document written with ID: ', docRef.id)
               this.story.id = docRef.id
-              this.$store.dispatch('saveStory', this.story)
+              this.saveStory(this.story)
               this.$router.push('/story/update')
             }.bind(this))
             .catch(function (error) {

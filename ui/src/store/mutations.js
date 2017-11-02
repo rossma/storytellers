@@ -17,7 +17,9 @@ export const mutations = {
   },
 
   [types.SAVE_STORY] (state, storyPayload) {
-    state.story = storyPayload
+    // state.story = storyPayload
+    // https://vuejs.org/v2/api/#Vue-set
+    Vue.set(state.story = storyPayload)
   }
 
 }
