@@ -13,7 +13,7 @@
             {{ story }}
             <br/>
             {{ page }}
-            <img class="card-img-top img-fluid" v-if="page" :src="page.imageRef" alt="no image">
+            <img class="card-img-top img-fluid" v-if="page" :src="page.image.ref" alt="no image">
           </v-card-text>
         </v-card>
       </v-flex>

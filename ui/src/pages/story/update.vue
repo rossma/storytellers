@@ -11,34 +11,51 @@
            {{ story.summary }}
           </v-card-text>
         </v-card>
-        <v-card>
-          <v-container fill-height fluid>
-            <v-layout fill-height>
-              <v-flex xs12 align-end flexbox>
-                <upload-button icon="mdi mdi-book-open-page-variant" tooltip="Upload Words" :selectedCallback="processFileWords"></upload-button>
-                <upload-button icon="mdi mdi-file-image" tooltip="Upload Image" :selectedCallback="processFileImage"></upload-button>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-card>
-        <v-card>
-          <v-container fill-height fluid>
-            <v-layout fill-height>
-              <v-flex xs12 align-end flexbox>
+        <v-tabs dark fixed icons centered>
+          <v-tabs-bar class="cyan">
+            <v-tabs-slider color="yellow"></v-tabs-slider>
+            <v-tabs-item href="#tab-1">
+              <v-icon>mdi mdi-book-open-page-variant</v-icon>
+              Writing
+            </v-tabs-item>
+            <v-tabs-item href="#tab-2">
+              <v-icon>mdi mdi-palette</v-icon>
+              Picture
+            </v-tabs-item>
+            <v-tabs-item href="#tab-3">
+              <v-icon>mdi mdi-music-box</v-icon>
+              Sound
+            </v-tabs-item>
+          </v-tabs-bar>
+          <v-tabs-items>
+            <v-tabs-content :id="'tab-1'">
+              <v-card flat>
                 <v-card-text>
-                  <v-subheader>Preview Panel</v-subheader>
-                  <v-container fluid>
-                    <v-layout row>
-                      <v-flex xs12>
-                        <img class="card-img-top img-fluid" :src="imageFileUrl" />
-                      </v-flex>
-                    </v-layout>
-                  </v-container>
+                  <upload-button name="Upload" icon="mdi mdi-upload" :selectedCallback="processFileWords"></upload-button>
                 </v-card-text>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-card>
+              </v-card>
+            </v-tabs-content>
+            <v-tabs-content :id="'tab-2'">
+              <v-card flat>
+                <v-card-text>
+                  <upload-button name="Upload" icon="mdi mdi-palette" :selectedCallback="processFileImage"></upload-button>
+                    <v-container fluid>
+                      <v-layout row>
+                        <v-flex xs12>
+                          <img class="card-img-top img-fluid" :src="imageFileUrl" />
+                        </v-flex>
+                      </v-layout>
+                    </v-container>
+                </v-card-text>
+              </v-card>
+            </v-tabs-content>
+            <v-tabs-content :id="'tab-3'">
+              <v-card flat>
+                <upload-button name="Upload" icon="mdi mdi-music-box" :selectedCallback="processFileImage"></upload-button>
+              </v-card>
+            </v-tabs-content>
+          </v-tabs-items>
+        </v-tabs>
         <v-btn @click="publish">publish</v-btn>
       </v-flex>
     </v-layout>
@@ -111,9 +128,10 @@
         this.imageFileUrl = imageUrl
         console.log('ImageURL:', this.imageFileUrl)
         db.collection('stories/' + storyId + '/chapters/' + this.chapter + '/pages').doc(this.page.toString()).set({
-          imageRef: imageUrl,
-          type: 'img',
-          created: Date.now(),
+          image: {
+            ref: imageUrl,
+            created: Date.now()
+          },
           public: false
         })
       },
@@ -127,19 +145,16 @@
             console.log('imageFilenameKey:', this.imageFilenameKey)
             return db.collection('images').doc(this.imageFilenameKey).get()
               .then(function (imageDoc) {
-                console.log('a1')
                 if (imageDoc.exists) {
                   console.log('imageDoc:', imageDoc.data())
                   previewUrl = imageDoc.data().previewUrl
                 } else {
-                  /* In case the firebase functions still need to run to write URLs to DB the record won't exist at this time */
-                  console.log('Image Document not found in DB')
+                  console.log('Image Document not found in DB at this time')
                   // return Promise.reject(new Error('Image Document not found in DB'))
                 }
               })
           })
           .then(() => {
-            console.log('b')
             return db.collection('previews').add({
               storyOid: this.story.id,
               chapter: this.chapter,
@@ -150,11 +165,11 @@
               previewImageUrl: previewUrl,
               imageFilenameOid: this.imageFilenameKey
             })
-              .then(function (docRef) {
+              .then(() => {
                 console.log('story published')
                 this.alert.show = true
                 this.alert.message = 'Story published'
-              }.bind(this))
+              })
           }).catch(function (err) {
             console.log('in error handler:', err)
           })
