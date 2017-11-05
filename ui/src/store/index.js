@@ -5,7 +5,14 @@ import { mutations } from './mutations'
 import * as actions from './actions'
 
 export const state = () => ({
-  user: {}
+  user: {
+    uid: '',
+    displayName: '',
+    email: '',
+    photoUrl: '',
+    created: null
+  },
+  story: {}
 })
 
 const createStore = () => {

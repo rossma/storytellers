@@ -1,7 +1,7 @@
 <!-- This template is very authenticated users only -->
 <template>
-  <v-app id="example-1" toolbar footer dark>
-    <v-navigation-drawer persistent v-model="drawer" light enable-resize-watcher absolute dark>
+  <v-app toolbar footer dark>
+    <v-navigation-drawer persistent v-model="drawer" enable-resize-watcher absolute dark app>
       <v-list dense>
         <v-list-tile @click="home">
           <v-list-tile-action>
@@ -9,6 +9,14 @@
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>Storytellers</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile @click="">
+          <v-list-tile-action>
+            <v-icon>contact_mail</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Contact</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
@@ -44,23 +52,16 @@
           <span>SignOut</span>
         </v-tooltip>
       </v-speed-dial>
-      <!--<v-tooltip left v-show="!loggedIn">-->
-        <!--<v-btn fab dark small slot="activator" to="/auth/signin">-->
-          <!--<v-icon>mdi mdi-login</v-icon>-->
-        <!--</v-btn>-->
-        <!--<span>Sign In</span>-->
-      <!--</v-tooltip>-->
     </v-toolbar>
     <main>
-      <v-container>
+      <v-content>
         <nuxt/>
-      </v-container>
-     </main>
+      </v-content>
+    </main>
     <v-footer dark>
       <span class="white--text">© 2017</span>
     </v-footer>
   </v-app>
-
 </template>
 
 <script>

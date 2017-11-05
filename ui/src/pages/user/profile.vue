@@ -1,5 +1,5 @@
 <template>
-  <v-container grid-list-xl>
+  <v-container grid-list-md>
     <v-alert :color="alert.colour" icon="check_circle" v-model="alert.show" dismissible>
       {{ alert.message }}
     </v-alert>
@@ -25,7 +25,7 @@
                           </v-avatar>
                           <span>Upload Profile</span>
                         </v-tooltip>
-                        <v-text-field label="Display Name" v-model="user.displayName" required
+                        <v-text-field label="Display Name" v-model="user.data.displayName" required
                                       :rules="nameRules"></v-text-field>
                       </v-flex>
                     </v-layout>
@@ -35,6 +35,27 @@
               <v-btn @click="submit" :disabled="!valid">submit</v-btn>
             </v-form>
           </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+    <v-layout row wrap>
+      <v-flex xs12>
+        <v-card dark color="primary">
+          <v-card-text class="px-0">My stories</v-card-text>
+          <v-layout row wrap>
+            <v-flex d-flex xs12 sm6 md4 v-for="(preview, key, index) in previews" :key="preview.id" >
+              <v-card>
+                <v-card-title color="primary" class="title">{{ preview.data.title }}</v-card-title>
+                <img class="card-img-top img-fluid preview-img" :src="preview.data.previewImageUrl" alt="no image"
+                     v-on:click="showDetail(preview.id)">
+              </v-card>
+            </v-flex>
+          </v-layout>
+        </v-card>
+      </v-flex>
+      <v-flex xs12>
+        <v-card dark color="primary">
+          <v-card-text class="px-0">Collaborations</v-card-text>
         </v-card>
       </v-flex>
     </v-layout>
@@ -65,18 +86,32 @@
         photoUrl: null,
         nameRules: [
           (v) => !!v || 'Name is required'
-        ]
+        ],
+        previews: []
       }
     },
     mounted: function () {
       this.$nextTick(function () {
-        this.photoUrl = this.user.photoUrl
+        this.photoUrl = this.user.data.photoUrl
+        this.loadPreviews(this.user.uid)
       })
     },
     methods: {
       ...mapActions([
         'saveUser'
       ]),
+      loadPreviews (uid) {
+        console.log('Loading previews for uid:', uid)
+        db.collection('previews').where('uid', '==', uid).get().then(function (querySnapshot) {
+          this.previews = querySnapshot.docs.map((m) => {
+            let preview = {
+              id: m.id,
+              data: m.data()
+            }
+            return preview
+          })
+        }.bind(this))
+      },
       profileImageSelected (e) {
         if (e.target.files[0]) {
           console.log('profile image selected')
@@ -104,14 +139,14 @@
           console.log('valid')
           let firebaseUser = firebaseApp.auth().currentUser
           firebaseUser.updateProfile({
-            displayName: this.user.displayName,
+            displayName: this.user.data.displayName,
             photoURL: this.photoUrl
           }).then(function () {
             db.collection('users').doc(firebaseUser.uid).set({
-              displayName: this.user.displayName,
+              displayName: this.user.data.displayName,
               photoUrl: this.photoUrl
             }, { merge: true }).then(function () {
-              this.user.photoUrl = this.photoUrl
+              this.user.data.photoUrl = this.photoUrl
               console.log('user:', this.user)
               this.saveUser(this.user)
               this.raiseAlert('success', 'Profile successfully updated')
@@ -129,6 +164,10 @@
         this.alert.show = true
         this.alert.colour = severity
         this.alert.message = message
+      },
+      showDetail (previewOid) {
+        console.log('previewOid:', previewOid)
+        this.$router.push('/story/detail/' + previewOid)
       }
     }
   }

@@ -7,7 +7,7 @@
         <form @submit.prevent="login">
           <v-card-text ref="form">
             <p class="error" v-if="error">{{ error.message }}</p>
-            <v-text-field label="email" v-model="user.email"></v-text-field>
+            <v-text-field label="email" v-model="email"></v-text-field>
             <v-text-field
               name="password-in-txt"
               label="password"
@@ -20,7 +20,6 @@
           </v-card-text>
           <v-divider class="mt-5"></v-divider>
           <v-card-actions>
-            <!--<v-btn success class="elevation-0" @click="submit">Sign In</v-btn>-->
             <button type="submit">Sign In</button>
           </v-card-actions>
         </form>
@@ -30,6 +29,7 @@
 </template>
 
 <script>
+  import { mapActions } from 'vuex'
   import firebaseApp from '~/firebaseApp'
   const db = firebaseApp.firestore()
 
@@ -39,40 +39,42 @@
       return {
         showPassword: false,
         error: null,
-        password: '',
-        user: {
-          email: '',
-          displayName: '',
-          photoUrl: '',
-          created: Date.now()
-        }
+        email: '',
+        password: ''
       }
     },
     methods: {
-      submit () {
-        this.$refs.form.$el.submit()
-      },
+      ...mapActions([
+        'saveUser'
+      ]),
       login () {
         this.error = ''
         // http://nodewebapps.com/2017/06/18/how-do-nodejs-sessions-work/
 
-        firebaseApp.auth().signInWithEmailAndPassword(this.user.email, this.password)
+        firebaseApp.auth().signInWithEmailAndPassword(this.email, this.password)
           .then(function (firebaseUser) {
             console.log('[SIGNIN.vue] successful login for user', firebaseUser.email)
 
             let docRef = db.collection('users').doc(firebaseUser.uid)
 
-            docRef.get().then(function (doc) {
+            return docRef.get().then(function (doc) {
               if (doc.exists) {
-                this.user = doc.data()
-                this.$store.dispatch('saveUser', this.user)
+                let user = {
+                  uid: doc.id,
+                  data: doc.data()
+                }
+                console.log('user exists in db', user)
+                this.saveUser(user)
+                return Promise.resolve(user)
               } else {
-                console.log("User doesn't exist in DB?? should have at sign up...should we save it here anyway?")
+                console.log("User doesn't exist in DB? should have at sign up...should we save it here anyway?")
+                return Promise.reject(new Error('User doesn\'t exist in DB'))
               }
             }.bind(this))
-          }.bind(this)).then(function () {
+          }.bind(this)).then(function (user) {
+            console.log('user:', user)
             let loginBody = JSON.stringify({
-              user: this.user
+              user: user
             })
 
             console.log('login body:', loginBody)
