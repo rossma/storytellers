@@ -1,47 +1,49 @@
 <template>
-  <v-container grid-list-md>
+  <v-container grid-list-xl>
     <v-alert :color="alert.colour" icon="check_circle" v-model="alert.show" dismissible>
       {{ alert.message }}
     </v-alert>
     <v-layout>
-      <v-flex>
+      <v-flex xs12>
         <v-card>
           <v-card-title primary class="title">User Profile</v-card-title>
-          <v-card-text>
-            <v-form v-model="valid" ref="form" lazy-validation>
-              <v-card color="secondary" flat>
-                <v-card-text>
-                  <v-container fluid>
-                    <v-layout row>
-                      <v-flex xs12>
-                        <v-tooltip top>
-                          <v-avatar class="indigo jbtn-file" v-show="!photoUrl" slot="activator">
-                              <v-icon dark>account_circle</v-icon>
-                              <input type="file" v-on:change="profileImageSelected">
-                          </v-avatar>
-                          <v-avatar class="jbtn-file" v-show="photoUrl" slot="activator">
-                            <img :src="photoUrl" alt="no photo">
-                            <input type="file" v-on:change="profileImageSelected">
-                          </v-avatar>
-                          <span>Upload Profile</span>
-                        </v-tooltip>
-                        <v-text-field label="Display Name" v-model="user.data.displayName" required
-                                      :rules="nameRules"></v-text-field>
-                      </v-flex>
-                    </v-layout>
-                  </v-container>
-                </v-card-text>
+          <v-layout row wrap text-xs-center>
+            <v-flex xs2>
+              <v-card dark flat>
+                <v-tooltip top>
+                  <v-avatar class="indigo jbtn-file" v-show="!photoUrl" slot="activator">
+                    <v-icon dark>account_circle</v-icon>
+                    <input type="file" v-on:change="profileImageSelected">
+                  </v-avatar>
+                  <v-avatar class="jbtn-file" v-show="photoUrl" slot="activator">
+                    <img :src="photoUrl" alt="no photo">
+                    <input type="file" v-on:change="profileImageSelected">
+                  </v-avatar>
+                  <span>Upload Profile</span>
+                </v-tooltip>
               </v-card>
+            </v-flex>
+            <v-flex xs10>
+              <v-card flat>
+                <v-form v-model="valid" ref="form" lazy-validation>
+                  <v-text-field label="Email" v-model="user.data.email" readonly disabled>
+                  </v-text-field>
+                  <v-text-field label="Display Name" v-model="user.data.displayName" required :rules="nameRules">
+                  </v-text-field>
+                </v-form>
+              </v-card>
+            </v-flex>
+            <v-flex xs12 text-xs-right>
               <v-btn @click="submit" :disabled="!valid">submit</v-btn>
-            </v-form>
-          </v-card-text>
+            </v-flex>
+          </v-layout>
         </v-card>
       </v-flex>
     </v-layout>
     <v-layout row wrap>
       <v-flex xs12>
-        <v-card dark color="primary">
-          <v-card-text class="px-0">My stories</v-card-text>
+        <v-card dark>
+          <v-card-title primary>My Stories</v-card-title>
           <v-layout row wrap>
             <v-flex d-flex xs12 sm6 md4 v-for="(preview, key, index) in previews" :key="preview.id" >
               <v-card>
@@ -54,8 +56,8 @@
         </v-card>
       </v-flex>
       <v-flex xs12>
-        <v-card dark color="primary">
-          <v-card-text class="px-0">Collaborations</v-card-text>
+        <v-card dark>
+          <v-card-title primary>Collaborations</v-card-title>
         </v-card>
       </v-flex>
     </v-layout>

@@ -1,8 +1,13 @@
 # Storytellers UI
 
-> A social network application used to encourage users to create and share stories with one another as well as collaborate with one in creating stories in multiple mediums. 
+> Storytellers is a web based community driven application providing a platform for the creative and artistic to share 
+> and collaborate their stories and ideas with one another through the support of multiple mediums.
 
-This is the frontend UI module of the application
+The project is divided into two separate modules: 
+* UI - Frontend javascript web components
+* Firebase functions - Backend javascript node.js functions
+
+This module is the UI frontend.
 
 ## Build Setup
 
