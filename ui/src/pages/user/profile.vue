@@ -44,15 +44,7 @@
       <v-flex xs12>
         <v-card dark>
           <v-card-title primary>My Stories</v-card-title>
-          <v-layout row wrap>
-            <v-flex d-flex xs12 sm6 md4 v-for="(preview, key, index) in previews" :key="preview.id" >
-              <v-card>
-                <v-card-title color="primary" class="title">{{ preview.data.title }}</v-card-title>
-                <img class="card-img-top img-fluid preview-img" :src="preview.data.previewImageUrl" alt="no image"
-                     v-on:click="showDetail(preview.id)">
-              </v-card>
-            </v-flex>
-          </v-layout>
+          <preview-list name="PreviewList" v-bind:filterBy="previewAuthorFilter"></preview-list>
         </v-card>
       </v-flex>
       <v-flex xs12>
@@ -68,6 +60,7 @@
   import { mapGetters, mapActions } from 'vuex'
 
   import firebaseApp from '~/firebaseApp'
+  import PreviewList from '~/components/preview/PreviewList'
 
   const db = firebaseApp.firestore()
 
@@ -76,6 +69,9 @@
       ...mapGetters([
         'user'
       ])
+    },
+    components: {
+      PreviewList
     },
     data () {
       return {
@@ -89,31 +85,20 @@
         nameRules: [
           (v) => !!v || 'Name is required'
         ],
-        previews: []
+        previews: [],
+        previewAuthorFilter: {
+          byAuthorUid: null
+        }
       }
     },
-    mounted: function () {
-      this.$nextTick(function () {
-        this.photoUrl = this.user.data.photoUrl
-        this.loadPreviews(this.user.uid)
-      })
+    created: function () {
+      this.photoUrl = this.user.data.photoUrl
+      this.previewAuthorFilter.byAuthorUid = this.user.uid
     },
     methods: {
       ...mapActions([
         'saveUser'
       ]),
-      loadPreviews (uid) {
-        console.log('Loading previews for uid:', uid)
-        db.collection('previews').where('uid', '==', uid).get().then(function (querySnapshot) {
-          this.previews = querySnapshot.docs.map((m) => {
-            let preview = {
-              id: m.id,
-              data: m.data()
-            }
-            return preview
-          })
-        }.bind(this))
-      },
       profileImageSelected (e) {
         if (e.target.files[0]) {
           console.log('profile image selected')

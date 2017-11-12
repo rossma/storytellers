@@ -3,62 +3,70 @@
     <v-alert color="success" icon="check_circle" v-model="alert.show" dismissible>
       {{ alert.message }}
     </v-alert>
-    <v-layout row wrap>
-      <v-flex>
-        <v-card>
-          <v-card-title primary class="title">{{ story.title }}</v-card-title>
-          <v-card-text>
-           {{ story.summary }}
-          </v-card-text>
-        </v-card>
-        <v-tabs dark fixed icons centered>
-          <v-tabs-bar class="cyan">
-            <v-tabs-slider color="yellow"></v-tabs-slider>
-            <v-tabs-item href="#tab-1">
-              <v-icon>mdi mdi-book-open-page-variant</v-icon>
-              Writing
-            </v-tabs-item>
-            <v-tabs-item href="#tab-2">
-              <v-icon>mdi mdi-palette</v-icon>
-              Picture
-            </v-tabs-item>
-            <v-tabs-item href="#tab-3">
-              <v-icon>mdi mdi-music-box</v-icon>
-              Sound
-            </v-tabs-item>
-          </v-tabs-bar>
+    <v-layout>
+      <v-flex xs12>
+        <v-tabs dark grow icons>
+          <v-toolbar color="cyan" dark>
+            <div>
+              <h3 class="headline mb-0">{{ story.title }}</h3>
+              <div v-show="user.data.displayName">{{ user.data.displayName }}</div>
+              <div v-if="!user.data.displayName">display name not set</div>
+            </div>
+            <v-tabs-bar class="cyan" slot="extension">
+              <v-tabs-slider color="yellow"></v-tabs-slider>
+              <v-tabs-item href="#summary-tab">
+                <v-icon>mdi mdi-book-open</v-icon>
+                Summary
+              </v-tabs-item>
+              <v-tabs-item href="#writing-tab">
+                <v-icon>mdi mdi-book-open-page-variant</v-icon>
+                Writing
+              </v-tabs-item>
+              <v-tabs-item href="#picture-tab">
+                <v-icon>mdi mdi-palette</v-icon>
+                Picture
+              </v-tabs-item>
+              <v-tabs-item href="#sound-tab">
+                <v-icon>mdi mdi-music-box</v-icon>
+                Sound
+              </v-tabs-item>
+            </v-tabs-bar>
+          </v-toolbar>
           <v-tabs-items>
-            <v-tabs-content :id="'tab-1'">
+            <v-tabs-content :id="'summary-tab'">
+              <v-card flat>
+                <v-card-text>
+                  <h6>{{ story.summary }}</h6>
+                </v-card-text>
+              </v-card>
+            </v-tabs-content>
+            <v-tabs-content :id="'writing-tab'">
               <v-card flat>
                 <v-card-text>
                   <upload-button name="Upload" icon="mdi mdi-upload" :selectedCallback="processFileWords"></upload-button>
                 </v-card-text>
               </v-card>
             </v-tabs-content>
-            <v-tabs-content :id="'tab-2'">
+            <v-tabs-content :id="'picture-tab'">
               <v-card flat>
                 <v-card-text>
                   <upload-button name="Upload" icon="mdi mdi-palette" :selectedCallback="processFileImage"></upload-button>
-                    <v-container fluid>
-                      <v-layout row>
-                        <v-flex xs12>
-                          <img class="card-img-top img-fluid" :src="imageFileUrl" />
-                        </v-flex>
-                      </v-layout>
-                    </v-container>
+                  <div class="text-xs-center">
+                    <img class="card-img-top img-fluid" :src="imageFileUrl" alt="no image"/>
+                  </div>
                 </v-card-text>
               </v-card>
             </v-tabs-content>
-            <v-tabs-content :id="'tab-3'">
+            <v-tabs-content :id="'sound-tab'">
               <v-card flat>
                 <upload-button name="Upload" icon="mdi mdi-music-box" :selectedCallback="processFileImage"></upload-button>
               </v-card>
             </v-tabs-content>
           </v-tabs-items>
         </v-tabs>
-        <v-btn @click="publish">publish</v-btn>
       </v-flex>
     </v-layout>
+    <v-btn @click="publish">publish</v-btn>
   </v-container>
 </template>
 
@@ -66,6 +74,7 @@
   import { mapGetters } from 'vuex'
   import UploadButton from '~/components/UploadButton'
   import firebaseApp from '~/firebaseApp'
+  import stringUtils from '~/utils/string'
 
   const db = firebaseApp.firestore()
 
@@ -74,7 +83,7 @@
       UploadButton
     },
     computed: {
-      ...mapGetters(['story'])
+      ...mapGetters(['story', 'user'])
     },
     data () {
       return {
@@ -155,11 +164,13 @@
               })
           })
           .then(() => {
+            console.log('in previews update:', stringUtils.truncateWithEllipse(this.story.summary, 100))
             return db.collection('previews').add({
               storyOid: this.story.id,
               chapter: this.chapter,
               page: this.page,
               title: this.story.title,
+              summary: stringUtils.truncateWithEllipse(this.story.summary, 100),
               uid: firebaseApp.auth().currentUser.uid,
               userDisplayName: firebaseApp.auth().currentUser.displayName,
               previewImageUrl: previewUrl,
