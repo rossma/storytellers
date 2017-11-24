@@ -3,18 +3,18 @@
     <v-alert :color="alert.colour" icon="check_circle" v-model="alert.show" dismissible>
       {{ alert.message }}
     </v-alert>
-    <v-layout v-if="preview">
+    <v-layout v-if="story.id">
       <v-flex xs12>
         <v-tabs dark grow icons>
           <v-toolbar color="cyan" dark>
             <div>
-              <h3 class="headline mb-0">{{ preview.title }}</h3>
+              <h3 class="headline mb-0">{{ story.data.title }}</h3>
               <div v-show="authorUser.displayName">{{ authorUser.displayName }}</div>
               <div v-if="!authorUser.displayName">author</div>
             </div>
             <v-tabs-bar class="cyan" slot="extension">
               <v-tabs-slider color="yellow"></v-tabs-slider>
-              <v-tabs-item href="#summary-tab" v-show="story.summary">
+              <v-tabs-item href="#summary-tab" v-show="story.data.summary">
                 <v-icon>mdi mdi-book-open</v-icon>
                 Summary
               </v-tabs-item>
@@ -22,7 +22,7 @@
                 <v-icon>mdi mdi-book-open-page-variant</v-icon>
                 Writing
               </v-tabs-item>
-              <v-tabs-item href="#picture-tab" v-if="page.image.ref">
+              <v-tabs-item href="#picture-tab" v-if="page.data.image.ref">
                 <v-icon>mdi mdi-palette</v-icon>
                 Picture
               </v-tabs-item>
@@ -33,10 +33,10 @@
             </v-tabs-bar>
           </v-toolbar>
           <v-tabs-items>
-            <v-tabs-content :id="'summary-tab'" v-show="story.summary">
+            <v-tabs-content :id="'summary-tab'" v-show="story.data.summary">
               <v-card flat>
                 <v-card-text>
-                  <h6>{{ story.summary }}</h6>
+                  <h6>{{ story.data.summary }}</h6>
                 </v-card-text>
               </v-card>
             </v-tabs-content>
@@ -47,11 +47,11 @@
                 </v-card-text>
               </v-card>
             </v-tabs-content>
-            <v-tabs-content :id="'picture-tab'" v-if="page.image.ref">
+            <v-tabs-content :id="'picture-tab'" v-if="page.data.image.ref">
               <v-card flat>
                 <v-card-text>
                   <div class="text-xs-center">
-                    <img class="card-img-top img-fluid" :src="page.image.ref" alt="no image">
+                    <img class="card-img-top img-fluid" :src="page.data.image.ref" alt="no image">
                   </div>
                 </v-card-text>
               </v-card>
@@ -69,10 +69,18 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
+
   import firebaseApp from '~/firebaseApp'
   const db = firebaseApp.firestore()
 
   export default {
+    layout: 'story',
+    computed: {
+      ...mapGetters([
+        'user'
+      ])
+    },
     data () {
       return {
         alert: {
@@ -80,36 +88,53 @@
           message: '',
           colour: 'success'
         },
-        preview: '',
+        drawer: true,
         authorUser: '',
         story: {
-          summary: null
+          id: null,
+          data: {
+            summary: null
+          }
+        },
+        chapter: {
+          id: null,
+          data: {
+            number: null
+          }
         },
         page: {
-          image: {
-            ref: null
+          id: null,
+          data: {
+            number: null,
+            image: {
+              ref: null
+            }
           }
         }
       }
     },
     mounted: function () {
       this.$nextTick(function () {
-        console.log('[Story Detail] - in mounted, preview id:', this.$route.params.id)
-        this.loadPreview(this.$route.params.id)
+        console.log('[Story Detail] - in mounted, page id:', this.$route.params.id)
+        this.loadPage(this.$route.params.id)
       })
     },
     methods: {
-      loadPreview (previewOid) {
-        console.log('in loadpreview', previewOid)
-        let docRef = db.collection('previews').doc(previewOid)
-
+      loadPage (pageOid) {
+        let docRef = db.collection('pages').doc(pageOid)
         docRef.get().then(function (doc) {
           if (doc.exists) {
-            this.preview = doc.data()
-            this.initAuthorUser(this.preview.uid)
-            this.initStory(this.preview.storyOid)
+            this.page.id = pageOid
+            this.page.data = doc.data()
+            if (this.isAuthorised()) {
+              this.initAuthorUser(this.page.data.uid)
+              this.initStory(this.page.data.storyOid)
+              this.initChapter(this.page.data.chapterOid)
+            } else {
+              this.raiseAlert('error', 'User not authorised to view this page')
+            }
           } else {
-            this.raiseAlert('error', 'Preview does not exist')
+            this.raiseAlert('error', 'Page does not exist')
           }
         }.bind(this))
       },
@@ -130,21 +155,29 @@
 
         storyDocRef.get().then(function (storyDoc) {
           if (storyDoc.exists) {
-            this.story = storyDoc.data()
+            this.story.id = storyDoc.id
+            this.story.data = storyDoc.data()
             console.log('story.....', this.story)
-            let pageDocRef = storyDocRef.collection('chapters/' +
-                this.preview.chapter.toString() + '/pages').doc(this.preview.page.toString())
-            pageDocRef.get().then(function (pageDoc) {
-              if (pageDoc.exists) {
-                this.page = pageDoc.data()
-              } else {
-                this.raiseAlert('error', 'Page does not exist')
-              }
-            }.bind(this))
           } else {
             this.raiseAlert('error', 'Story does not exist')
           }
         }.bind(this))
+      },
+      initChapter (chapterOid) {
+        let chapterDocRef = db.collection('chapters').doc(chapterOid)
+
+        chapterDocRef.get().then(function (chapterDoc) {
+          if (chapterDoc.exists) {
+            this.chapter.id = chapterDoc.id
+            this.chapter.data = chapterDoc.data()
+            console.log('chapter.....', this.chapter)
+          } else {
+            this.raiseAlert('error', 'Chapter does not exist')
+          }
+        }.bind(this))
+      },
+      isAuthorised () {
+        return this.page.data.public || this.page.data.uid === this.user.uid
       },
       raiseAlert (severity, message) {
         this.alert.show = true

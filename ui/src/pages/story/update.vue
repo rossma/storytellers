@@ -79,6 +79,7 @@
   const db = firebaseApp.firestore()
 
   export default {
+    layout: 'story',
     components: {
       UploadButton
     },
@@ -94,8 +95,16 @@
         valid: true,
         imageFileUrl: '',
         imageFilenameKey: '',
-        chapter: 1,
-        page: 1
+        chapter: {
+          id: null,
+          number: 1,
+          name: ''
+        },
+        page: {
+          id: null,
+          number: 1,
+          public: false
+        }
       }
     },
     mounted: function () {
@@ -135,19 +144,40 @@
       writeContentData (storyId, imageUrl) {
         console.log('ImageURL:', imageUrl)
         this.imageFileUrl = imageUrl
-        console.log('ImageURL:', this.imageFileUrl)
-        db.collection('stories/' + storyId + '/chapters/' + this.chapter + '/pages').doc(this.page.toString()).set({
-          image: {
-            ref: imageUrl,
-            created: Date.now()
-          },
-          public: false
+        db.collection('chapters').add({
+          chapter: this.chapter.number,
+          name: this.chapter.name,
+          uid: this.user.uid
+        }).then(function (chapterDocRef) {
+          console.log('Chapter Document written with ID: ', chapterDocRef.id)
+          this.chapter.id = chapterDocRef.id
+          db.collection('pages').add({
+            storyOid: storyId,
+            chapterOid: this.chapter.id,
+            page: this.page.number,
+            uid: this.user.uid,
+            image: {
+              ref: imageUrl,
+              created: Date.now()
+            },
+            public: false
+          }).then(function (pageDocRef) {
+            console.log('Page Document written with ID: ', pageDocRef.id)
+            this.page.id = pageDocRef.id
+          }.bind(this)).catch(function (error) {
+            console.error('Error adding page document: ', error)
+            return Promise.reject(new Error('error adding Page Document to DB'))
+          })
+        }.bind(this)).catch(function (error) {
+          console.error('Error adding document: ', error)
+          return Promise.reject(new Error('error adding chapter Document to DB'))
         })
       },
       publish () {
         console.log('publishing story')
         let previewUrl = ''
-        db.collection('stories/' + this.story.id + '/chapters/' + this.chapter + '/pages/').doc(this.page.toString()).set({
+
+        db.collection('/pages/').doc(this.page.id).set({
           public: true
         }, { merge: true })
           .then(() => {
@@ -167,12 +197,12 @@
             console.log('in previews update:', stringUtils.truncateWithEllipse(this.story.summary, 100))
             return db.collection('previews').add({
               storyOid: this.story.id,
-              chapter: this.chapter,
-              page: this.page,
+              chapterOid: this.chapter.id,
+              pageOid: this.page.id,
               title: this.story.title,
               summary: stringUtils.truncateWithEllipse(this.story.summary, 100),
-              uid: firebaseApp.auth().currentUser.uid,
-              userDisplayName: firebaseApp.auth().currentUser.displayName,
+              uid: this.user.uid,
+              userDisplayName: this.user.data.displayName,
               previewImageUrl: previewUrl,
               imageFilenameOid: this.imageFilenameKey
             })

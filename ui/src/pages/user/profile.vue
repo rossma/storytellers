@@ -44,7 +44,7 @@
       <v-flex xs12>
         <v-card dark>
           <v-card-title primary>My Stories</v-card-title>
-          <preview-list name="PreviewList" v-bind:filterBy="previewAuthorFilter"></preview-list>
+          <preview-list name="PreviewList" v-bind:showAction="false" v-bind:filterBy="previewAuthorFilter"></preview-list>
         </v-card>
       </v-flex>
       <v-flex xs12>
@@ -85,15 +85,16 @@
         nameRules: [
           (v) => !!v || 'Name is required'
         ],
-        previews: [],
         previewAuthorFilter: {
-          byAuthorUid: null
+          byAuthorUid: null,
+          userProfile: true
         }
       }
     },
     created: function () {
-      this.photoUrl = this.user.data.photoUrl
+      this.photoUrl = this.user.photoUrl
       this.previewAuthorFilter.byAuthorUid = this.user.uid
+      this.tmp()
     },
     methods: {
       ...mapActions([
@@ -119,6 +120,9 @@
         } else {
           console.log('no profile image selected')
         }
+      },
+      tmp () {
+        console.log('in tmp method')
       },
       submit () {
         console.log('in submit')

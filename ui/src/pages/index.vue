@@ -1,5 +1,5 @@
 <template>
-    <preview-list name="PreviewList" v-bind:filterBy="filterBy"></preview-list>
+  <preview-list name="PreviewList" v-bind:filterBy="filterBy"></preview-list>
 </template>
 
 <script>
