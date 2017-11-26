@@ -1,6 +1,6 @@
 {
   "name": "storytellers",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.1",
   "description": "Stories created in collaboration and shared",
   "author": "Ross Mahony",
   "scripts": {
@@ -14,9 +14,14 @@
     "express": "^4.15.4",
     "express-session": "^1.15.5",
     "firebase": "4.6.0",
+    "grpc": "^1.7.2",
     "mdi": "^2.0.46",
-    "nuxt": "^1.0.0-rc6",
-    "vuetify": "0.16.9",
+    "nuxt": "^1.0.0-rc11",
+    "vue": "^2.5.8",
+    "vue-loader": "^13.5.0",
+    "vue-server-renderer": "^2.5.8",
+    "vue-template-compiler": "^2.5.8",
+    "vuetify": "^0.17.2",
     "vuex": "^2.3.1",
     "whatwg-fetch": "^2.0.3"
   },

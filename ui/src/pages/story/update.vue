@@ -145,6 +145,7 @@
         console.log('ImageURL:', imageUrl)
         this.imageFileUrl = imageUrl
         db.collection('chapters').add({
+          storyOid: this.story.id,
           chapter: this.chapter.number,
           name: this.chapter.name,
           uid: this.user.uid

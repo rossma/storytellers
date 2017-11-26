@@ -69,9 +69,10 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
-
+  import { mapGetters, mapActions } from 'vuex'
+  import { EventBus } from '~/utils/event-bus.js'
   import firebaseApp from '~/firebaseApp'
+
   const db = firebaseApp.firestore()
 
   export default {
@@ -120,6 +121,9 @@
       })
     },
     methods: {
+      ...mapActions([
+        'saveStory'
+      ]),
       loadPage (pageOid) {
         let docRef = db.collection('pages').doc(pageOid)
         docRef.get().then(function (doc) {
@@ -157,6 +161,8 @@
           if (storyDoc.exists) {
             this.story.id = storyDoc.id
             this.story.data = storyDoc.data()
+            this.saveStory(this.story)
+            this.publishStoryOid(this.story.id)
             console.log('story.....', this.story)
           } else {
             this.raiseAlert('error', 'Story does not exist')
@@ -183,6 +189,10 @@
         this.alert.show = true
         this.alert.colour = severity
         this.alert.message = message
+      },
+      publishStoryOid (storyOid) {
+        console.log('publishing story')
+        EventBus.$emit('storyOidEvent', storyOid)
       }
     }
   }
