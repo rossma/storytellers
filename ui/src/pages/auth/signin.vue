@@ -44,8 +44,8 @@
 
 <script>
 import { mapActions } from 'vuex'
+import { findUserByOid } from '~/service/user'
 import firebaseApp from '~/firebaseApp'
-const db = firebaseApp.firestore()
 
 export default {
   layout: 'auth',
@@ -65,52 +65,44 @@ export default {
       this.error = ''
       // http://nodewebapps.com/2017/06/18/how-do-nodejs-sessions-work/
 
-      firebaseApp.auth().signInWithEmailAndPassword(this.email, this.password)
-        .then(function (firebaseUser) {
-          console.log('[SIGNIN.vue] successful login for user', firebaseUser.email)
-
-          let docRef = db.collection('users').doc(firebaseUser.uid)
-
-          return docRef.get().then(function (doc) {
-            if (doc.exists) {
-              let user = {
-                uid: doc.id,
-                data: doc.data()
-              }
-              console.log('user exists in db', user)
-              this.saveUser(user)
-              return Promise.resolve(user)
-            } else {
-              console.log("User doesn't exist in DB? should have at sign up...should we save it here anyway?")
-              return Promise.reject(new Error('User doesn\'t exist in DB'))
-            }
-          }.bind(this))
-        }.bind(this)).then(function (user) {
-          console.log('user:', user)
-          let loginBody = JSON.stringify({
-            user: user
-          })
-
-          console.log('login body:', loginBody)
-
-          return fetch('/api/login', {
-            // Send the client cookies to the server
-            credentials: 'same-origin',
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: loginBody
-          })
-            .then((response) => {
-              console.log('User state saved in session, status:' + response.status)
-              this.$router.push('/')
-            })
-        }.bind(this))
-        .catch(err => {
-          console.log('form err:', err)
-          this.error = err
+      firebaseApp.auth().signInWithEmailAndPassword(this.email, this.password).then((firebaseUser) => {
+        console.log('[SIGNIN.vue] successful login for user', firebaseUser.email)
+        return findUserByOid(firebaseUser.uid)
+      }).then((userDoc) => {
+        if (userDoc.exists) {
+          let user = {
+            uid: userDoc.id,
+            data: userDoc.data()
+          }
+          this.saveUser(user)
+          return Promise.resolve(user)
+        } else {
+          console.log("User doesn't exist in DB? should have at sign up...should we save it here anyway?")
+          return Promise.reject(new Error('User doesn\'t exist in DB'))
+        }
+      }).then((user) => {
+        console.log('user:', user)
+        let loginBody = JSON.stringify({
+          user: user
         })
+
+        console.log('login body:', loginBody)
+
+        return fetch('/api/login', {
+          // Send the client cookies to the server
+          credentials: 'same-origin',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: loginBody
+        })
+      }).then((response) => {
+        console.log('User state saved in session, status:' + response.status)
+        this.$router.push('/')
+      }).catch(err => {
+        this.error = err
+      })
     }
   }
 }

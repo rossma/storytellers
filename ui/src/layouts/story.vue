@@ -29,7 +29,8 @@
             :key="chapter.id">
             <v-layout
               row
-              align-center>
+              align-center
+              v-show="!editChapter">
               <v-flex xs6>
                 <v-subheader v-if="chapter.data.name">
                   {{ chapter.data.name }}
@@ -43,7 +44,37 @@
                 class="text-xs-right">
                 <v-btn
                   small
-                  flat>edit</v-btn>
+                  flat
+                  @click="editChapter = !editChapter">edit</v-btn>
+              </v-flex>
+            </v-layout>
+            <v-layout
+              row
+              align-center
+              v-show="editChapter">
+              <v-flex xs6>
+                <v-text-field
+                  name="input-1-3"
+                  label="Chapter"
+                  single-line
+                  v-if="chapter.data.name"
+                  v-model="chapter.data.name"
+                />
+                <v-text-field
+                  name="input-1-3"
+                  label="Chapter"
+                  single-line
+                  v-else
+                  v-model="chapter.data.chapter"
+                />
+              </v-flex>
+              <v-flex
+                xs6
+                class="text-xs-right">
+                <v-btn
+                  small
+                  flat
+                  @click="saveChapter(chapter)">save</v-btn>
               </v-flex>
             </v-layout>
             <v-list-tile
@@ -83,11 +114,9 @@
         </v-layout>
       </v-list>
     </navigation-toolbar>
-    <main>
-      <v-content>
-        <nuxt/>
-      </v-content>
-    </main>
+    <v-content>
+      <nuxt/>
+    </v-content>
     <page-footer/>
   </v-app>
 </template>
@@ -97,9 +126,8 @@ import { mapGetters } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
 import PageFooter from '~/components/layout/PageFooter'
 import NavigationToolbar from '~/components/layout/NavigationToolbar'
-import firebaseApp from '~/firebaseApp'
-
-const db = firebaseApp.firestore()
+import { updateChapterName, findChaptersByStory } from '~/service/chapter'
+import { findPagesByStory } from '~/service/page'
 
 export default {
   middleware: 'authenticated',
@@ -110,7 +138,8 @@ export default {
   data () {
     return {
       chapters: [],
-      pages: []
+      pages: [],
+      editChapter: false
     }
   },
   computed: {
@@ -119,7 +148,7 @@ export default {
     ])
   },
   mounted: function () {
-    this.$nextTick(function () {
+    this.$nextTick(() => {
       console.log('[Story Nav] - in mounted, story id:', this.$route.params.id)
       EventBus.$on('storyOidEvent', storyOid => {
         console.log(`[story layout] storyOidEvent received payload:[${storyOid}]`)
@@ -132,36 +161,27 @@ export default {
   },
   methods: {
     loadChapters (storyOid) {
-      let self = this
-      console.log('loading chapters for story', storyOid)
-      let chaptersRef = db.collection('chapters').where('storyOid', '==', storyOid)
-      chaptersRef.get().then(function (querySnapshot) {
-        self.chapters = querySnapshot.docs.map((m) => {
-          let chapter = {
-            id: m.id,
-            data: m.data()
-          }
-          console.log('Chapter:', chapter)
-          return chapter
-        })
-      }).then(() => {
-        console.log('Found Chapters:', self.chapters)
-        let pagesRef = db.collection('pages').where('storyOid', '==', storyOid)
-        pagesRef.get().then(function (querySnapshot) {
-          self.pages = querySnapshot.docs.map((m) => {
-            let page = {
-              id: m.id,
-              data: m.data()
-            }
-            console.log('Page:', page)
-            return page
-          })
-        })
+      findChaptersByStory(storyOid).then((chapters) => {
+        console.log('Found Chapters:', chapters)
+        this.chapters = chapters
+        return findPagesByStory(storyOid)
+      }).then((pages) => {
+        console.log('Found Pages:', pages)
+        this.pages = pages
       })
     },
     chapterPages (chapterOid) {
       console.log('filtering pages by chapteroid:', chapterOid)
       return this.pages.filter(p => p.data.chapterOid === chapterOid)
+    },
+    saveChapter (chapter) {
+      console.log('chapter:', chapter)
+      if (!chapter.data.name) {
+        chapter.data.name = chapter.data.chapter
+      }
+      console.log('Saving name:', chapter.data.name)
+      updateChapterName(chapter.id, chapter.data.name)
+      this.editChapter = !this.editChapter
     }
   }
 }

@@ -99,11 +99,11 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import { uploadProfileImage } from '~/service/image'
+import { updateUser } from '~/service/user'
 
 import firebaseApp from '~/firebaseApp'
 import PreviewList from '~/components/preview/PreviewList'
-
-const db = firebaseApp.firestore()
 
 export default {
   components: {
@@ -135,7 +135,6 @@ export default {
   created: function () {
     this.photoUrl = this.user.photoUrl
     this.previewAuthorFilter.byAuthorUid = this.user.uid
-    this.tmp()
   },
   methods: {
     ...mapActions([
@@ -148,48 +147,39 @@ export default {
         var metadata = {
           'contentType': file.type
         }
-        var storageRef = firebaseApp.storage().ref()
-        storageRef.child('images/' + file.name).put(file, metadata)
-          .then(function (snapshot) {
-            console.log('Uploaded', snapshot.totalBytes, 'bytes.')
-            console.log('Metadata:', snapshot.metadata)
-            console.log('downloadURL:', snapshot.downloadURL)
-            this.photoUrl = snapshot.downloadURL
-          }.bind(this)).catch(function (error) {
-            console.error('Upload failed:', error)
-          })
+        uploadProfileImage(file, metadata, this.user.uid).then((downloadUrl) => {
+          this.photoUrl = downloadUrl
+        }).catch((error) => {
+          console.error('Upload failed:', error)
+          // todo raise alert
+        })
       } else {
         console.log('no profile image selected')
+        // todo raise alert
       }
     },
-    tmp () {
-      console.log('in tmp method')
-    },
     submit () {
-      console.log('in submit')
       if (this.$refs.form.validate()) {
-        console.log('valid')
         let firebaseUser = firebaseApp.auth().currentUser
         firebaseUser.updateProfile({
           displayName: this.user.data.displayName,
           photoURL: this.photoUrl
-        }).then(function () {
-          db.collection('users').doc(firebaseUser.uid).set({
-            displayName: this.user.data.displayName,
-            photoUrl: this.photoUrl
-          }, { merge: true }).then(function () {
-            this.user.data.photoUrl = this.photoUrl
-            console.log('user:', this.user)
-            this.saveUser(this.user)
-            this.raiseAlert('success', 'Profile successfully updated')
-          }.bind(this)).catch(function (error) {
-            console.error('Error adding user document', error)
-            this.raiseAlert('error', 'There was an error updating your profile')
-          })
-        }.bind(this)).catch(function (error) {
-          console.log('Error updating user profile', error)
+        }).then(() => {
+          return updateUser(firebaseUser.uid,
+            {
+              displayName: this.user.data.displayName,
+              photoUrl: this.photoUrl
+            },
+            { merge: true })
+        }).then(() => {
+          this.user.data.photoUrl = this.photoUrl
+          console.log('user:', this.user)
+          this.saveUser(this.user)
+          this.raiseAlert('success', 'Profile successfully updated')
+        }).catch((error) => {
+          console.error('Error adding user document', error)
           this.raiseAlert('error', 'There was an error updating your profile')
-        }.bind(this))
+        })
       }
     },
     raiseAlert (severity, message) {

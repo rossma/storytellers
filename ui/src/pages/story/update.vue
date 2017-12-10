@@ -100,10 +100,11 @@
 <script>
 import { mapGetters } from 'vuex'
 import UploadButton from '~/components/UploadButton'
-import firebaseApp from '~/firebaseApp'
 import stringUtils from '~/utils/string'
-
-const db = firebaseApp.firestore()
+import { addChapter } from '~/service/chapter'
+import { addPage, updatePage } from '~/service/page'
+import { uploadStoryImage, findImageByOid } from '~/service/image'
+import { addPreview } from '~/service/preview'
 
 export default {
   layout: 'story',
@@ -135,7 +136,7 @@ export default {
     ...mapGetters(['story', 'user'])
   },
   mounted: function () {
-    this.$nextTick(function () {
+    this.$nextTick(() => {
       console.log('[Story/Update] - in mounted, story id:', this.story.id)
     })
   },
@@ -147,39 +148,26 @@ export default {
       var metadata = {
         'contentType': file.type
       }
-      var storageRef = firebaseApp.storage().ref()
-      // Push to child path.
-      // [START oncomplete]
       this.imageFilenameKey = this.uuidv4()
-      storageRef.child('images/original/' + this.imageFilenameKey + '.' + file.name.split('.').pop())
-        .put(file, metadata).then(function (snapshot) {
-          console.log('Uploaded', snapshot.totalBytes, 'bytes.')
-          console.log('Metadata:', snapshot.metadata)
-          console.log('downloadURL:', snapshot.downloadURL)
-          // var url = snapshot.downloadURL;
-          // console.log('File available at', url);
-          // [START_EXCLUDE]
-          // document.getElementById('linkbox').innerHTML = '<a href="' +  url + '">Click For File</a>';
-          // [END_EXCLUDE]
-          this.writeContentData(this.story.id, snapshot.downloadURL)
-        }.bind(this)).catch(function (error) {
-          // [START onfailure]
-          console.error('Upload failed:', error)
-          // [END onfailure]
-        })
+      uploadStoryImage(file, metadata, this.imageFilenameKey).then((downloadUrl) => {
+        this.writeContentData(this.story.id, downloadUrl)
+      }).catch((err) => {
+        console.log('Upload failed:', err)
+        // todo raise alert
+      })
     },
     writeContentData (storyId, imageUrl) {
       console.log('ImageURL:', imageUrl)
       this.imageFileUrl = imageUrl
-      db.collection('chapters').add({
+      addChapter({
         storyOid: this.story.id,
         chapter: this.chapter.number,
         name: this.chapter.name,
         uid: this.user.uid
-      }).then(function (chapterDocRef) {
+      }).then((chapterDocRef) => {
         console.log('Chapter Document written with ID: ', chapterDocRef.id)
         this.chapter.id = chapterDocRef.id
-        db.collection('pages').add({
+        return addPage({
           storyOid: storyId,
           chapterOid: this.chapter.id,
           page: this.page.number,
@@ -189,59 +177,47 @@ export default {
             created: Date.now()
           },
           public: false
-        }).then(function (pageDocRef) {
-          console.log('Page Document written with ID: ', pageDocRef.id)
-          this.page.id = pageDocRef.id
-        }.bind(this)).catch(function (error) {
-          console.error('Error adding page document: ', error)
-          return Promise.reject(new Error('error adding Page Document to DB'))
         })
-      }.bind(this)).catch(function (error) {
+      }).then((pageDocRef) => {
+        console.log('Page Document written with ID: ', pageDocRef.id)
+        this.page.id = pageDocRef.id
+      }).catch((error) => {
         console.error('Error adding document: ', error)
-        return Promise.reject(new Error('error adding chapter Document to DB'))
+        return Promise.reject(new Error('error adding Document to DB'))
       })
     },
     publish () {
       console.log('publishing story')
-      let previewUrl = ''
-
-      db.collection('/pages/').doc(this.page.id).set({
-        public: true
-      }, { merge: true })
-        .then(() => {
-          console.log('imageFilenameKey:', this.imageFilenameKey)
-          return db.collection('images').doc(this.imageFilenameKey).get()
-            .then(function (imageDoc) {
-              if (imageDoc.exists) {
-                console.log('imageDoc:', imageDoc.data())
-                previewUrl = imageDoc.data().previewUrl
-              } else {
-                console.log('Image Document not found in DB at this time')
-                // return Promise.reject(new Error('Image Document not found in DB'))
-              }
-            })
+      updatePage({public: true}, { merge: true }).then((pageDoc) => {
+        console.log('imageFilenameKey:', this.imageFilenameKey)
+        return findImageByOid(this.imageFilenameKey)
+      }).then((imageDoc) => {
+        let previewUrl = ''
+        if (imageDoc.exists) {
+          console.log('imageDoc:', imageDoc.data())
+          previewUrl = imageDoc.data().previewUrl
+        } else {
+          // possible if the server function hasn't run yet
+          console.log('Image Document not found in DB at this time')
+        }
+        return addPreview({
+          storyOid: this.story.id,
+          chapterOid: this.chapter.id,
+          pageOid: this.page.id,
+          title: this.story.title,
+          summary: stringUtils.truncateWithEllipse(this.story.summary, 100),
+          uid: this.user.uid,
+          userDisplayName: this.user.data.displayName,
+          previewImageUrl: previewUrl,
+          imageFilenameOid: this.imageFilenameKey
         })
-        .then(() => {
-          console.log('in previews update:', stringUtils.truncateWithEllipse(this.story.summary, 100))
-          return db.collection('previews').add({
-            storyOid: this.story.id,
-            chapterOid: this.chapter.id,
-            pageOid: this.page.id,
-            title: this.story.title,
-            summary: stringUtils.truncateWithEllipse(this.story.summary, 100),
-            uid: this.user.uid,
-            userDisplayName: this.user.data.displayName,
-            previewImageUrl: previewUrl,
-            imageFilenameOid: this.imageFilenameKey
-          })
-            .then(() => {
-              console.log('story published')
-              this.alert.show = true
-              this.alert.message = 'Story published'
-            })
-        }).catch(function (err) {
-          console.log('in error handler:', err)
-        })
+      }).then(() => {
+        console.log('story published')
+        this.alert.show = true
+        this.alert.message = 'Story published'
+      }).catch((err) => {
+        console.log('in error handler:', err)
+      })
     },
     uuidv4 () {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {

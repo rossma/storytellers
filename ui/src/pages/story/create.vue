@@ -46,9 +46,8 @@
 
 <script>
 import { mapActions } from 'vuex'
-
+import { addStory } from '~/service/story'
 import firebaseApp from '~/firebaseApp'
-const db = firebaseApp.firestore()
 
 export default {
   data () {
@@ -69,23 +68,23 @@ export default {
     submit () {
       if (this.$refs.form.validate()) {
         console.log('submiting form:', this.story)
-        db.collection('stories').add({
+        addStory({
           uid: firebaseApp.auth().currentUser.uid,
           title: this.story.title,
           summary: this.story.summary,
           created: this.story.created
+        }).then((storyDoc) => {
+          console.log('Document written with ID: ', storyDoc.id)
+          this.story.id = storyDoc.id
+          this.saveStory(this.story)
+          this.$router.push('/story/update')
+        }).catch((error) => {
+          console.error('Error adding document: ', error)
+          // todo add alert
         })
-          .then(function (docRef) {
-            console.log('Document written with ID: ', docRef.id)
-            this.story.id = docRef.id
-            this.saveStory(this.story)
-            this.$router.push('/story/update')
-          }.bind(this))
-          .catch(function (error) {
-            console.error('Error adding document: ', error)
-          })
       } else {
         console.log('Form validation failed')
+        // todo add alert
       }
     }
   }

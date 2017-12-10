@@ -44,8 +44,8 @@
 
 <script>
 import { mapActions } from 'vuex'
+import { addUser } from '~/service/user'
 import firebaseApp from '~/firebaseApp'
-const db = firebaseApp.firestore()
 
 export default {
   layout: 'auth',
@@ -67,45 +67,43 @@ export default {
     signUp () {
       console.log('[SIGNUP] signing up')
       this.error = ''
-      firebaseApp.auth().createUserWithEmailAndPassword(this.email, this.password)
-        .then(function (firebaseUser) {
-          console.log('[SIGNUP.vue] successful user creation in firebase', firebaseUser.email)
-          let user = {
-            uid: firebaseUser.uid,
-            data: {
-              email: this.email,
-              displayName: '',
-              photoUrl: '',
-              created: Date.now()
-            }
+      firebaseApp.auth().createUserWithEmailAndPassword(this.email, this.password).then((firebaseUser) => {
+        console.log('[SIGNUP.vue] successful user creation in firebase', firebaseUser.email)
+        let user = {
+          uid: firebaseUser.uid,
+          data: {
+            email: this.email,
+            displayName: '',
+            photoUrl: '',
+            created: Date.now()
           }
-
-          let docRef = db.collection('users').doc(user.uid)
-          docRef.set(user.data)
-          this.saveUser(user)
-          return Promise.resolve(user)
-        }.bind(this)).then(function (user) {
-          let loginBody = JSON.stringify({
-            user: user
-          })
-
-          console.log('login body:' + loginBody)
-
-          return fetch('/api/login', {
-            // Send the client cookies to the server
-            credentials: 'same-origin',
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: loginBody
-          }).then((response) => {
-            console.log('User state saved in session, status:' + response.status)
-            this.$router.push('/')
-          })
-        }.bind(this)).catch(error => {
-          this.error = error
+        }
+        return addUser(user)
+      }).then((user) => {
+        this.saveUser(user)
+        return Promise.resolve(user)
+      }).then((user) => {
+        let loginBody = JSON.stringify({
+          user: user
         })
+
+        console.log('login body:' + loginBody)
+
+        return fetch('/api/login', {
+          // Send the client cookies to the server
+          credentials: 'same-origin',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: loginBody
+        })
+      }).then((response) => {
+        console.log('User state saved in session, status:' + response.status)
+        this.$router.push('/')
+      }).catch(err => {
+        this.error = err
+      })
     }
   }
 }

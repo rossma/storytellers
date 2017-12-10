@@ -47,10 +47,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
-
-import firebaseApp from '~/firebaseApp'
-
-const db = firebaseApp.firestore()
+import { findPagesByUser } from '~/service/page'
+import { findStoriesByUser } from '~/service/story'
+import { findPreviewsByFilter } from '~/service/preview'
 
 export default {
   name: 'PreviewList',
@@ -80,7 +79,7 @@ export default {
     ])
   },
   mounted: function () {
-    this.$nextTick(function () {
+    this.$nextTick(() => {
       this.init()
     })
   },
@@ -93,91 +92,45 @@ export default {
       }
     },
     fetchUserProfileStories () {
-      console.log('UID:', this.user.uid)
       let pages = null
-      // let pagesRef = db.collection('pages').where('uid', '==', this.user.uid).where('public', '==', false)
-      let pagesRef = db.collection('pages').where('uid', '==', this.user.uid)
-      pagesRef.get().then(function (querySnapshot) {
-        pages = querySnapshot.docs.map((m) => {
-          let page = {
-            id: m.id,
-            data: m.data()
-          }
-          return page
-        })
-      }).then(() => {
+      findPagesByUser(this.user.uid).then((pageSnapshot) => {
+        pages = pageSnapshot
         if (pages.length > 0) {
-          let stories = null
-          let storiesRef = db.collection('stories').where('uid', '==', this.user.uid)
-          storiesRef.get().then(function (querySnapshot) {
-            stories = querySnapshot.docs.map((m) => {
-              let story = {
-                id: m.id,
-                data: m.data()
-              }
-              console.log('story:', story)
-              return story
-            })
-          }).then(() => {
-            console.log('Found Stories:', stories)
-            let chapters = null
-            let chaptersRef = db.collection('chapters').where('uid', '==', this.user.uid)
-            chaptersRef.get().then(function (querySnapshot) {
-              chapters = querySnapshot.docs.map((m) => {
-                let chapter = {
-                  id: m.id,
-                  data: m.data()
-                }
-                return chapter
-              })
-            }).then(() => {
-              console.log('Found Chapters:', chapters)
-
-              // initialise previews
-
-              this.previews = pages.map((page) => {
-                console.log('page:', page)
-                let story = stories.find(x => x.id === page.data.storyOid)
-                console.log('tmp:', story)
-
-                let preview = {
-                  data: {
-                    chapterOid: page.data.chapterOid,
-                    pageOid: page.id,
-                    previewImageUrl: page.data.image.ref,
-                    storyOid: page.data.storyOid,
-                    summary: story.data.summary,
-                    title: story.data.title,
-                    uid: page.data.uid,
-                    userDisplayName: this.user.data.displayName
-                  }
-                }
-                console.log('preview:', preview)
-                return preview
-              })
-              console.log('previews:', this.previews)
-              console.log('previews:', JSON.stringify(this.previews))
-            })
-          })
+          return findStoriesByUser(this.user.uid)
         } else {
           console.log('There are no private pages for this user')
+          return Promise.reject(new Error('There are no private pages for this user'))
         }
+      }).then((stories) => {
+        this.previews = pages.map((page) => {
+          let story = stories.find(x => x.id === page.data.storyOid)
+          let preview = {
+            data: {
+              chapterOid: page.data.chapterOid,
+              pageOid: page.id,
+              previewImageUrl: page.data.image.ref,
+              storyOid: page.data.storyOid,
+              summary: story.data.summary,
+              title: story.data.title,
+              uid: page.data.uid,
+              userDisplayName: this.user.data.displayName
+            }
+          }
+          console.log('preview:', preview)
+          return preview
+        })
+      }).catch((error) => {
+        console('Error in loading data', error)
+        // todo raise an alert
       })
     },
     fetchPublicStories () {
-      let previewsRef = db.collection('previews')
-      if (this.filterBy.byAuthorUid) {
-        previewsRef = previewsRef.where('uid', '==', this.filterBy.byAuthorUid)
-      }
-      previewsRef.get().then(function (querySnapshot) {
-        this.previews = querySnapshot.docs.map((m) => {
-          let preview = {
-            id: m.id,
-            data: m.data()
-          }
-          return preview
-        })
-      }.bind(this))
+      findPreviewsByFilter(this.filterBy).then((previewsSnapshot) => {
+        this.previews = previewsSnapshot
+      }).catch((error) => {
+        console('Error in loading data', error)
+        // todo raise an alert
+      })
     },
     showDetail (pageOid) {
       console.log('previewOid:', pageOid)

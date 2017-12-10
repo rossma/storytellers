@@ -93,9 +93,10 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
-import firebaseApp from '~/firebaseApp'
-
-const db = firebaseApp.firestore()
+import { findPageByOid } from '~/service/page'
+import { findUserByOid } from '~/service/user'
+import { findStoryByOid } from '~/service/story'
+import { findChapterByOid } from '~/service/chapter'
 
 export default {
   layout: 'story',
@@ -137,7 +138,7 @@ export default {
     ])
   },
   mounted: function () {
-    this.$nextTick(function () {
+    this.$nextTick(() => {
       console.log('[Story Detail] - in mounted, page id:', this.$route.params.id)
       this.loadPage(this.$route.params.id)
     })
@@ -147,11 +148,10 @@ export default {
       'saveStory'
     ]),
     loadPage (pageOid) {
-      let docRef = db.collection('pages').doc(pageOid)
-      docRef.get().then(function (doc) {
-        if (doc.exists) {
+      findPageByOid(pageOid).then((pageDoc) => {
+        if (pageDoc.exists) {
           this.page.id = pageOid
-          this.page.data = doc.data()
+          this.page.data = pageDoc.data()
           if (this.isAuthorised()) {
             this.initAuthorUser(this.page.data.uid)
             this.initStory(this.page.data.storyOid)
@@ -162,24 +162,19 @@ export default {
         } else {
           this.raiseAlert('error', 'Page does not exist')
         }
-      }.bind(this))
+      })
     },
     initAuthorUser (userOid) {
-      let userDocRef = db.collection('users').doc(userOid)
-
-      userDocRef.get().then(function (userDoc) {
+      findUserByOid(userOid).then((userDoc) => {
         if (userDoc.exists) {
           this.authorUser = userDoc.data()
-          console.log('author.....', this.authorUser)
         } else {
           this.raiseAlert('error', 'Author does not exist')
         }
-      }.bind(this))
+      })
     },
     initStory (storyOid) {
-      let storyDocRef = db.collection('stories').doc(storyOid)
-
-      storyDocRef.get().then(function (storyDoc) {
+      findStoryByOid(storyOid).then((storyDoc) => {
         if (storyDoc.exists) {
           this.story.id = storyDoc.id
           this.story.data = storyDoc.data()
@@ -189,12 +184,10 @@ export default {
         } else {
           this.raiseAlert('error', 'Story does not exist')
         }
-      }.bind(this))
+      })
     },
     initChapter (chapterOid) {
-      let chapterDocRef = db.collection('chapters').doc(chapterOid)
-
-      chapterDocRef.get().then(function (chapterDoc) {
+      findChapterByOid(chapterOid).then((chapterDoc) => {
         if (chapterDoc.exists) {
           this.chapter.id = chapterDoc.id
           this.chapter.data = chapterDoc.data()
@@ -202,7 +195,7 @@ export default {
         } else {
           this.raiseAlert('error', 'Chapter does not exist')
         }
-      }.bind(this))
+      })
     },
     isAuthorised () {
       return this.page.data.public || this.page.data.uid === this.user.uid

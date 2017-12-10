@@ -123,25 +123,23 @@ export default {
     },
     signout () {
       console.log('signing out')
-      firebaseApp.auth().signOut()
-        .then(function () {
-          console.log('Signed Out')
-          return fetch('/api/logout', {
-            // Send the client cookies to the server
-            credentials: 'same-origin',
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
-            .then((response) => {
-              console.log('User session destroyed:' + response.status)
-              this.$router.push('/auth/signin')
-            })
-        }.bind(this),
-        function (error) {
-          console.error('Sign Out Error', error)
+      firebaseApp.auth().signOut().then(() => {
+        console.log('Signed Out')
+        return fetch('/api/logout', {
+          // Send the client cookies to the server
+          credentials: 'same-origin',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
         })
+      }).then((response) => {
+        console.log('User session destroyed:' + response.status)
+        this.$router.push('/auth/signin')
+      }).catch(error => {
+        console.error('Sign Out Error', error)
+        // todo raise an alert
+      })
     }
   }
 }
