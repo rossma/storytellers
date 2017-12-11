@@ -1,32 +1,16 @@
 import * as types from './mutation-types.js'
 
-// export const nuxtServerInit = ({ commit }, { req }) => {
-//   console.log('in nuxServerInit')
-//   if (req.session && req.session.user) {
-//     commit(types.SIGN_IN, req.session.user)
-//   }
-// }
-
 export const nuxtServerInit = ({ commit }, { req }) => {
-  console.log('in nuxServerInit')
   if (req.session && req.session.user) {
-    console.log('in nuxServerInit 2:' + JSON.stringify(req.session.user))
-    // returning a promise for all AJAX request stuff
+    console.log('[STORE ACTION]- in nuxServerInit:' + JSON.stringify(req.session.user))
     return Promise.all([
-      // commit(types.SIGN_IN, req.session.user)
+      commit(types.SAVE_USER, req.session.user)
     ])
   }
 }
 
-// export const signIn = ({commit}, userPayload) => {
-//   commit(types.SIGN_IN, userPayload)
-// }
-
-// export const signOut = ({commit}) => {
-//   commit(types.SIGN_OUT)
-// }
-
 export const saveUser = ({commit}, userPayload) => {
+  console.log('...........................Saving user2:', userPayload)
   commit(types.SAVE_USER, userPayload)
 }
 

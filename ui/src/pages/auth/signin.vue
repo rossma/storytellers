@@ -64,7 +64,6 @@ export default {
     login () {
       this.error = ''
       // http://nodewebapps.com/2017/06/18/how-do-nodejs-sessions-work/
-
       firebaseApp.auth().signInWithEmailAndPassword(this.email, this.password).then((firebaseUser) => {
         console.log('[SIGNIN.vue] successful login for user', firebaseUser.email)
         return findUserByOid(firebaseUser.uid)

@@ -27,5 +27,5 @@ export function findStoryByOid (storyOid) {
 
 export function addStory (story) {
   console.log(`[Story Service] - Adding story:[${story}]`)
-  return DB.collection('stories').add(story``)
+  return DB.collection('stories').add(story)
 }

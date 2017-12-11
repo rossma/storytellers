@@ -6,6 +6,7 @@ import * as types from './mutation-types'
 export const mutations = {
 
   [types.SAVE_USER] (state, userPayload) {
+    console.log('.......................Saving user:', userPayload)
     state.user = userPayload
   },
 
