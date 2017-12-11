@@ -1,3 +1,5 @@
+import 'firebase/storage' // this is needed if page is refreshed otherwise error is thrown: ...storage() is not a function
+
 import firebaseApp from '~/firebaseApp'
 
 const DB = firebaseApp.firestore()
