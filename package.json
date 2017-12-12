@@ -1,6 +1,9 @@
 {
   "name": "storytellers",
   "version": "1.0.0-alpha.1",
+  "engines": {
+    "node": "7.8.0"
+  },
   "description": "Stories created in collaboration and shared with each other",
   "author": "Ross Mahony",
   "dependencies": {
