@@ -1,0 +1,9 @@
+{
+  "name": "storytellers",
+  "version": "1.0.0-alpha.1",
+  "description": "Stories created in collaboration and shared with each other",
+  "author": "Ross Mahony",
+  "scripts": {
+    "postinstall": "cd ui && npm start"
+  }
+}
