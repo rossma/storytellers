@@ -3,7 +3,11 @@
   "version": "1.0.0-alpha.1",
   "description": "Stories created in collaboration and shared with each other",
   "author": "Ross Mahony",
+  "dependencies": {
+    "nuxt": "latest"
+  },
   "scripts": {
     "postinstall": "cd ui && npm start"
-  }
+  },
+  "cacheDirectories": ["ui/node_modules"]
 }
