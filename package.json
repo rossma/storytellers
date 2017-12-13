@@ -40,5 +40,10 @@
   "scripts": {
     "postinstall": "cd ui && npm start"
   },
+  "resolveLoader": {
+    "modulesDirectories": [
+      "ui/node_modules"
+    ]
+  },
   "cacheDirectories": ["ui/node_modules"]
 }
