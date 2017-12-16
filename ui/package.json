@@ -11,10 +11,11 @@
     "dev-custom-server": "node server.js",
     "build": "nuxt build",
     "start-default-server": "nuxt build && nuxt start",
-    "start": "nuxt build && node server.js"
+    "start": "concurrently \"nuxt build\" \"node server.js\""
   },
   "dependencies": {
     "body-parser": "^1.18.2",
+    "concurrently": "^3.5.1",
     "express": "^4.15.4",
     "express-session": "^1.15.5",
     "firebase": "4.6.0",
