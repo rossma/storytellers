@@ -1,8 +1,9 @@
 <template>
   <v-container grid-list-xl>
     <v-alert
+      outline
       :color="alert.colour"
-      icon="check_circle"
+      :icon="alert.icon"
       v-model="alert.show"
       dismissible>
       {{ alert.message }}
@@ -104,6 +105,7 @@ import { updateUser } from '~/service/user'
 
 import firebaseApp from '~/firebaseApp'
 import PreviewList from '~/components/preview/PreviewList'
+import alertUtil from '~/utils/alert'
 
 export default {
   components: {
@@ -112,9 +114,7 @@ export default {
   data () {
     return {
       alert: {
-        show: false,
-        message: '',
-        colour: 'success'
+        show: false
       },
       valid: true,
       photoUrl: null,
@@ -150,12 +150,10 @@ export default {
         uploadProfileImage(file, metadata, this.user.uid).then((downloadUrl) => {
           this.photoUrl = downloadUrl
         }).catch((error) => {
-          console.error('Upload failed:', error)
-          // todo raise alert
+          this.alert = alertUtil.raiseAlert('error', error.message)
         })
       } else {
-        console.log('no profile image selected')
-        // todo raise alert
+        this.alert = alertUtil.raiseAlert('warning', 'no profile image selected')
       }
     },
     submit () {
@@ -175,17 +173,11 @@ export default {
           this.user.data.photoUrl = this.photoUrl
           console.log('user:', this.user)
           this.saveUser(this.user)
-          this.raiseAlert('success', 'Profile successfully updated')
+          this.alert = alertUtil.raiseAlert('success', 'Profile successfully updated')
         }).catch((error) => {
-          console.error('Error adding user document', error)
-          this.raiseAlert('error', 'There was an error updating your profile')
+          this.alert = alertUtil.raiseAlert('error', error.message)
         })
       }
-    },
-    raiseAlert (severity, message) {
-      this.alert.show = true
-      this.alert.colour = severity
-      this.alert.message = message
     },
     showDetail (previewOid) {
       console.log('previewOid:', previewOid)

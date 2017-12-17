@@ -2,7 +2,14 @@
   <v-layout
     column
     align-center>
-
+    <v-alert
+      outline
+      :color="alert.colour"
+      :icon="alert.icon"
+      v-model="alert.show"
+      dismissible>
+      {{ alert.message }}
+    </v-alert>
     <v-btn
       color="primary"
       flat
@@ -17,9 +24,6 @@
       <v-card>
         <form @submit.prevent="signUp">
           <v-card-text ref="form">
-            <p
-              class="error"
-              v-if="error">{{ error.message }}</p>
             <v-text-field
               label="email"
               v-model="email" />
@@ -46,15 +50,18 @@
 import { mapActions } from 'vuex'
 import { addUser } from '~/service/user'
 import firebaseApp from '~/firebaseApp'
+import alertUtil from '~/utils/alert'
 
 export default {
   layout: 'auth',
   data () {
     return {
       email: '',
-      password: null,
+      password: '',
       showPassword: false,
-      error: null
+      alert: {
+        show: false
+      }
     }
   },
   methods: {
@@ -66,7 +73,6 @@ export default {
     },
     signUp () {
       console.log('[SIGNUP] signing up')
-      this.error = ''
       firebaseApp.auth().createUserWithEmailAndPassword(this.email, this.password).then((firebaseUser) => {
         console.log('[SIGNUP.vue] successful user creation in firebase', firebaseUser.email)
         let user = {
@@ -101,8 +107,8 @@ export default {
       }).then((response) => {
         console.log('User state saved in session, status:' + response.status)
         this.$router.push('/')
-      }).catch(err => {
-        this.error = err
+      }).catch(error => {
+        this.alert = alertUtil.raiseAlert('error', error.message)
       })
     }
   }

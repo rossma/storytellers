@@ -1,8 +1,9 @@
 <template>
   <v-container grid-list-xl>
     <v-alert
+      outline
       :color="alert.colour"
-      icon="check_circle"
+      :icon="alert.icon"
       v-model="alert.show"
       dismissible>
       {{ alert.message }}
@@ -97,15 +98,14 @@ import { findPageByOid } from '~/service/page'
 import { findUserByOid } from '~/service/user'
 import { findStoryByOid } from '~/service/story'
 import { findChapterByOid } from '~/service/chapter'
+import alertUtil from '~/utils/alert'
 
 export default {
   layout: 'story',
   data () {
     return {
       alert: {
-        show: false,
-        message: '',
-        colour: 'success'
+        show: false
       },
       drawer: true,
       authorUser: '',
@@ -157,10 +157,10 @@ export default {
             this.initStory(this.page.data.storyOid)
             this.initChapter(this.page.data.chapterOid)
           } else {
-            this.raiseAlert('error', 'User not authorised to view this page')
+            this.alert = alertUtil.raiseAlert('error', 'User not authorised to view this page')
           }
         } else {
-          this.raiseAlert('error', 'Page does not exist')
+          this.alert = alertUtil.raiseAlert('error', 'Page does not exist')
         }
       })
     },
@@ -169,7 +169,7 @@ export default {
         if (userDoc.exists) {
           this.authorUser = userDoc.data()
         } else {
-          this.raiseAlert('error', 'Author does not exist')
+          this.alert = alertUtil.raiseAlert('error', 'Author does not exist')
         }
       })
     },
@@ -180,9 +180,8 @@ export default {
           this.story.data = storyDoc.data()
           this.saveStory(this.story)
           this.publishStoryOid(this.story.id)
-          console.log('story.....', this.story)
         } else {
-          this.raiseAlert('error', 'Story does not exist')
+          this.alert = alertUtil.raiseAlert('error', 'Story does not exist')
         }
       })
     },
@@ -193,17 +192,12 @@ export default {
           this.chapter.data = chapterDoc.data()
           console.log('chapter.....', this.chapter)
         } else {
-          this.raiseAlert('error', 'Chapter does not exist')
+          this.alert = alertUtil.raiseAlert('error', 'Chapter does not exist')
         }
       })
     },
     isAuthorised () {
       return this.page.data.public || this.page.data.uid === this.user.uid
-    },
-    raiseAlert (severity, message) {
-      this.alert.show = true
-      this.alert.colour = severity
-      this.alert.message = message
     },
     publishStoryOid (storyOid) {
       console.log('publishing story')

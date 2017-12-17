@@ -1,27 +1,20 @@
 <template>
   <div>
     <v-navigation-drawer
-      v-model="drawer"
       clipped
       fixed
       dark
       app
-      enable-resize-watcher>
+      v-model="drawer">
       <v-list dense>
-        <v-list-tile @click="home">
-          <v-list-tile-action>
-            <v-icon>home</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Storytellers</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
         <slot name="nav-drawer" />
       </v-list>
     </v-navigation-drawer>
     <v-toolbar
       dark
-      app>
+      app
+      clipped-left
+      fixed>
       <v-toolbar-side-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title class="home-title">
         <nuxt-link to="/">Storytellers</nuxt-link>
