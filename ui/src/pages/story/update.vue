@@ -3,8 +3,9 @@
     fluid
     grid-list-xl>
     <v-alert
-      color="success"
-      icon="check_circle"
+      outline
+      :color="alert.colour"
+      :icon="alert.icon"
       v-model="alert.show"
       dismissible>
       {{ alert.message }}
@@ -49,7 +50,7 @@
             <v-tabs-content :id="'summary-tab'">
               <v-card flat>
                 <v-card-text>
-                  <h6>{{ story.summary }}</h6>
+                  {{ story.summary }}
                 </v-card-text>
               </v-card>
             </v-tabs-content>
@@ -105,6 +106,7 @@ import { addChapter } from '~/service/chapter'
 import { addPage, updatePage } from '~/service/page'
 import { uploadStoryImage, findImageByOid } from '~/service/image'
 import { addPreview } from '~/service/preview'
+import alertUtil from '~/utils/alert'
 
 export default {
   layout: 'story',
@@ -114,8 +116,7 @@ export default {
   data () {
     return {
       alert: {
-        show: false,
-        message: ''
+        show: false
       },
       valid: true,
       imageFileUrl: '',
@@ -151,9 +152,8 @@ export default {
       this.imageFilenameKey = this.uuidv4()
       uploadStoryImage(file, metadata, this.imageFilenameKey).then((downloadUrl) => {
         this.writeContentData(this.story.id, downloadUrl)
-      }).catch((err) => {
-        console.log('Upload failed:', err)
-        // todo raise alert
+      }).catch((error) => {
+        this.alert = alertUtil.raiseAlert('error', error.message)
       })
     },
     writeContentData (storyId, imageUrl) {
@@ -188,7 +188,8 @@ export default {
     },
     publish () {
       console.log('publishing story')
-      updatePage({public: true}, { merge: true }).then((pageDoc) => {
+      let page = {public: true}
+      updatePage(this.page.id, page).then(() => {
         console.log('imageFilenameKey:', this.imageFilenameKey)
         return findImageByOid(this.imageFilenameKey)
       }).then((imageDoc) => {
@@ -212,11 +213,9 @@ export default {
           imageFilenameOid: this.imageFilenameKey
         })
       }).then(() => {
-        console.log('story published')
-        this.alert.show = true
-        this.alert.message = 'Story published'
-      }).catch((err) => {
-        console.log('in error handler:', err)
+        this.alert = alertUtil.raiseAlert('success', 'Story published')
+      }).catch((error) => {
+        this.alert = alertUtil.raiseAlert('error', error.message)
       })
     },
     uuidv4 () {

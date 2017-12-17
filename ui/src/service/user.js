@@ -10,7 +10,7 @@ export function findUserByOid (userOid) {
 
 export function updateUser (userOid, user) {
   console.log(`[user Service] - Updating user:[${userOid} with:[${user}]`)
-  return DB.collection('users').doc(userOid).set(user)
+  return DB.collection('users').doc(userOid).set(user, { merge: true })
 }
 
 export function addUser (user) {

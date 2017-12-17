@@ -1,11 +1,11 @@
 <template>
   <div>
     <v-navigation-drawer
-      clipped
       fixed
-      dark
+      clipped
       app
-      v-model="drawer">
+      v-model="drawer"
+      dark>
       <v-list dense>
         <slot name="nav-drawer" />
       </v-list>
@@ -82,9 +82,7 @@ export default {
   name: 'NavigationToolbar',
   data () {
     return {
-      clipped: false,
       drawer: true,
-      fixed: false,
       profile: {
         direction: 'bottom',
         fab: false,

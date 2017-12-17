@@ -31,11 +31,11 @@ export function findPageByOid (pageOid) {
 }
 
 export function addPage (page) {
-  console.log(`[Page Service] - Adding page:[${page}]`)
+  console.log(`[Page Service] - Adding page:[${JSON.stringify(page)}]`)
   return DB.collection('pages').add(page)
 }
 
 export function updatePage (pageOid, page) {
-  console.log(`[Page Service] - Updating page:[${pageOid} with:[${page}]`)
-  return DB.collection('pages').doc(pageOid).set(page)
+  console.log(`[Page Service] - Updating page:[${pageOid} with:[${JSON.stringify(page)}]`)
+  return DB.collection('pages').doc(pageOid).set(page, { merge: true })
 }

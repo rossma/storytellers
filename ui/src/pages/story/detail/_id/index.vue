@@ -54,7 +54,7 @@
               v-show="story.data.summary">
               <v-card flat>
                 <v-card-text>
-                  <h6>{{ story.data.summary }}</h6>
+                  {{ story.data.summary }}
                 </v-card-text>
               </v-card>
             </v-tabs-content>

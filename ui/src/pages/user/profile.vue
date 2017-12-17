@@ -167,8 +167,7 @@ export default {
             {
               displayName: this.user.data.displayName,
               photoUrl: this.photoUrl
-            },
-            { merge: true })
+            })
         }).then(() => {
           this.user.data.photoUrl = this.photoUrl
           console.log('user:', this.user)
