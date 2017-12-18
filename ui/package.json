@@ -1,35 +1,46 @@
 {
   "name": "storytellers",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.1",
   "description": "Stories created in collaboration and shared",
   "author": "Ross Mahony",
+  "engines": {
+    "node": "7.8.0"
+  },
   "scripts": {
-    "dev": "nuxt",
-    "dev-custom-server": "node server.js",
     "build": "nuxt build",
-    "start": "nuxt build && nuxt start"
+    "build-start": "npm run build && npm run start",
+    "dev": "nuxt",
+    "heroku-postbuild": "npm run build",
+    "start": "node server.js"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.15.4",
     "express-session": "^1.15.5",
     "firebase": "4.6.0",
+    "grpc": "^1.7.2",
     "mdi": "^2.0.46",
-    "nuxt": "^1.0.0-rc6",
-    "vuetify": "0.16.9",
+    "nuxt": "^1.0.0-rc11",
+    "vue": "^2.5.8",
+    "vue-loader": "^13.5.0",
+    "vue-server-renderer": "^2.5.8",
+    "vue-template-compiler": "^2.5.8",
+    "vuetify": "^0.17.2",
     "vuex": "^2.3.1",
     "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
-    "eslint": "^4.3.0",
+    "eslint": "^4.12.0",
     "eslint-config-standard": "^10.2.1",
+    "eslint-friendly-formatter": "^3.0.0",
     "eslint-loader": "^1.9.0",
     "eslint-plugin-html": "^3.1.1",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
+    "eslint-plugin-vue": "^4.0.0-beta.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1"
   }
