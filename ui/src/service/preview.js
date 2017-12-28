@@ -23,6 +23,17 @@ export function findPreviewsByFilter (filterBy) {
   return findPreviews(previewsRef)
 }
 
+export function findPreviewsByStory (storyOid) {
+  console.log(`[Preview Service] - Finding previews by story:[${storyOid}]`)
+  let previewsRef = DB.collection('previews').where('storyOid', '==', storyOid)
+  return findPreviews(previewsRef)
+}
+
+export function updatePreview (previewOid, preview) {
+  console.log(`[Preview Service] - Updating preview:[${previewOid} with:[${preview}]`)
+  return DB.collection('previews').doc(previewOid).set(preview, { merge: true })
+}
+
 export function addPreview (preview) {
   console.log(`[Preview Service] - Adding preview:[${preview}]`)
   return DB.collection('previews').add(preview)

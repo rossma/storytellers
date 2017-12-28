@@ -10,7 +10,6 @@ export const nuxtServerInit = ({ commit }, { req }) => {
 }
 
 export const saveUser = ({commit}, userPayload) => {
-  console.log('...........................Saving user2:', userPayload)
   commit(types.SAVE_USER, userPayload)
 }
 

@@ -10,71 +10,73 @@
     </v-alert>
     <v-layout>
       <v-flex xs12>
-        <v-card>
-          <v-card-title
-            primary
-            class="title">User Profile</v-card-title>
-          <v-layout
-            row
-            wrap
-            text-xs-center>
-            <v-flex xs2>
-              <v-card
-                dark
-                flat>
-                <v-tooltip top>
-                  <v-avatar
-                    class="indigo jbtn-file"
-                    v-show="!photoUrl"
-                    slot="activator">
-                    <v-icon dark>account_circle</v-icon>
-                    <input
-                      type="file"
-                      @change="profileImageSelected">
-                  </v-avatar>
-                  <v-avatar
-                    class="jbtn-file"
-                    v-show="photoUrl"
-                    slot="activator">
-                    <img
-                      :src="photoUrl"
-                      alt="no photo">
-                    <input
-                      type="file"
-                      @change="profileImageSelected">
-                  </v-avatar>
-                  <span>Upload Profile</span>
-                </v-tooltip>
-              </v-card>
-            </v-flex>
-            <v-flex xs10>
-              <v-card flat>
-                <v-form
-                  v-model="valid"
-                  ref="form"
-                  lazy-validation>
-                  <v-text-field
-                    label="Email"
-                    v-model="user.data.email"
-                    readonly
-                    disabled />
-                  <v-text-field
-                    label="Display Name"
-                    v-model="user.data.displayName"
-                    required
-                    :rules="nameRules" />
-                </v-form>
-              </v-card>
-            </v-flex>
-            <v-flex
-              xs12
-              text-xs-right>
-              <v-btn
-                @click="submit"
-                :disabled="!valid">submit</v-btn>
-            </v-flex>
-          </v-layout>
-        </v-card>
+        <v-expansion-panel>
+          <v-expansion-panel-content>
+            <div slot="header">
+              <h3>User Profile</h3>
+            </div>
+            <v-layout
+              row
+              wrap
+              text-xs-center>
+              <v-flex xs2>
+                <v-card
+                  dark
+                  flat>
+                  <v-tooltip top>
+                    <v-avatar
+                      class="indigo jbtn-file"
+                      v-show="!photoUrl"
+                      slot="activator">
+                      <v-icon dark>account_circle</v-icon>
+                      <input
+                        type="file"
+                        @change="profileImageSelected">
+                    </v-avatar>
+                    <v-avatar
+                      class="jbtn-file"
+                      v-show="photoUrl"
+                      slot="activator">
+                      <img
+                        :src="photoUrl"
+                        alt="no photo">
+                      <input
+                        type="file"
+                        @change="profileImageSelected">
+                    </v-avatar>
+                    <span>Upload Profile</span>
+                  </v-tooltip>
+                </v-card>
+              </v-flex>
+              <v-flex xs10>
+                <v-card flat>
+                  <v-form
+                    v-model="valid"
+                    ref="form"
+                    lazy-validation>
+                    <v-text-field
+                      label="Email"
+                      v-model="user.data.email"
+                      readonly
+                      disabled />
+                    <v-text-field
+                      label="Display Name"
+                      v-model="user.data.displayName"
+                      required
+                      :rules="nameRules" />
+                  </v-form>
+                </v-card>
+              </v-flex>
+              <v-flex
+                xs12
+                text-xs-right>
+                <v-btn
+                  @click="submit"
+                  :disabled="!valid">submit</v-btn>
+              </v-flex>
+            </v-layout>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
       </v-flex>
     </v-layout>
     <v-layout
@@ -177,10 +179,6 @@ export default {
           this.alert = alertUtil.raiseAlert('error', error.message)
         })
       }
-    },
-    showDetail (previewOid) {
-      console.log('previewOid:', previewOid)
-      this.$router.push('/story/detail/' + previewOid)
     }
   }
 }

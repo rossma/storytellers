@@ -16,8 +16,8 @@ function uploadImageToStorage (file, path, metadata) {
     })
 }
 
-export function uploadStoryImage (imageFile, metadata, imageOid) {
-  return uploadImageToStorage(imageFile, `images/original/${imageOid}.${imageFile.name.split('.').pop()}`, metadata)
+export function uploadStoryImage (imageFile, metadata, imageOid, imageExt) {
+  return uploadImageToStorage(imageFile, `images/original/${imageOid}.${imageExt}`, metadata)
 }
 
 export function uploadProfileImage (imageFile, metadata, userOid) {
@@ -28,4 +28,10 @@ export function findImageByOid (imageOid) {
   console.log(`[Image Service] - Finding image by oid:[${imageOid}]`)
   let imageRef = DB.collection('images').doc(imageOid)
   return imageRef.get()
+}
+
+export function deleteImage (imageOid) {
+  console.log(`[Image Service] - Deleting image by image id/filename:[${imageOid}]`)
+  let imageRef = DB.collection('images').doc(imageOid)
+  return imageRef.delete()
 }

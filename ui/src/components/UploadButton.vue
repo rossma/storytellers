@@ -1,8 +1,10 @@
-<!-- Taken from https://github.com/jannhama/vuetify-upload-btn -->
+<!-- Taken from https://github.com/jannhama/vuetify-upload-btn
+    This uses invalid HTML input inside a button
+    For now it will do but hope to replace with vuetify component when released
+ -->
 <template>
   <v-btn
     flat
-    slot="activator"
     color="white"
     class="jbtn-file">
     <v-icon left>{{ icon }}</v-icon>

@@ -8,7 +8,26 @@
       dismissible>
       {{ alert.message }}
     </v-alert>
-    <v-layout v-if="story.id">
+    <v-layout
+      v-if="story.id"
+      row
+      wrap>
+      <v-flex xs12>
+        <v-expansion-panel>
+          <v-expansion-panel-content>
+            <div slot="header">
+              <div><h2>{{ story.data.title }}</h2></div>
+              <div v-show="authorUser.displayName"><h5>{{ authorUser.displayName }}</h5></div>
+            </div>
+            <story-detail
+              name="StoryDetail"
+              :story="story"
+              :editable="isEditable"
+              :story-exists="true"
+              style="padding-bottom:10px;"/>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-flex>
       <v-flex xs12>
         <v-tabs
           dark
@@ -17,47 +36,21 @@
           <v-toolbar
             color="cyan"
             dark>
-            <div>
-              <h3 class="headline mb-0">{{ story.data.title }}</h3>
-              <div v-show="authorUser.displayName">{{ authorUser.displayName }}</div>
-              <div v-if="!authorUser.displayName">author</div>
-            </div>
             <v-tabs-bar
               class="cyan"
               slot="extension">
               <v-tabs-slider color="yellow" />
-              <v-tabs-item
-                href="#summary-tab"
-                v-show="story.data.summary">
-                <v-icon>mdi mdi-book-open</v-icon>
-                Summary
-              </v-tabs-item>
               <v-tabs-item href="#writing-tab">
                 <v-icon>mdi mdi-book-open-page-variant</v-icon>
                 Writing
               </v-tabs-item>
-              <v-tabs-item
-                href="#picture-tab"
-                v-if="page.data.image.ref">
+              <v-tabs-item href="#picture-tab">
                 <v-icon>mdi mdi-palette</v-icon>
                 Picture
-              </v-tabs-item>
-              <v-tabs-item href="#sound-tab">
-                <v-icon>mdi mdi-music-box</v-icon>
-                Sound
               </v-tabs-item>
             </v-tabs-bar>
           </v-toolbar>
           <v-tabs-items>
-            <v-tabs-content
-              :id="'summary-tab'"
-              v-show="story.data.summary">
-              <v-card flat>
-                <v-card-text>
-                  {{ story.data.summary }}
-                </v-card-text>
-              </v-card>
-            </v-tabs-content>
             <v-tabs-content :id="'writing-tab'">
               <v-card flat>
                 <v-card-text>
@@ -65,28 +58,75 @@
                 </v-card-text>
               </v-card>
             </v-tabs-content>
-            <v-tabs-content
-              :id="'picture-tab'"
-              v-if="page.data.image.ref">
+            <v-tabs-content :id="'picture-tab'">
               <v-card flat>
-                <v-card-text>
-                  <div class="text-xs-center">
-                    <img
-                      class="card-img-top img-fluid"
-                      :src="page.data.image.ref"
-                      alt="no image">
-                  </div>
+                <v-card-text class="text-xs-center">
+                  <img
+                    v-if="page.data.image && page.data.image.ref"
+                    class="card-img-top img-fluid thumb"
+                    :src="page.data.image.ref"
+                    @click.stop="imageDialog = true"
+                    title="Upload">
+                  <img
+                    v-else
+                    class="card-img-top img-fluid thumb"
+                    src="/img/missing-image.png"
+                    @click.stop="imageDialog = true"
+                    title="Upload">
                 </v-card-text>
-              </v-card>
-            </v-tabs-content>
-            <v-tabs-content :id="'sound-tab'">
-              <v-card flat>
-                temp text
               </v-card>
             </v-tabs-content>
           </v-tabs-items>
         </v-tabs>
       </v-flex>
+    </v-layout>
+    <v-layout
+      row
+      justify-center>
+      <v-dialog
+        v-model="imageDialog"
+        fullscreen
+        transition="dialog-bottom-transition"
+        :overlay="false">
+        <v-card>
+          <v-toolbar
+            dark
+            color="primary">
+            <v-btn
+              icon
+              @click.native="imageDialog = false"
+              dark>
+              <v-icon>close</v-icon>
+            </v-btn>
+            <v-toolbar-title>Story Image</v-toolbar-title>
+            <v-spacer />
+            <v-toolbar-items>
+              <upload-button
+                v-if="isEditable"
+                name="Upload"
+                icon="mdi mdi-palette"
+                :selected-callback="previewImageFile" />
+              <v-btn
+                dark
+                flat
+                @click="saveImage">
+                <v-icon left>mdi mdi-content-save</v-icon>
+                Save
+              </v-btn>
+            </v-toolbar-items>
+          </v-toolbar>
+          <v-card-text class="text-xs-center">
+            <img
+              v-if="pageImageSrc"
+              class="card-img-top"
+              :src="pageImageSrc">
+            <img
+              v-else
+              class="card-img-top"
+              src="/img/missing-image.png">
+          </v-card-text>
+        </v-card>
+      </v-dialog>
     </v-layout>
   </v-container>
 </template>
@@ -94,27 +134,29 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
-import { findPageByOid } from '~/service/page'
+import { findPageByOid, updatePage } from '~/service/page'
 import { findUserByOid } from '~/service/user'
-import { findStoryByOid } from '~/service/story'
+import { findStoryByOid, updateStory } from '~/service/story'
+import { addPreview } from '~/service/preview'
 import { findChapterByOid } from '~/service/chapter'
+import { deleteImage, findImageByOid, uploadStoryImage } from '~/service/image'
 import alertUtil from '~/utils/alert'
+import StoryDetail from '~/components/story/StoryDetail.vue'
+import stringUtils from '~/utils/string'
+import UploadButton from '~/components/UploadButton'
 
 export default {
+  components: {
+    StoryDetail,
+    UploadButton
+  },
   layout: 'story',
   data () {
     return {
       alert: {
         show: false
       },
-      drawer: true,
       authorUser: '',
-      story: {
-        id: null,
-        data: {
-          summary: null
-        }
-      },
       chapter: {
         id: null,
         data: {
@@ -126,22 +168,52 @@ export default {
         data: {
           number: null,
           image: {
+            filename: null,
             ref: null
           }
         }
-      }
+      },
+      story: {
+        id: null,
+        data: {
+          summary: null
+        }
+      },
+      imageFile: null,
+      imageFilenameKey: null,
+      imageFileExt: null,
+      imagePreviewSrc: '',
+      imageDialog: false
     }
   },
   computed: {
     ...mapGetters([
       'user'
-    ])
+    ]),
+    isEditable: function () {
+      return this.page.data.uid === this.user.uid
+    },
+    pageImageSrc: function () {
+      if (this.imagePreviewSrc) {
+        return this.imagePreviewSrc
+      } else if (this.page.data.image && this.page.data.image.ref) {
+        return this.page.data.image.ref
+      } else {
+        return ''
+      }
+    }
   },
   mounted: function () {
     this.$nextTick(() => {
       console.log('[Story Detail] - in mounted, page id:', this.$route.params.id)
       this.loadPage(this.$route.params.id)
+      EventBus.$on('alert', alert => {
+        this.alert = alert
+      })
     })
+  },
+  beforeDestroy () {
+    EventBus.$off('alert')
   },
   methods: {
     ...mapActions([
@@ -179,7 +251,7 @@ export default {
           this.story.id = storyDoc.id
           this.story.data = storyDoc.data()
           this.saveStory(this.story)
-          this.publishStoryOid(this.story.id)
+          this.publishStoryEvent(this.story)
         } else {
           this.alert = alertUtil.raiseAlert('error', 'Story does not exist')
         }
@@ -199,15 +271,119 @@ export default {
     isAuthorised () {
       return this.page.data.public || this.page.data.uid === this.user.uid
     },
-    publishStoryOid (storyOid) {
+    publishStoryEvent (story) {
+      console.log('publishing story event')
+      EventBus.$emit('storyEvent', story)
+    },
+    previewImageFile (file) {
+      console.log('in previewImageFile')
+      this.imageFile = file
+      let reader = new FileReader()
+      reader.onloadend = () => {
+        this.imagePreviewSrc = reader.result
+      }
+
+      if (file) {
+        reader.readAsDataURL(file)
+      }
+    },
+    saveImage () {
+      console.log('saving image')
+      if (this.imageFile) {
+        var metadata = {
+          'contentType': this.imageFile.type
+        }
+        this.imageFilenameKey = this.uuidv4()
+        this.imageFileExt = this.imageFile.name.split('.').pop()
+        if (this.page.data.image && this.page.data.image.filename) {
+          console.log('Deleting reference to old image')
+          deleteImage(this.page.data.image.filename.split('.').shift()).then(() => {
+            console.log(`Old image with name:${this.page.data.image.filename} deleted`)
+          })
+        }
+        console.log('uploading image')
+        uploadStoryImage(this.imageFile, metadata, this.imageFilenameKey, this.imageFileExt).then((downloadUrl) => {
+          this.saveImageReference(downloadUrl)
+        }).catch((error) => {
+          this.alert = alertUtil.raiseAlert('error', error.message)
+        })
+        this.imageDialog = false
+      } else {
+        console.log('Image file not set')
+        // todo raise error alert
+      }
+    },
+    saveImageReference (imageUrl) {
+      console.log('ImageURL:', imageUrl)
+      this.imageFileUrl = imageUrl
+
+      this.page.data.image.filename = `${this.imageFilenameKey}.${this.imageFileExt}`
+      this.page.data.image.ref = imageUrl
+      this.page.data.image.created = Date.now()
+
+      updatePage(this.page.id, this.page.data.image).then(() => {
+        if (!this.story.cover) {
+          // if no cover exist then set this image to the cover
+          return updateStory(this.story.id, {
+            cover: {
+              chapterOid: this.chapter.id,
+              pageOid: this.page.id,
+              imageFilename: `${this.imageFilenameKey}.${this.imageFileExt}`,
+              imageRef: this.imageFileUrl
+            }
+          })
+        }
+      }).catch((error) => {
+        console.error('Error updating page document:', error)
+        this.alert = alertUtil.raiseAlert('error', 'Error updating page')
+      })
+    },
+    publish () {
       console.log('publishing story')
-      EventBus.$emit('storyOidEvent', storyOid)
+      let page = {public: true}
+      updatePage(this.page.id, page).then(() => {
+        console.log('imageFilenameKey:', this.imageFilenameKey)
+        return findImageByOid(this.imageFilenameKey)
+      }).then((imageDoc) => {
+        let previewUrl = ''
+        if (imageDoc.exists) {
+          console.log('imageDoc:', imageDoc.data())
+          previewUrl = imageDoc.data().previewUrl
+        } else {
+          // possible if the server function hasn't run yet
+          console.log('Image.vue Document not found in DB at this time')
+        }
+        return addPreview({
+          storyOid: this.story.id,
+          chapterOid: this.chapter.id,
+          pageOid: this.page.id,
+          title: this.story.title,
+          summary: stringUtils.truncateWithEllipse(this.story.summary, 100),
+          uid: this.user.uid,
+          userDisplayName: this.user.data.displayName,
+          previewImageUrl: previewUrl,
+          imageFilenameOid: this.imageFilenameKey
+        })
+      }).then(() => {
+        this.alert = alertUtil.raiseAlert('success', 'Story published')
+      }).catch((error) => {
+        this.alert = alertUtil.raiseAlert('error', error.message)
+      })
+    },
+    uuidv4 () {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0
+        var v = c === 'x' ? r : (r & 0x3 | 0x8)
+        return v.toString(16)
+      })
     }
   }
 }
 </script>
 <style>
-img {
-  max-width: 500px;
+img.thumb {
+  /*max-width: 500px;*/
+  max-height: 300px;
+  cursor: pointer;
 }
 </style>
