@@ -381,8 +381,13 @@ export default {
 }
 </script>
 <style>
+img {
+  max-width: 100%;
+  min-width: 300px;
+  height: auto;
+}
+
 img.thumb {
-  /*max-width: 500px;*/
   max-height: 300px;
   cursor: pointer;
 }

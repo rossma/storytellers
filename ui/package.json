@@ -1,10 +1,15 @@
 {
   "name": "storytellers",
   "version": "1.0.0-alpha.2",
+  "private": true,
   "description": "Stories created in collaboration and shared",
   "author": "Ross Mahony",
   "engines": {
     "node": "7.8.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:rossma/storytellers.git"
   },
   "scripts": {
     "build": "nuxt build",
@@ -25,7 +30,7 @@
     "vue-loader": "^13.5.0",
     "vue-server-renderer": "^2.5.8",
     "vue-template-compiler": "^2.5.8",
-    "vuetify": "^0.17.2",
+    "vuetify": "^0.17.6",
     "vuex": "^2.3.1",
     "whatwg-fetch": "^2.0.3"
   },
