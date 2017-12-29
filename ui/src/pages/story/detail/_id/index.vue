@@ -74,10 +74,14 @@
                     @click.stop="openImageDialog()"
                     title="Upload">
                 </v-card-text>
-                <v-card-actions class="text-xs-right">
-                  <v-btn
-                    flat
-                    @click="publish">Publish</v-btn>
+                <v-card-actions>
+                  <v-layout class="text-xs-right">
+                    <v-flex>
+                      <v-btn
+                        flat
+                        @click="publish">Publish</v-btn>
+                    </v-flex>
+                  </v-layout>
                 </v-card-actions>
               </v-card>
             </v-tabs-content>
