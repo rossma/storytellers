@@ -13,7 +13,7 @@
         <v-expansion-panel>
           <v-expansion-panel-content>
             <div slot="header">
-              <h3>User Profile</h3>
+              <h2>User Profile</h2>
             </div>
             <v-layout
               row
@@ -84,16 +84,11 @@
       wrap>
       <v-flex xs12>
         <v-card dark>
-          <v-card-title primary>My Stories</v-card-title>
+          <v-card-title primary><h2>My Stories</h2></v-card-title>
           <preview-list
             name="PreviewList"
             :show-action="false"
             :filter-by="previewAuthorFilter" />
-        </v-card>
-      </v-flex>
-      <v-flex xs12>
-        <v-card dark>
-          <v-card-title primary>Collaborations</v-card-title>
         </v-card>
       </v-flex>
     </v-layout>

@@ -62,16 +62,16 @@
               <v-card flat>
                 <v-card-text class="text-xs-center">
                   <img
-                    v-if="page.data.image && page.data.image.ref"
+                    v-show="pageImageSrc"
                     class="card-img-top img-fluid thumb"
-                    :src="page.data.image.ref"
-                    @click.stop="imageDialog = true"
+                    :src="pageImageSrc"
+                    @click.stop="openImageDialog()"
                     title="Upload">
                   <img
-                    v-else
+                    v-show="!pageImageSrc"
                     class="card-img-top img-fluid thumb"
                     src="/img/missing-image.png"
-                    @click.stop="imageDialog = true"
+                    @click.stop="openImageDialog()"
                     title="Upload">
                 </v-card-text>
               </v-card>
@@ -117,11 +117,11 @@
           </v-toolbar>
           <v-card-text class="text-xs-center">
             <img
-              v-if="pageImageSrc"
+              v-show="previewImageSrc"
               class="card-img-top"
-              :src="pageImageSrc">
+              :src="previewImageSrc">
             <img
-              v-else
+              v-show="!previewImageSrc"
               class="card-img-top"
               src="/img/missing-image.png">
           </v-card-text>
@@ -166,11 +166,7 @@ export default {
       page: {
         id: null,
         data: {
-          number: null,
-          image: {
-            filename: null,
-            ref: null
-          }
+          number: null
         }
       },
       story: {
@@ -194,10 +190,15 @@ export default {
       return this.page.data.uid === this.user.uid
     },
     pageImageSrc: function () {
+      if (this.page.data.image && this.page.data.image.ref) {
+        return this.page.data.image.ref
+      } else {
+        return ''
+      }
+    },
+    previewImageSrc: function () {
       if (this.imagePreviewSrc) {
         return this.imagePreviewSrc
-      } else if (this.page.data.image && this.page.data.image.ref) {
-        return this.page.data.image.ref
       } else {
         return ''
       }
@@ -275,6 +276,14 @@ export default {
       console.log('publishing story event')
       EventBus.$emit('storyEvent', story)
     },
+    openImageDialog () {
+      if (this.pageImageSrc) {
+        this.imagePreviewSrc = this.pageImageSrc
+      } else {
+        this.imagePreviewSrc = ''
+      }
+      this.imageDialog = true
+    },
     previewImageFile (file) {
       console.log('in previewImageFile')
       this.imageFile = file
@@ -317,11 +326,15 @@ export default {
       console.log('ImageURL:', imageUrl)
       this.imageFileUrl = imageUrl
 
-      this.page.data.image.filename = `${this.imageFilenameKey}.${this.imageFileExt}`
-      this.page.data.image.ref = imageUrl
-      this.page.data.image.created = Date.now()
+      this.page.data = {
+        image: {
+          filename: `${this.imageFilenameKey}.${this.imageFileExt}`,
+          ref: imageUrl,
+          created: Date.now()
+        }
+      }
 
-      updatePage(this.page.id, this.page.data.image).then(() => {
+      updatePage(this.page.id, this.page.data).then(() => {
         if (!this.story.cover) {
           // if no cover exist then set this image to the cover
           return updateStory(this.story.id, {
@@ -332,7 +345,12 @@ export default {
               imageRef: this.imageFileUrl
             }
           })
+        } else {
+          return Promise.resolve()
         }
+      }).then(() => {
+        console.log('Page here looks like:', this.page)
+        this.alert = alertUtil.raiseAlert('success', 'Image updated')
       }).catch((error) => {
         console.error('Error updating page document:', error)
         this.alert = alertUtil.raiseAlert('error', 'Error updating page')
@@ -383,7 +401,6 @@ export default {
 <style>
 img {
   max-width: 100%;
-  min-width: 300px;
   height: auto;
 }
 

@@ -33,14 +33,16 @@ export default {
     }
   },
   methods: {
-    fileSelected (e) {
+    fileSelected (event) {
       if (this.selectedCallback) {
-        if (e.target.files[0]) {
-          this.selectedCallback(e.target.files[0])
+        if (event.target.files[0]) {
+          this.selectedCallback(event.target.files[0])
         } else {
           this.selectedCallback(null)
         }
       }
+      event.target.value = null
+      return false
     }
   }
 }
