@@ -1,19 +1,14 @@
-<!-- Taken from https://github.com/jannhama/vuetify-upload-btn
-    This uses invalid HTML input inside a button
-    For now it will do but hope to replace with vuetify component when released
- -->
 <template>
-  <v-btn
-    flat
-    color="white"
-    class="jbtn-file">
-    <v-icon left>{{ icon }}</v-icon>
-    {{ name }}
+  <label class="btn btn--flat theme--dark custom-file-upload">
     <input
       id="selectFile"
       type="file"
       @change="fileSelected">
-  </v-btn>
+    <div class="btn__content">
+      <v-icon left>{{ icon }}</v-icon>
+      {{ name }}
+    </div>
+  </label>
 </template>
 
 <script>
@@ -67,5 +62,16 @@ export default {
   outline: none;
   cursor: inherit;
   display: block;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.custom-file-upload {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
 }
 </style>
