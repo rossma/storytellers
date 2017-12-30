@@ -18,8 +18,8 @@ exports.handler = function(event, database, storage, bucketName) {
   const bucket = storage.bucket(bucketName);
 
   let imageFilename = getImageFilename(deletedValue.image);
-  removePageImagesFromStorage(bucket, imageFilename).then(() => {
-    return pageIsCoverToStory(database, deletedValue.storyOid, deletedValue.image.filename);
+  return removePageImagesFromStorage(bucket, imageFilename).then(() => {
+    return pageIsCoverToStory(database, deletedValue.storyOid, imageFilename);
   }).then((isCover) => {
     if (isCover) {
       console.log('Page image is cover story');

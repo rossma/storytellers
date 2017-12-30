@@ -79,7 +79,7 @@
           </v-tabs-items>
         </v-tabs>
         <v-btn
-          v-if="isEditable"
+          v-if="canPublish()"
           dark
           fab
           fixed
@@ -283,6 +283,9 @@ export default {
     },
     isAuthorised () {
       return this.page.data.public || this.page.data.uid === this.user.uid
+    },
+    canPublish () {
+      return !this.page.data.public && this.page.data.uid === this.user.uid
     },
     publishStoryEvent (story) {
       console.log('publishing story event')
