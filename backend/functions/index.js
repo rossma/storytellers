@@ -2,6 +2,8 @@
 
 const generateThumbnailFunction = require('./generate-thumbnail');
 const onDeleteStoryFunction = require('./delete-story');
+const onDeleteChapterFunction = require('./delete-chapter');
+const onDeletePageFunction = require('./delete-page');
 const onDeleteImageFunction = require('./delete-image');
 
 const functions = require('firebase-functions');
@@ -27,7 +29,15 @@ exports.generateThumbnail = functions.storage.object().onChange(event => {
 });
 
 exports.onDeleteStory = functions.firestore.document('stories/{storyId}').onDelete(event => {
-  return onDeleteStoryFunction.handler(event, firestoreDatabase, gcs, bucketName);
+  return onDeleteStoryFunction.handler(event, firestoreDatabase);
+});
+
+exports.onDeleteChapter = functions.firestore.document('chapters/{chapterId}').onDelete(event => {
+  return onDeleteChapterFunction.handler(event, firestoreDatabase);
+});
+
+exports.onDeletePage = functions.firestore.document('pages/{pageId}').onDelete(event => {
+  return onDeletePageFunction.handler(event, firestoreDatabase, gcs, bucketName);
 });
 
 exports.onDeleteImage = functions.firestore.document('images/{imageId}').onDelete(event => {

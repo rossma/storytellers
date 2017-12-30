@@ -19,16 +19,24 @@ firebase deploy --only functions:generateThumbnail
 
 ### delete-story
 > This function is triggered every time a record is deleted from the stories collection.
-> Data cleanup is performed in this function by removing rows from other referenced documents
-> Uploaded files to storage related to this story are also removed
 
 #### Deploy function
 firebase deploy --only functions:onDeleteStory
 
+### delete-chapter
+> This function is triggered every time a record is deleted from the chapters collection.
+
+#### Deploy function
+firebase deploy --only functions:onDeleteChapter
+
+### delete-page
+> This function is triggered every time a record is deleted from the stories collection.
+
+#### Deploy function
+firebase deploy --only functions:onDeletePage
+
 ### delete-image
-> This function is triggered every time a record is deleted from the images collection probably when an old image is 
-replaced with a new one.
-> Uploaded files to storage related to this image are removed from storage
+> This function is triggered every time a record is deleted from the images collection.
 
 #### Deploy function
 firebase deploy --only functions:onDeleteImage

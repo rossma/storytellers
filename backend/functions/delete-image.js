@@ -3,10 +3,8 @@ const BASE_ORIG_FILE_PATH = 'images/original'
 const BASE_236X_FILE_PATH = 'images/236x'
 
 /**
- *  This will run when an image record is deleted from the images collection. This will happen when a user replaces
- *  an image with another one.
- *
- *  Uploaded files to storage are removed
+ *  This will run when an image record is deleted from the images collection. Any other collection referencing this
+ *  record deleted is also deleted. Images uploaded to storage are deleted.
  */
 exports.handler = function(event, database, storage, bucketName) {
   const imageOid = event.params.imageId;

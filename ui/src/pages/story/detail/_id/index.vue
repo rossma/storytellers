@@ -74,19 +74,22 @@
                     @click.stop="openImageDialog()"
                     title="Upload">
                 </v-card-text>
-                <v-card-actions>
-                  <v-layout class="text-xs-right">
-                    <v-flex>
-                      <v-btn
-                        flat
-                        @click="publish">Publish</v-btn>
-                    </v-flex>
-                  </v-layout>
-                </v-card-actions>
               </v-card>
             </v-tabs-content>
           </v-tabs-items>
         </v-tabs>
+        <v-btn
+          v-if="isEditable"
+          dark
+          fab
+          fixed
+          bottom
+          right
+          color="green"
+          @click="publish"
+        >
+          <v-icon>mdi mdi-publish</v-icon>
+        </v-btn>
       </v-flex>
     </v-layout>
     <v-layout
