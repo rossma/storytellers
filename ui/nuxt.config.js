@@ -58,10 +58,7 @@ module.exports = {
   modules: [
     '~/modules/material-design-icons',
     '@nuxtjs/toast'
-  ],
-  toast: {
-    position: 'center'
-  }
+  ]
   /*,
   *router: {
   *  middleware: 'check-auth'
