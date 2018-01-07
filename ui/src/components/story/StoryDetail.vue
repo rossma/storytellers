@@ -35,7 +35,7 @@
       <v-btn
         @click.stop="deleteDialog = true"
         color="red"
-        v-if="storyExists">delete
+        v-if="storyExists && editable">delete
       </v-btn>
       <v-btn
         @click="submit"
@@ -198,8 +198,8 @@ export default {
         })
       })
     },
-    raiseAlert (severity, message) {
-      EventBus.$emit('alert', alertUtil.raiseAlert(severity, message))
+    raiseAlert (severity, message, ...args) {
+      EventBus.$emit('alert', alertUtil.raiseAlert(severity, message, args))
     }
   }
 }

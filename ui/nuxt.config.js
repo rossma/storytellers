@@ -15,7 +15,10 @@ module.exports = {
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' }
     ]
   },
-  plugins: ['~/plugins/vuetify.js'],
+  plugins: [
+    '~/plugins/vuetify',
+    { src: '~/plugins/vue-notifications', ssr: false }
+  ],
   css: [
     '~/assets/style/app.styl'
   ],
@@ -27,12 +30,16 @@ module.exports = {
   ** Build configuration
   */
   build: {
-    vendor: ['vuetify'],
+    vendor: [
+      'vuetify',
+      'vue-notifications',
+      'mini-toastr'
+    ],
     extractCSS: true,
     /*
     ** Run ESLINT on save
     */
-    extend (config, ctx) {
+    extend(config, ctx) {
       if (ctx.dev && ctx.isClient) {
         config.module.rules.push({
           enforce: 'pre',
@@ -48,6 +55,12 @@ module.exports = {
         config.resolve.alias['config'] = '~/config/development'
       } else {
         config.resolve.alias['config'] = '~/config/production'
+
+        /* https://github.com/nuxt/nuxt.js/issues/1668
+        *  https://github.com/nuxt/nuxt.js/issues/385*/
+        const UglifyJSWebpackPlugin = require('uglifyjs-webpack-plugin')
+        config.plugins = config.plugins.filter((plugin) => plugin.constructor.name !== 'UglifyJsPlugin')
+        config.plugins.push(new UglifyJSWebpackPlugin())
       }
     }
   },

@@ -12,7 +12,8 @@ function alertIcon (severity) {
 }
 
 export default {
-  raiseAlert: (severity, message) => {
+  raiseAlert: (severity, message, ...args) => {
+    console.log(`alert raised, severity:${severity} message:${message} args:${args}`)
     return {
       show: true,
       message: message,

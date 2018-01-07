@@ -25,9 +25,11 @@
     "firebase": "4.8.1",
     "grpc": "^1.7.2",
     "mdi": "^2.0.46",
+    "mini-toastr": "^0.7.2",
     "nuxt": "^1.0.0-rc11",
     "vue": "^2.5.8",
     "vue-loader": "^13.5.0",
+    "vue-notifications": "^0.9.0",
     "vue-server-renderer": "^2.5.8",
     "vue-template-compiler": "^2.5.8",
     "vuetify": "^0.17.6",
@@ -47,6 +49,7 @@
     "eslint-plugin-standard": "^3.0.1",
     "eslint-plugin-vue": "^4.0.0-beta.0",
     "stylus": "^0.54.5",
-    "stylus-loader": "^3.0.1"
+    "stylus-loader": "^3.0.1",
+    "uglifyjs-webpack-plugin": "^1.1.6"
   }
 }
