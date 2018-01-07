@@ -52,19 +52,16 @@ module.exports = {
         config.resolve.alias['config'] = '~/config/development'
       } else {
         config.resolve.alias['config'] = '~/config/production'
-
-        /* https://github.com/nuxt/nuxt.js/issues/1668
-        *  https://github.com/nuxt/nuxt.js/issues/385*/
-        /*const UglifyJSWebpackPlugin = require('uglifyjs-webpack-plugin')
-        config.plugins = config.plugins.filter((plugin) => plugin.constructor.name !== 'UglifyJsPlugin')
-        config.plugins.push(new UglifyJSWebpackPlugin())*/
       }
     }
   },
   modules: [
     '~/modules/material-design-icons',
     '@nuxtjs/toast'
-  ]
+  ],
+  toast: {
+    position: 'center'
+  }
   /*,
   *router: {
   *  middleware: 'check-auth'
