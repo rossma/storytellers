@@ -107,16 +107,9 @@ export default {
         console.log('User state saved in session, status:' + response.status)
         this.$router.push('/')
       }).catch(error => {
-        this.showLoginError({message: error.message})
+        this.$toast.error('Error while authenticating')
         this.alert = alertUtil.raiseAlert('error', error.message)
       })
-    }
-  },
-  notifications: {
-    showLoginError: { // You can have any name you want instead of 'showLoginError'
-      title: 'Login Failed',
-      message: 'Failed to authenticate',
-      type: 'error' // You also can use 'VueNotifications.types.error' instead of 'error'
     }
   }
 }

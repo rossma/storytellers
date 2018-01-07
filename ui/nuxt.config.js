@@ -16,8 +16,7 @@ module.exports = {
     ]
   },
   plugins: [
-    '~/plugins/vuetify',
-    { src: '~/plugins/vue-notifications', ssr: false }
+    '~/plugins/vuetify'
   ],
   css: [
     '~/assets/style/app.styl'
@@ -31,9 +30,7 @@ module.exports = {
   */
   build: {
     vendor: [
-      'vuetify',
-      'vue-notifications',
-      'mini-toastr'
+      'vuetify'
     ],
     extractCSS: true,
     /*
@@ -58,14 +55,15 @@ module.exports = {
 
         /* https://github.com/nuxt/nuxt.js/issues/1668
         *  https://github.com/nuxt/nuxt.js/issues/385*/
-        const UglifyJSWebpackPlugin = require('uglifyjs-webpack-plugin')
+        /*const UglifyJSWebpackPlugin = require('uglifyjs-webpack-plugin')
         config.plugins = config.plugins.filter((plugin) => plugin.constructor.name !== 'UglifyJsPlugin')
-        config.plugins.push(new UglifyJSWebpackPlugin())
+        config.plugins.push(new UglifyJSWebpackPlugin())*/
       }
     }
   },
   modules: [
-    '~/modules/material-design-icons'
+    '~/modules/material-design-icons',
+    '@nuxtjs/toast'
   ]
   /*,
   *router: {
