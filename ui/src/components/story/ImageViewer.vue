@@ -51,8 +51,6 @@
 </template>
 
 <script>
-import alertUtil from '~/utils/alert'
-import { EventBus } from '~/utils/event-bus.js'
 import UploadButton from '~/components/UploadButton'
 import { updatePage } from '~/service/page'
 import { deleteImage, uploadStoryImage } from '~/service/image'
@@ -147,11 +145,11 @@ export default {
         uploadStoryImage(this.imageFile, metadata, filenameKey, fileExt).then((downloadUrl) => {
           this.saveImageReference(downloadUrl, `${filenameKey}.${fileExt}`)
         }).catch((error) => {
-          this.raiseAlert('error', error.message)
+          this.$toast.error(error.message)
         })
         this.closeDialog()
       } else {
-        this.raiseAlert('error', 'Image file not set')
+        this.$toast.error('Image file not set')
       }
     },
     saveImageReference (imageUrl, filename) {
@@ -180,9 +178,9 @@ export default {
           return Promise.resolve()
         }
       }).then(() => {
-        this.raiseAlert('success', 'Image updated')
+        this.$toast.success('Image updated')
       }).catch((error) => {
-        this.raiseAlert('error', 'Error updating page', error)
+        this.$toast.error(error.message)
       })
     },
     uuidv4 () {
@@ -191,9 +189,6 @@ export default {
         var v = c === 'x' ? r : (r & 0x3 | 0x8)
         return v.toString(16)
       })
-    },
-    raiseAlert (severity, message, ...args) {
-      EventBus.$emit('alert', alertUtil.raiseAlert(severity, message, args))
     }
   }
 }

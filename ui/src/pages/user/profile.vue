@@ -1,13 +1,5 @@
 <template>
   <v-container grid-list-xl>
-    <v-alert
-      outline
-      :color="alert.colour"
-      :icon="alert.icon"
-      v-model="alert.show"
-      dismissible>
-      {{ alert.message }}
-    </v-alert>
     <v-layout>
       <v-flex xs12>
         <v-expansion-panel>
@@ -102,7 +94,6 @@ import { updateUser } from '~/service/user'
 
 import firebaseApp from '~/firebaseApp'
 import PreviewList from '~/components/preview/PreviewList'
-import alertUtil from '~/utils/alert'
 
 export default {
   components: {
@@ -110,9 +101,6 @@ export default {
   },
   data () {
     return {
-      alert: {
-        show: false
-      },
       valid: true,
       photoUrl: null,
       nameRules: [
@@ -147,10 +135,10 @@ export default {
         uploadProfileImage(file, metadata, this.user.uid).then((downloadUrl) => {
           this.photoUrl = downloadUrl
         }).catch((error) => {
-          this.alert = alertUtil.raiseAlert('error', error.message)
+          this.$toast.error(error.message)
         })
       } else {
-        this.alert = alertUtil.raiseAlert('warning', 'no profile image selected')
+        this.$toast.error('No profile image selected')
       }
     },
     submit () {
@@ -169,9 +157,9 @@ export default {
           this.user.data.photoUrl = this.photoUrl
           console.log('user:', this.user)
           this.saveUser(this.user)
-          this.alert = alertUtil.raiseAlert('success', 'Profile successfully updated')
+          this.$toast.success('Profile successfully updated')
         }).catch((error) => {
-          this.alert = alertUtil.raiseAlert('error', error.message)
+          this.$toast.error(error.message)
         })
       }
     }

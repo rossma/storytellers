@@ -66,12 +66,10 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { EventBus } from '~/utils/event-bus.js'
 import { findPreviewsByStory, updatePreview } from '~/service/preview'
 import { addStory, updateStory, deleteStory } from '~/service/story'
 import { addChapter } from '~/service/chapter'
 import { addPage } from '~/service/page'
-import alertUtil from '~/utils/alert'
 import stringUtils from '~/utils/string'
 
 export default {
@@ -116,13 +114,11 @@ export default {
     deleteStory () {
       console.log('Deleting story', this.mutableStory)
       this.deleteDialog = false
-      // this.raiseAlert('success', 'Story deleted')
       deleteStory(this.mutableStory.id).then(() => {
         console.log('Story successfully deleted')
         this.$router.push('/user/profile')
       }).catch((error) => {
-        console.log('There was an error deleting story', error)
-        this.raiseAlert('error', 'There was an error deleting story')
+        this.$toast.error(`There was an error deleting story:${error.message}`)
       })
     },
     submit () {
@@ -134,7 +130,8 @@ export default {
           this.createStory(this.mutableStory)
         }
       } else {
-        this.raiseAlert('error', 'User not authorised to view this page')
+        // todo implement form validation
+        this.$toast.error('Form validation failed')
       }
     },
     createStory (story) {
@@ -166,8 +163,7 @@ export default {
         console.log('Page Document written with ID: ', pageDocRef.id)
         this.$router.push('/story/detail/' + pageDocRef.id)
       }).catch((error) => {
-        console.error('Error adding document: ', error)
-        this.raiseAlert('error', 'Error adding story')
+        this.$toast.error(`Error adding story:${error.message}`)
       })
     },
     updateStory (story) {
@@ -176,11 +172,10 @@ export default {
         summary: story.data.summary
       }).then((storyDoc) => {
         this.saveStory(storyDoc)
-        this.raiseAlert('success', 'Story updated')
+        this.$toast.success('Story updated')
         this.updatePreviews(story)
       }).catch((error) => {
-        console.error('Error updating story', error)
-        this.raiseAlert('error', 'Error updating story')
+        this.$toast.error(`Error updating story:${error.message}`)
       })
     },
     updatePreviews (story) {
@@ -197,9 +192,6 @@ export default {
           summary: stringUtils.truncateWithEllipse(story.data.summary, 100)
         })
       })
-    },
-    raiseAlert (severity, message, ...args) {
-      EventBus.$emit('alert', alertUtil.raiseAlert(severity, message, args))
     }
   }
 }

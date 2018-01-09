@@ -1,13 +1,5 @@
 <template>
   <v-container grid-list-xl>
-    <v-alert
-      outline
-      :color="alert.colour"
-      :icon="alert.icon"
-      v-model="alert.show"
-      dismissible>
-      {{ alert.message }}
-    </v-alert>
     <v-layout
       v-if="story.id"
       row
@@ -115,7 +107,6 @@ import { findStoryByOid } from '~/service/story'
 import { addPreview } from '~/service/preview'
 import { findChapterByOid } from '~/service/chapter'
 import { findImageByOid } from '~/service/image'
-import alertUtil from '~/utils/alert'
 import StoryDetail from '~/components/story/StoryDetail.vue'
 import stringUtils from '~/utils/string'
 import ImageViewer from '~/components/story/ImageViewer'
@@ -128,9 +119,6 @@ export default {
   layout: 'story',
   data () {
     return {
-      alert: {
-        show: false
-      },
       authorUser: '',
       chapter: {
         id: null,
@@ -175,13 +163,7 @@ export default {
     this.$nextTick(() => {
       console.log('[Story Detail] - in mounted, page id:', this.$route.params.id)
       this.loadPage(this.$route.params.id)
-      EventBus.$on('alert', alert => {
-        this.alert = alert
-      })
     })
-  },
-  beforeDestroy () {
-    EventBus.$off('alert')
   },
   methods: {
     ...mapActions([
@@ -197,10 +179,10 @@ export default {
             this.initStory(this.page.data.storyOid)
             this.initChapter(this.page.data.chapterOid)
           } else {
-            this.alert = alertUtil.raiseAlert('error', 'User not authorised to view this page')
+            this.$toast.error('User not authorised to view this page')
           }
         } else {
-          this.alert = alertUtil.raiseAlert('error', 'Page does not exist')
+          this.$toast.error('Page does not exist')
         }
       })
     },
@@ -209,7 +191,7 @@ export default {
         if (userDoc.exists) {
           this.authorUser = userDoc.data()
         } else {
-          this.alert = alertUtil.raiseAlert('error', 'Author does not exist')
+          this.$toast.error('Author does not exist')
         }
       })
     },
@@ -221,7 +203,7 @@ export default {
           this.saveStory(this.story)
           this.publishStoryEvent(this.story)
         } else {
-          this.alert = alertUtil.raiseAlert('error', 'Story does not exist')
+          this.$toast.error('Story does not exist')
         }
       })
     },
@@ -232,7 +214,7 @@ export default {
           this.chapter.data = chapterDoc.data()
           console.log('chapter.....', this.chapter)
         } else {
-          this.alert = alertUtil.raiseAlert('error', 'Chapter does not exist')
+          this.$toast.error('Chapter does not exist')
         }
       })
     },
@@ -281,9 +263,9 @@ export default {
           imageFilenameOid: this.imageFilenameKey
         })
       }).then(() => {
-        this.alert = alertUtil.raiseAlert('success', 'Story published')
+        this.$toast.success('Story published')
       }).catch((error) => {
-        this.alert = alertUtil.raiseAlert('error', error.message)
+        this.$toast.error(error.message)
       })
     }
   }

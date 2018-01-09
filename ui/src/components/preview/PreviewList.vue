@@ -123,16 +123,14 @@ export default {
           console.log('There are no stories for this user')
         }
       }).catch((error) => {
-        // todo raise an alert
-        console('Error in loading data', error)
+        this.$toast.error(error.message)
       })
     },
     fetchPublicStories () {
       findPreviewsByFilter(this.filterBy).then((previewsSnapshot) => {
         this.previews = previewsSnapshot
       }).catch((error) => {
-        console('Error in loading data', error)
-        // todo raise an alert
+        this.$toast.error(error.message)
       })
     },
     showDetail (storyOid, pageOid) {
@@ -146,12 +144,10 @@ export default {
           if (page) {
             this.$router.push('/story/detail/' + page.id)
           } else {
-            // todo raise an error
-            console.log('Error - page does not exits')
+            this.$toast.error('Page does not exits')
           }
-        }).error((error) => {
-          // todo raise an error
-          console.log('Error - fetching pages for story', error)
+        }).catch((error) => {
+          this.$toast.error(error.message)
         })
       }
     }
