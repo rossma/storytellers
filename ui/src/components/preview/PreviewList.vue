@@ -16,7 +16,7 @@
             <v-card-media
               class="preview-img"
               :src="preview.data.previewImageUrl"
-              @click="showDetail(preview.data.pageOid)"
+              @click="showDetail(preview.data.storyOid, preview.data.pageOid)"
               height="300px"/>
             <v-card-title primary-title>
               <div>
@@ -47,8 +47,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { findPagesByUser } from '~/service/page'
 import { findStoriesByUser } from '~/service/story'
+import { findPagesByStory } from '~/service/page'
 import { findPreviewsByFilter } from '~/service/preview'
 
 export default {
@@ -92,49 +92,64 @@ export default {
       }
     },
     fetchUserProfileStories () {
-      let pages = null
-      findPagesByUser(this.user.uid).then((pageSnapshot) => {
-        pages = pageSnapshot
-        if (pages.length > 0) {
-          return findStoriesByUser(this.user.uid)
-        } else {
-          console.log('There are no private pages for this user')
-          return Promise.reject(new Error('There are no private pages for this user'))
-        }
-      }).then((stories) => {
-        this.previews = pages.map((page) => {
-          let story = stories.find(x => x.id === page.data.storyOid)
-          let preview = {
-            data: {
-              chapterOid: page.data.chapterOid,
-              pageOid: page.id,
-              previewImageUrl: page.data.image.ref,
-              storyOid: page.data.storyOid,
-              summary: story.data.summary,
-              title: story.data.title,
-              uid: page.data.uid,
-              userDisplayName: this.user.data.displayName
+      let stories = null
+      findStoriesByUser(this.user.uid).then((storiesSnapshot) => {
+        stories = storiesSnapshot
+        if (stories.length > 0) {
+          // todo initialise previews from cover image
+          this.previews = stories.map((story) => {
+            if (!story.data.cover) {
+              story.data.cover = {
+                chapterOid: null,
+                pageOid: null,
+                imageRef: '/img/missing-image.png'
+              }
             }
-          }
-          console.log('preview:', preview)
-          return preview
-        })
+            return {
+              data: {
+                chapterOid: story.data.cover.chapterOid,
+                pageOid: story.data.cover.pageOid,
+                previewImageUrl: story.data.cover.imageRef,
+                storyOid: story.id,
+                summary: story.data.summary,
+                title: story.data.title,
+                uid: story.data.uid,
+                userDisplayName: this.user.data.displayName
+              }
+            }
+          })
+          console.log('previews:', this.previews)
+        } else {
+          console.log('There are no stories for this user')
+        }
       }).catch((error) => {
-        console('Error in loading data', error)
-        // todo raise an alert
+        this.$toast.error(error.message)
       })
     },
     fetchPublicStories () {
       findPreviewsByFilter(this.filterBy).then((previewsSnapshot) => {
         this.previews = previewsSnapshot
       }).catch((error) => {
-        console('Error in loading data', error)
-        // todo raise an alert
+        this.$toast.error(error.message)
       })
     },
-    showDetail (pageOid) {
-      console.log('previewOid:', pageOid)
-      this.$router.push('/story/detail/' + pageOid)
+    showDetail (storyOid, pageOid) {
+      console.log(`storyOid:${storyOid} previewOid:${pageOid}`)
+      if (pageOid) {
+        this.$router.push('/story/detail/' + pageOid)
+      } else {
+        // in the event no page id is defined in cover take the first page
+        findPagesByStory(storyOid).then((pages) => {
+          let page = pages.find(p => p.data.page === 1)
+          if (page) {
+            this.$router.push('/story/detail/' + page.id)
+          } else {
+            this.$toast.error('Page does not exits')
+          }
+        }).catch((error) => {
+          this.$toast.error(error.message)
+        })
+      }
     }
   }
 }

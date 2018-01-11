@@ -15,7 +15,9 @@ module.exports = {
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' }
     ]
   },
-  plugins: ['~/plugins/vuetify.js'],
+  plugins: [
+    '~/plugins/vuetify'
+  ],
   css: [
     '~/assets/style/app.styl'
   ],
@@ -27,13 +29,15 @@ module.exports = {
   ** Build configuration
   */
   build: {
-    vendor: ['vuetify'],
+    vendor: [
+      'vuetify'
+    ],
     extractCSS: true,
     /*
     ** Run ESLINT on save
     */
-    extend (config, ctx) {
-      if (ctx.dev && ctx.isClient) {
+    extend(config, ctx) {
+      if (ctx.isDev && ctx.isClient) {
         config.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
@@ -44,7 +48,7 @@ module.exports = {
           }
         })
       }
-      if (ctx.dev) {
+      if (ctx.isDev) {
         config.resolve.alias['config'] = '~/config/development'
       } else {
         config.resolve.alias['config'] = '~/config/production'
@@ -52,8 +56,12 @@ module.exports = {
     }
   },
   modules: [
-    '~/modules/material-design-icons'
-  ]
+    '~/modules/material-design-icons',
+    '@nuxtjs/toast'
+  ],
+  toast: {
+    position: 'top-center'
+  }
   /*,
   *router: {
   *  middleware: 'check-auth'

@@ -1,14 +1,25 @@
 <template>
   <v-container grid-list-xl>
-    <v-alert
-      outline
-      :color="alert.colour"
-      :icon="alert.icon"
-      v-model="alert.show"
-      dismissible>
-      {{ alert.message }}
-    </v-alert>
-    <v-layout v-if="story.id">
+    <v-layout
+      v-if="story.id"
+      row
+      wrap>
+      <v-flex xs12>
+        <v-expansion-panel>
+          <v-expansion-panel-content>
+            <div slot="header">
+              <div><h2>{{ story.data.title }}</h2></div>
+              <div v-show="authorUser.displayName"><h5>{{ authorUser.displayName }}</h5></div>
+            </div>
+            <story-detail
+              name="StoryDetail"
+              :story="story"
+              :editable="isEditable"
+              :story-exists="true"
+              style="padding-bottom:10px;"/>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-flex>
       <v-flex xs12>
         <v-tabs
           dark
@@ -17,47 +28,21 @@
           <v-toolbar
             color="cyan"
             dark>
-            <div>
-              <h3 class="headline mb-0">{{ story.data.title }}</h3>
-              <div v-show="authorUser.displayName">{{ authorUser.displayName }}</div>
-              <div v-if="!authorUser.displayName">author</div>
-            </div>
             <v-tabs-bar
               class="cyan"
               slot="extension">
               <v-tabs-slider color="yellow" />
-              <v-tabs-item
-                href="#summary-tab"
-                v-show="story.data.summary">
-                <v-icon>mdi mdi-book-open</v-icon>
-                Summary
-              </v-tabs-item>
               <v-tabs-item href="#writing-tab">
                 <v-icon>mdi mdi-book-open-page-variant</v-icon>
                 Writing
               </v-tabs-item>
-              <v-tabs-item
-                href="#picture-tab"
-                v-if="page.data.image.ref">
+              <v-tabs-item href="#picture-tab">
                 <v-icon>mdi mdi-palette</v-icon>
                 Picture
-              </v-tabs-item>
-              <v-tabs-item href="#sound-tab">
-                <v-icon>mdi mdi-music-box</v-icon>
-                Sound
               </v-tabs-item>
             </v-tabs-bar>
           </v-toolbar>
           <v-tabs-items>
-            <v-tabs-content
-              :id="'summary-tab'"
-              v-show="story.data.summary">
-              <v-card flat>
-                <v-card-text>
-                  {{ story.data.summary }}
-                </v-card-text>
-              </v-card>
-            </v-tabs-content>
             <v-tabs-content :id="'writing-tab'">
               <v-card flat>
                 <v-card-text>
@@ -65,56 +50,76 @@
                 </v-card-text>
               </v-card>
             </v-tabs-content>
-            <v-tabs-content
-              :id="'picture-tab'"
-              v-if="page.data.image.ref">
+            <v-tabs-content :id="'picture-tab'">
               <v-card flat>
-                <v-card-text>
-                  <div class="text-xs-center">
-                    <img
-                      class="card-img-top img-fluid"
-                      :src="page.data.image.ref"
-                      alt="no image">
-                  </div>
+                <v-card-text class="text-xs-center">
+                  <img
+                    v-show="pageImageSrc"
+                    class="card-img-top img-fluid thumb"
+                    :src="pageImageSrc"
+                    @click.stop="openImageDialog()"
+                    title="Upload">
+                  <img
+                    v-show="!pageImageSrc"
+                    class="card-img-top img-fluid thumb"
+                    src="/img/missing-image.png"
+                    @click.stop="openImageDialog()"
+                    title="Upload">
                 </v-card-text>
-              </v-card>
-            </v-tabs-content>
-            <v-tabs-content :id="'sound-tab'">
-              <v-card flat>
-                temp text
               </v-card>
             </v-tabs-content>
           </v-tabs-items>
         </v-tabs>
+        <v-btn
+          v-if="canPublish()"
+          dark
+          fab
+          fixed
+          bottom
+          right
+          color="green"
+          @click="publish"
+        >
+          <v-icon>mdi mdi-publish</v-icon>
+        </v-btn>
       </v-flex>
     </v-layout>
+    <image-viewer
+      v-if="(story.id && chapter.id && page.id)"
+      :story-oid="story.id"
+      :chapter-oid="chapter.id"
+      :page-oid="page.id"
+      :current-image-oid="currentImageOid"
+      :editable="isEditable"
+      :has-story-cover="story.cover"
+      :dialog="imageDialog"
+      :src="pageImageSrc"
+      @close="imageDialog = false" />
   </v-container>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
-import { findPageByOid } from '~/service/page'
+import { findPageByOid, updatePage } from '~/service/page'
 import { findUserByOid } from '~/service/user'
 import { findStoryByOid } from '~/service/story'
+import { addPreview } from '~/service/preview'
 import { findChapterByOid } from '~/service/chapter'
-import alertUtil from '~/utils/alert'
+import { findImageByOid } from '~/service/image'
+import StoryDetail from '~/components/story/StoryDetail.vue'
+import stringUtils from '~/utils/string'
+import ImageViewer from '~/components/story/ImageViewer'
 
 export default {
+  components: {
+    StoryDetail,
+    ImageViewer
+  },
   layout: 'story',
   data () {
     return {
-      alert: {
-        show: false
-      },
-      drawer: true,
       authorUser: '',
-      story: {
-        id: null,
-        data: {
-          summary: null
-        }
-      },
       chapter: {
         id: null,
         data: {
@@ -124,18 +129,35 @@ export default {
       page: {
         id: null,
         data: {
-          number: null,
-          image: {
-            ref: null
-          }
+          number: null
         }
-      }
+      },
+      story: {
+        id: null,
+        data: {
+          summary: null
+        }
+      },
+      imageDialog: false
     }
   },
   computed: {
     ...mapGetters([
       'user'
-    ])
+    ]),
+    isEditable: function () {
+      return this.page.data.uid === this.user.uid
+    },
+    pageImageSrc: function () {
+      if (this.page.data.image && this.page.data.image.ref) {
+        return this.page.data.image.ref
+      } else {
+        return ''
+      }
+    },
+    currentImageOid: function () {
+      return (this.page.data.image && this.page.data.image.filename)
+    }
   },
   mounted: function () {
     this.$nextTick(() => {
@@ -157,10 +179,10 @@ export default {
             this.initStory(this.page.data.storyOid)
             this.initChapter(this.page.data.chapterOid)
           } else {
-            this.alert = alertUtil.raiseAlert('error', 'User not authorised to view this page')
+            this.$toast.error('User not authorised to view this page')
           }
         } else {
-          this.alert = alertUtil.raiseAlert('error', 'Page does not exist')
+          this.$toast.error('Page does not exist')
         }
       })
     },
@@ -169,7 +191,7 @@ export default {
         if (userDoc.exists) {
           this.authorUser = userDoc.data()
         } else {
-          this.alert = alertUtil.raiseAlert('error', 'Author does not exist')
+          this.$toast.error('Author does not exist')
         }
       })
     },
@@ -179,9 +201,9 @@ export default {
           this.story.id = storyDoc.id
           this.story.data = storyDoc.data()
           this.saveStory(this.story)
-          this.publishStoryOid(this.story.id)
+          this.publishStoryEvent(this.story)
         } else {
-          this.alert = alertUtil.raiseAlert('error', 'Story does not exist')
+          this.$toast.error('Story does not exist')
         }
       })
     },
@@ -192,22 +214,71 @@ export default {
           this.chapter.data = chapterDoc.data()
           console.log('chapter.....', this.chapter)
         } else {
-          this.alert = alertUtil.raiseAlert('error', 'Chapter does not exist')
+          this.$toast.error('Chapter does not exist')
         }
       })
     },
     isAuthorised () {
       return this.page.data.public || this.page.data.uid === this.user.uid
     },
-    publishStoryOid (storyOid) {
+    canPublish () {
+      return !this.page.data.public && this.page.data.uid === this.user.uid
+    },
+    publishStoryEvent (story) {
+      console.log('publishing story event')
+      EventBus.$emit('storyEvent', story)
+    },
+    openImageDialog () {
+      if (this.pageImageSrc) {
+        this.imagePreviewSrc = this.pageImageSrc
+      } else {
+        this.imagePreviewSrc = ''
+      }
+      this.imageDialog = true
+    },
+    publish () {
       console.log('publishing story')
-      EventBus.$emit('storyOidEvent', storyOid)
+      let page = {public: true}
+      updatePage(this.page.id, page).then(() => {
+        console.log('imageFilenameKey:', this.imageFilenameKey)
+        return findImageByOid(this.imageFilenameKey)
+      }).then((imageDoc) => {
+        let previewUrl = ''
+        if (imageDoc.exists) {
+          console.log('imageDoc:', imageDoc.data())
+          previewUrl = imageDoc.data().previewUrl
+        } else {
+          // possible if the server function hasn't run yet
+          console.log('Image.vue Document not found in DB at this time')
+        }
+        return addPreview({
+          storyOid: this.story.id,
+          chapterOid: this.chapter.id,
+          pageOid: this.page.id,
+          title: this.story.title,
+          summary: stringUtils.truncateWithEllipse(this.story.summary, 100),
+          uid: this.user.uid,
+          userDisplayName: this.user.data.displayName,
+          previewImageUrl: previewUrl,
+          imageFilenameOid: this.imageFilenameKey
+        })
+      }).then(() => {
+        this.$toast.success('Story published')
+      }).catch((error) => {
+        this.$toast.error(error.message)
+      })
     }
   }
 }
 </script>
 <style>
 img {
-  max-width: 500px;
+  max-width: 100%;
+  height: auto;
+}
+
+img.thumb {
+  max-height: 300px;
+  cursor: pointer;
 }
 </style>

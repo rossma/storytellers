@@ -1,6 +1,6 @@
 <template>
   <v-app dark>
-    <navigation-toolbar />
+    <navigation-toolbar :immutable-drawer="false" />
     <v-content>
       <nuxt />
     </v-content>

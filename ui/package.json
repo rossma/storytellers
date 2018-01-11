@@ -1,10 +1,15 @@
 {
   "name": "storytellers",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
+  "private": true,
   "description": "Stories created in collaboration and shared",
   "author": "Ross Mahony",
   "engines": {
-    "node": "7.8.0"
+    "node": "8.9.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:rossma/storytellers.git"
   },
   "scripts": {
     "build": "nuxt build",
@@ -14,18 +19,20 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "@nuxtjs/toast": "^2.3.3",
     "body-parser": "^1.18.2",
     "express": "^4.15.4",
     "express-session": "^1.15.5",
-    "firebase": "4.6.0",
+    "firebase": "4.8.1",
     "grpc": "^1.7.2",
     "mdi": "^2.0.46",
-    "nuxt": "^1.0.0-rc11",
+    "nuxt": "^1.0.0",
     "vue": "^2.5.8",
     "vue-loader": "^13.5.0",
     "vue-server-renderer": "^2.5.8",
     "vue-template-compiler": "^2.5.8",
-    "vuetify": "^0.17.2",
+    "vue-toasted": "^1.1.24",
+    "vuetify": "^0.17.6",
     "vuex": "^2.3.1",
     "whatwg-fetch": "^2.0.3"
   },

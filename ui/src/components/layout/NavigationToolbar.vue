@@ -5,6 +5,7 @@
       clipped
       app
       v-model="drawer"
+      disable-route-watcher
       dark>
       <v-list dense>
         <slot name="nav-drawer" />
@@ -15,7 +16,9 @@
       app
       clipped-left
       fixed>
-      <v-toolbar-side-icon @click.stop="drawer = !drawer" />
+      <v-toolbar-side-icon
+        @click.stop="drawer = !drawer"
+        v-if="hasNavDrawerSlot" />
       <v-toolbar-title class="home-title">
         <nuxt-link to="/">Storytellers</nuxt-link>
       </v-toolbar-title>
@@ -80,9 +83,15 @@ import firebaseApp from '~/firebaseApp'
 
 export default {
   name: 'NavigationToolbar',
+  props: {
+    immutableDrawer: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
-      drawer: true,
+      drawer: this.immutableDrawer,
       profile: {
         direction: 'bottom',
         fab: false,
@@ -105,10 +114,12 @@ export default {
       title: 'Vuetify.js'
     }
   },
+  computed: {
+    hasNavDrawerSlot () {
+      return this.$slots['nav-drawer']
+    }
+  },
   methods: {
-    home () {
-      this.$router.push('/')
-    },
     userProfile () {
       this.$router.push('/user/profile')
     },

@@ -41,7 +41,8 @@
               </v-flex>
               <v-flex
                 xs6
-                class="text-xs-right">
+                class="text-xs-right"
+                v-show="isEditable()">
                 <v-btn
                   small
                   flat
@@ -138,26 +139,33 @@ export default {
   data () {
     return {
       chapters: [],
+      editChapter: false,
       pages: [],
-      editChapter: false
+      story: {
+        id: '',
+        data: {
+          uid: '',
+          title: ''
+        }
+      }
     }
   },
   computed: {
     ...mapGetters([
-      'story'
+      'user'
     ])
   },
   mounted: function () {
     this.$nextTick(() => {
-      console.log('[Story Nav] - in mounted, story id:', this.$route.params.id)
-      EventBus.$on('storyOidEvent', storyOid => {
-        console.log(`[story layout] storyOidEvent received payload:[${storyOid}]`)
-        this.loadChapters(storyOid)
+      EventBus.$on('storyEvent', story => {
+        console.log(`[story layout] storyEvent received payload:[${story.id}]`)
+        this.story = story
+        this.loadChapters(story.id)
       })
     })
   },
   beforeDestroy () {
-    EventBus.$off('storyOidEvent')
+    EventBus.$off('storyEvent')
   },
   methods: {
     loadChapters (storyOid) {
@@ -182,6 +190,9 @@ export default {
       console.log('Saving name:', chapter.data.name)
       updateChapterName(chapter.id, chapter.data.name)
       this.editChapter = !this.editChapter
+    },
+    isEditable () {
+      return this.story.data.uid === this.user.uid
     }
   }
 }

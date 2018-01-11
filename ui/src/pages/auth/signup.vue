@@ -2,20 +2,11 @@
   <v-layout
     column
     align-center>
-    <v-alert
-      outline
-      :color="alert.colour"
-      :icon="alert.icon"
-      v-model="alert.show"
-      dismissible>
-      {{ alert.message }}
-    </v-alert>
     <v-btn
       color="primary"
       flat
       nuxt
       to="/auth/signin">Already a user? Sign in</v-btn>
-
     <v-flex
       xs12
       sm10
@@ -50,7 +41,6 @@
 import { mapActions } from 'vuex'
 import { addUser } from '~/service/user'
 import firebaseApp from '~/firebaseApp'
-import alertUtil from '~/utils/alert'
 
 export default {
   layout: 'auth',
@@ -108,7 +98,7 @@ export default {
         console.log('User state saved in session, status:' + response.status)
         this.$router.push('/')
       }).catch(error => {
-        this.alert = alertUtil.raiseAlert('error', error.message)
+        this.$toast.error(error.message)
       })
     }
   }
