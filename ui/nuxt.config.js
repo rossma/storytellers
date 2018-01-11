@@ -37,7 +37,7 @@ module.exports = {
     ** Run ESLINT on save
     */
     extend(config, ctx) {
-      if (ctx.dev && ctx.isClient) {
+      if (ctx.isDev && ctx.isClient) {
         config.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
@@ -48,7 +48,7 @@ module.exports = {
           }
         })
       }
-      if (ctx.dev) {
+      if (ctx.isDev) {
         config.resolve.alias['config'] = '~/config/development'
       } else {
         config.resolve.alias['config'] = '~/config/production'
