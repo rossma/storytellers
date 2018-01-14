@@ -163,7 +163,15 @@ export default {
     this.$nextTick(() => {
       console.log('[Story Detail] - in mounted, page id:', this.$route.params.id)
       this.loadPage(this.$route.params.id)
+
+      EventBus.$on('storyImageFileKey', filenameKey => {
+        console.log(`[Story Detail] - storyImageFileKey event received, filenameKey:${filenameKey}`)
+        this.page.data.image = { filename: filenameKey }
+      })
     })
+  },
+  beforeDestroy () {
+    EventBus.$off('storyImageFileKey')
   },
   methods: {
     ...mapActions([
@@ -201,7 +209,7 @@ export default {
           this.story.id = storyDoc.id
           this.story.data = storyDoc.data()
           this.saveStory(this.story)
-          this.publishStoryEvent(this.story)
+          this.publishStoryEvent(this.story, this.page)
         } else {
           this.$toast.error('Story does not exist')
         }
@@ -212,7 +220,6 @@ export default {
         if (chapterDoc.exists) {
           this.chapter.id = chapterDoc.id
           this.chapter.data = chapterDoc.data()
-          console.log('chapter.....', this.chapter)
         } else {
           this.$toast.error('Chapter does not exist')
         }
@@ -224,8 +231,9 @@ export default {
     canPublish () {
       return !this.page.data.public && this.page.data.uid === this.user.uid
     },
-    publishStoryEvent (story) {
+    publishStoryEvent (story, page) {
       console.log('publishing story event')
+      story.activeChapterOid = page.data.chapterOid
       EventBus.$emit('storyEvent', story)
     },
     openImageDialog () {
@@ -240,31 +248,37 @@ export default {
       console.log('publishing story')
       let page = {public: true}
       updatePage(this.page.id, page).then(() => {
-        console.log('imageFilenameKey:', this.imageFilenameKey)
-        return findImageByOid(this.imageFilenameKey)
+        if (this.page.data.image && this.page.data.image.filename) {
+          const filenameKey = this.page.data.image.filename.split('.').shift()
+          return findImageByOid(filenameKey)
+        } else {
+          return Promise.reject(new Error('Image reference can not be found'))
+        }
       }).then((imageDoc) => {
         let previewUrl = ''
         if (imageDoc.exists) {
-          console.log('imageDoc:', imageDoc.data())
+          console.log('imageDoc:', imageDoc.data(), this.story)
           previewUrl = imageDoc.data().previewUrl
+          return addPreview({
+            storyOid: this.story.id,
+            chapterOid: this.chapter.id,
+            pageOid: this.page.id,
+            title: this.story.data.title,
+            summary: stringUtils.truncateWithEllipse(this.story.data.summary, 100),
+            uid: this.user.uid,
+            userDisplayName: this.user.data.displayName,
+            previewImageUrl: previewUrl,
+            imageFilenameOid: imageDoc.id
+          })
         } else {
           // possible if the server function hasn't run yet
           console.log('Image.vue Document not found in DB at this time')
+          return Promise.reject(new Error('There was an error finding image reference'))
         }
-        return addPreview({
-          storyOid: this.story.id,
-          chapterOid: this.chapter.id,
-          pageOid: this.page.id,
-          title: this.story.title,
-          summary: stringUtils.truncateWithEllipse(this.story.summary, 100),
-          uid: this.user.uid,
-          userDisplayName: this.user.data.displayName,
-          previewImageUrl: previewUrl,
-          imageFilenameOid: this.imageFilenameKey
-        })
       }).then(() => {
         this.$toast.success('Story published')
       }).catch((error) => {
+        console.log('There was an error publishing page', error)
         this.$toast.error(error.message)
       })
     }

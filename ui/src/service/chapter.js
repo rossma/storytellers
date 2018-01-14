@@ -39,6 +39,6 @@ export function updateChapterName (chapterOid, chapterName) {
 }
 
 export function addChapter (chapter) {
-  console.log(`[Chapter Service] - Adding chapter:[${chapter}]`)
+  console.log(`[Chapter Service] - Adding chapter:`, chapter)
   return DB.collection('chapters').add(chapter)
 }

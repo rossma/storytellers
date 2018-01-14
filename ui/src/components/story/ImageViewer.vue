@@ -51,6 +51,7 @@
 </template>
 
 <script>
+import { EventBus } from '~/utils/event-bus.js'
 import UploadButton from '~/components/UploadButton'
 import { updatePage } from '~/service/page'
 import { deleteImage, uploadStoryImage } from '~/service/image'
@@ -147,6 +148,7 @@ export default {
         }).catch((error) => {
           this.$toast.error(error.message)
         })
+        EventBus.$emit('storyImageFileKey', filenameKey)
         this.closeDialog()
       } else {
         this.$toast.error('Image file not set')

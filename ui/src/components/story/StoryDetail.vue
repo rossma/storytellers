@@ -160,8 +160,8 @@ export default {
           public: false
         })
       }).then((pageDocRef) => {
-        console.log('Page Document written with ID: ', pageDocRef.id)
-        this.$router.push('/story/detail/' + pageDocRef.id)
+        console.log(`Page Document written with ID:${pageDocRef.id}`)
+        this.$router.push(`/story/detail/${pageDocRef.id}`)
       }).catch((error) => {
         this.$toast.error(`Error adding story:${error.message}`)
       })

@@ -12,11 +12,11 @@
         v-for="preview in previews"
         :key="preview.id" >
         <v-card class="preview-card">
-          <div>
+          <div
+            class="preview-detail-link"
+            @click="showDetail(preview.data.storyOid, preview.data.pageOid)">
             <v-card-media
-              class="preview-img"
               :src="preview.data.previewImageUrl"
-              @click="showDetail(preview.data.storyOid, preview.data.pageOid)"
               height="300px"/>
             <v-card-title primary-title>
               <div>
@@ -134,15 +134,15 @@ export default {
       })
     },
     showDetail (storyOid, pageOid) {
-      console.log(`storyOid:${storyOid} previewOid:${pageOid}`)
+      console.log(`storyOid:${storyOid} pageOid:${pageOid}`)
       if (pageOid) {
-        this.$router.push('/story/detail/' + pageOid)
+        this.$router.push(`/story/detail/${pageOid}`)
       } else {
         // in the event no page id is defined in cover take the first page
         findPagesByStory(storyOid).then((pages) => {
           let page = pages.find(p => p.data.page === 1)
           if (page) {
-            this.$router.push('/story/detail/' + page.id)
+            this.$router.push(`/story/detail/${page.id}`)
           } else {
             this.$toast.error('Page does not exits')
           }
@@ -156,7 +156,7 @@ export default {
 </script>
 
 <style>
-.preview-img {
+.preview-detail-link {
   cursor: pointer;
 }
 
