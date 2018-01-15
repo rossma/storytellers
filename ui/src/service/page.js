@@ -39,3 +39,15 @@ export function updatePage (pageOid, page) {
   console.log(`[Page Service] - Updating page:[${pageOid} with:[${JSON.stringify(page)}]`)
   return DB.collection('pages').doc(pageOid).set(page, { merge: true })
 }
+
+export function publishPage (preview) {
+  console.log(`[Page Service] - Publishing page:[${preview.pageOid} for story:[${preview.storyOid}]}]`)
+  let batch = DB.batch()
+  let pageRef = DB.collection('pages').doc(preview.pageOid)
+  batch.update(pageRef, { public: true })
+
+  let previewsRef = DB.collection('previews').doc()
+  batch.set(previewsRef, preview)
+
+  return batch.commit()
+}

@@ -101,10 +101,9 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
-import { findPageByOid, updatePage } from '~/service/page'
+import { findPageByOid, publishPage } from '~/service/page'
 import { findUserByOid } from '~/service/user'
 import { findStoryByOid } from '~/service/story'
-import { addPreview } from '~/service/preview'
 import { findChapterByOid } from '~/service/chapter'
 import { findImageByOid } from '~/service/image'
 import StoryDetail from '~/components/story/StoryDetail.vue'
@@ -244,22 +243,19 @@ export default {
       }
       this.imageDialog = true
     },
+    findImageFilenameKey () {
+      if (this.page.data.image && this.page.data.image.filename) {
+        const filenameKey = this.page.data.image.filename.split('.').shift()
+        return findImageByOid(filenameKey)
+      } else {
+        return Promise.reject(new Error('Image reference can not be found'))
+      }
+    },
     publish () {
       console.log('publishing story')
-      let page = {public: true}
-      updatePage(this.page.id, page).then(() => {
-        if (this.page.data.image && this.page.data.image.filename) {
-          const filenameKey = this.page.data.image.filename.split('.').shift()
-          return findImageByOid(filenameKey)
-        } else {
-          return Promise.reject(new Error('Image reference can not be found'))
-        }
-      }).then((imageDoc) => {
-        let previewUrl = ''
+      this.findImageFilenameKey().then((imageDoc) => {
         if (imageDoc.exists) {
-          console.log('imageDoc:', imageDoc.data(), this.story)
-          previewUrl = imageDoc.data().previewUrl
-          return addPreview({
+          let preview = {
             storyOid: this.story.id,
             chapterOid: this.chapter.id,
             pageOid: this.page.id,
@@ -267,15 +263,17 @@ export default {
             summary: stringUtils.truncateWithEllipse(this.story.data.summary, 100),
             uid: this.user.uid,
             userDisplayName: this.user.data.displayName,
-            previewImageUrl: previewUrl,
+            previewImageUrl: imageDoc.data().previewUrl,
             imageFilenameOid: imageDoc.id
-          })
+          }
+          return publishPage(preview)
         } else {
           // possible if the server function hasn't run yet
           console.log('Image.vue Document not found in DB at this time')
           return Promise.reject(new Error('There was an error finding image reference'))
         }
       }).then(() => {
+        this.page.data.public = true
         this.$toast.success('Story published')
       }).catch((error) => {
         console.log('There was an error publishing page', error)
