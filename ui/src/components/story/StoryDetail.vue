@@ -68,8 +68,6 @@
 import { mapGetters, mapActions } from 'vuex'
 import { findPreviewsByStory, updatePreview } from '~/service/preview'
 import { addStory, updateStory, deleteStory } from '~/service/story'
-import { addChapter } from '~/service/chapter'
-import { addPage } from '~/service/page'
 import stringUtils from '~/utils/string'
 
 export default {
@@ -127,6 +125,7 @@ export default {
         if (this.mutableStory.id) {
           this.updateStory(this.mutableStory)
         } else {
+          this.mutableStory.data.uid = this.user.uid
           this.createStory(this.mutableStory)
         }
       } else {
@@ -135,34 +134,24 @@ export default {
       }
     },
     createStory (story) {
-      addStory({
-        uid: this.user.uid,
-        title: story.data.title,
-        summary: story.data.summary,
-        created: story.data.created
-      }).then((storyDoc) => {
-        console.log('Document written with ID: ', storyDoc.id)
-        this.mutableStory.id = storyDoc.id
-        this.saveStory(storyDoc)
-        // create initial chapter and page
-        return addChapter({
-          storyOid: this.mutableStory.id,
-          chapter: 1,
-          uid: this.user.uid
-        })
-      }).then((chapterDocRef) => {
-        console.log('Chapter Document written with ID: ', chapterDocRef.id)
-        return addPage({
-          storyOid: this.mutableStory.id,
-          chapterOid: chapterDocRef.id,
-          page: 1,
-          uid: this.user.uid,
-          public: false
-        })
-      }).then((pageDocRef) => {
-        console.log(`Page Document written with ID:${pageDocRef.id}`)
-        this.$router.push(`/story/detail/${pageDocRef.id}`)
+      let chapter = {
+        chapter: 1,
+        uid: this.user.uid
+      }
+
+      let page = {
+        page: 1,
+        uid: story.data.uid,
+        public: false
+      }
+
+      addStory(story.data, chapter, page).then((result) => {
+        story.id = result.storyOid
+        this.mutableStory = story
+        this.saveStory(story)
+        this.$router.push(`/story/detail/${result.pageOid}`)
       }).catch((error) => {
+        console.log('Error adding story', error)
         this.$toast.error(`Error adding story:${error.message}`)
       })
     },

@@ -54,13 +54,13 @@
               <v-card flat>
                 <v-card-text class="text-xs-center">
                   <img
-                    v-show="pageImageSrc"
+                    v-show="pageImageSrc()"
                     class="card-img-top img-fluid thumb"
-                    :src="pageImageSrc"
+                    :src="pageImageSrc()"
                     @click.stop="openImageDialog()"
                     title="Upload">
                   <img
-                    v-show="!pageImageSrc"
+                    v-show="!pageImageSrc()"
                     class="card-img-top img-fluid thumb"
                     src="/img/missing-image.png"
                     @click.stop="openImageDialog()"
@@ -93,7 +93,7 @@
       :editable="isEditable"
       :has-story-cover="story.cover"
       :dialog="imageDialog"
-      :src="pageImageSrc"
+      :src="pageImageSrc()"
       @close="imageDialog = false" />
   </v-container>
 </template>
@@ -147,13 +147,6 @@ export default {
     isEditable: function () {
       return this.page.data.uid === this.user.uid
     },
-    pageImageSrc: function () {
-      if (this.page.data.image && this.page.data.image.ref) {
-        return this.page.data.image.ref
-      } else {
-        return ''
-      }
-    },
     currentImageOid: function () {
       return (this.page.data.image && this.page.data.image.filename)
     }
@@ -163,9 +156,12 @@ export default {
       console.log('[Story Detail] - in mounted, page id:', this.$route.params.id)
       this.loadPage(this.$route.params.id)
 
-      EventBus.$on('storyImageFileKey', filenameKey => {
-        console.log(`[Story Detail] - storyImageFileKey event received, filenameKey:${filenameKey}`)
-        this.page.data.image = { filename: filenameKey }
+      EventBus.$on('storyImageFileKey', imageDetails => {
+        console.log(`[Story Detail] - storyImageFileKey event received:`, imageDetails)
+        this.page.data.image = {
+          filename: imageDetails.filenameKey,
+          ref: imageDetails.imageSrc
+        }
       })
     })
   },
@@ -176,6 +172,13 @@ export default {
     ...mapActions([
       'saveStory'
     ]),
+    pageImageSrc () {
+      if (this.page.data.image && this.page.data.image.ref) {
+        return this.page.data.image.ref
+      } else {
+        return ''
+      }
+    },
     loadPage (pageOid) {
       findPageByOid(pageOid).then((pageDoc) => {
         if (pageDoc.exists) {
@@ -236,8 +239,8 @@ export default {
       EventBus.$emit('storyEvent', story)
     },
     openImageDialog () {
-      if (this.pageImageSrc) {
-        this.imagePreviewSrc = this.pageImageSrc
+      if (this.pageImageSrc()) {
+        this.imagePreviewSrc = this.pageImageSrc()
       } else {
         this.imagePreviewSrc = ''
       }

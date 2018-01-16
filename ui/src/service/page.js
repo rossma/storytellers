@@ -42,6 +42,7 @@ export function updatePage (pageOid, page) {
 
 export function publishPage (preview) {
   console.log(`[Page Service] - Publishing page:[${preview.pageOid} for story:[${preview.storyOid}]}]`)
+
   let batch = DB.batch()
   let pageRef = DB.collection('pages').doc(preview.pageOid)
   batch.update(pageRef, { public: true })
