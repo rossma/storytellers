@@ -27,6 +27,7 @@
           <v-list>
             <v-list-group
               v-for="chapter in chapters"
+              v-if="chapter"
               :value="chapter.active"
               :key="chapter.id">
               <v-list-tile
@@ -129,7 +130,7 @@ export default {
   mounted: function () {
     this.$nextTick(() => {
       EventBus.$on('storyEvent', story => {
-        console.log(`[story layout] storyEvent received payload:[${story.id}]`)
+        console.log(`[StoryLayout] storyEvent received payload:[${story.id}]`)
         this.story = story
         this.loadChapters(story.id, story.activeChapterOid)
       })
@@ -145,7 +146,8 @@ export default {
         this.chapters = chapters.map(chapter => {
           chapter.active = (chapter.id === this.story.activeChapterOid)
           return chapter
-        })
+        }).sort((a, b) => a.data.chapter - b.data.chapter)
+        console.log('Modified Chapters:', chapters)
         return findPagesByStory(storyOid)
       }).then((pages) => {
         console.log('Found Pages:', pages)

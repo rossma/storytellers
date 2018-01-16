@@ -113,7 +113,6 @@ export default {
   },
   methods: {
     closeDialog () {
-      // imageDialog = false
       this.$emit('close', false)
     },
     previewImageFile (file) {
@@ -138,6 +137,7 @@ export default {
           })
           this.closeDialog()
         }).catch((error) => {
+          console.log('There was an error uploading page image', error)
           this.$toast.error(error.message)
         })
       } else {
@@ -172,6 +172,7 @@ export default {
       }).then(() => {
         this.$toast.success('Image updated')
       }).catch((error) => {
+        console.log('There was an error updating story with image details', error)
         this.$toast.error(error.message)
       })
     }
