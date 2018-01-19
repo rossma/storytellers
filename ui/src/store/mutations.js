@@ -6,12 +6,15 @@ import * as types from './mutation-types'
 export const mutations = {
 
   [types.SAVE_USER] (state, userPayload) {
-    console.log('.......................Saving user:', userPayload)
     state.user = userPayload
   },
 
   [types.SAVE_STORY] (state, storyPayload) {
     state.story = storyPayload
+  },
+
+  [types.SAVE_PAGES] (state, pagesPayload) {
+    state.pages = pagesPayload
   }
 
 }

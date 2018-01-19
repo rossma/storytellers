@@ -36,7 +36,7 @@
       </v-tooltip>
       <v-speed-dial
         v-model="profile.fab"
-        :bottom="false"
+        :bottom="profile.bottom"
         :direction="profile.direction"
         :hover="profile.hover"
         :transition="profile.transition">
@@ -100,7 +100,7 @@ export default {
         tabs: null,
         top: false,
         right: true,
-        bottom: true,
+        bottom: false,
         left: false,
         transition: 'slide-y-reverse-transition'
       },

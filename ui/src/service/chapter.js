@@ -42,3 +42,9 @@ export function addChapter (chapter) {
   console.log(`[Chapter Service] - Adding chapter:`, chapter)
   return DB.collection('chapters').add(chapter)
 }
+
+export function deleteChapter (chapterOid) {
+  console.log(`[Chapter Service] - Deleting chapter:[${chapterOid}`)
+  let chapterRef = DB.collection('chapters').doc(chapterOid)
+  return chapterRef.delete()
+}

@@ -1,6 +1,5 @@
 import Vuex from 'vuex'
 import { mutations } from './mutations'
-// import * as types from './mutation-types.js'
 
 import * as actions from './actions'
 
@@ -26,6 +25,9 @@ const createStore = () => {
       },
       story: state => {
         return state.story
+      },
+      pages: state => {
+        return state.pages
       }
     }
   })

@@ -9,10 +9,10 @@ import firebaseApp from '~/firebaseApp.js'
 
 /* @deprecated */
 export default function (context) {
-  context.userAgent = context.isServer ? context.req.headers['user-agent'] : navigator.userAgent
+  context.userAgent = process.server ? context.req.headers['user-agent'] : navigator.userAgent
   firebaseApp.auth().onAuthStateChanged(user => {
-    console.log('[CHECK-AUTH.JS] Firebase onAuthStateChanged. isServer:' + context.isServer)
-    if (context.isServer && context.req.session && context.req.session.user) {
+    console.log('[CHECK-AUTH.JS] Firebase onAuthStateChanged. isServer:' + process.server)
+    if (process.server && context.req.session && context.req.session.user) {
       console.log('[CHECK-AUTH.JS] OnAuthStateChanged called from the server')
     } else if (user) {
       console.log('[CHECK-AUTH.JS] User set:' + JSON.stringify(user))

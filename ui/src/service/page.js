@@ -52,3 +52,9 @@ export function publishPage (preview) {
 
   return batch.commit()
 }
+
+export function deletePage (pageOid) {
+  console.log(`[Page Service] - Deleting page:[${pageOid}`)
+  let pageRef = DB.collection('pages').doc(pageOid)
+  return pageRef.delete()
+}

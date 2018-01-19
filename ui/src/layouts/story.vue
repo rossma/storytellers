@@ -26,7 +26,7 @@
         <template>
           <v-list>
             <v-list-group
-              v-for="chapter in chapters"
+              v-for="(chapter, chapterIdx) in chapters"
               v-if="chapter"
               :value="chapter.active"
               :key="chapter.id">
@@ -40,7 +40,7 @@
                     class="chapter-name-in-txt"
                     hide-details
                     single-line
-                    :value="chapterDisplayName(chapter)"
+                    :value="chapterDisplayName(chapter, chapterIdx)"
                     @blur="saveChapterName($event, chapter)"
                   />
                 </v-list-tile-content>
@@ -49,13 +49,13 @@
                 </v-list-tile-action>
               </v-list-tile>
               <v-list-tile
-                v-for="page in chapterPages(chapter.id)"
+                v-for="(page, pageIdx) in chapterPages(chapter.id)"
                 :key="page.id"
                 class="link-to-page"
                 @click="$router.push(`/story/detail/${page.id}`)">
                 <v-list-tile-content>
                   <v-list-tile-title class="grey--text">
-                    {{ chapter.data.chapter }}-{{ page.data.page }}
+                    {{ chapter.data.chapter }}-{{ ++pageIdx }}
                   </v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>
@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
 import PageFooter from '~/components/layout/PageFooter'
 import NavigationToolbar from '~/components/layout/NavigationToolbar'
@@ -130,9 +130,9 @@ export default {
   mounted: function () {
     this.$nextTick(() => {
       EventBus.$on('storyEvent', story => {
-        console.log(`[StoryLayout] storyEvent received payload:[${story.id}]`)
+        console.log(`[Story Layout] storyEvent received payload:[${story.id}]`)
         this.story = story
-        this.loadChapters(story.id, story.activeChapterOid)
+        this.loadChapters(story)
       })
     })
   },
@@ -140,26 +140,27 @@ export default {
     EventBus.$off('storyEvent')
   },
   methods: {
-    loadChapters (storyOid, activeChapterOid) {
-      findChaptersByStory(storyOid).then((chapters) => {
-        console.log('Found Chapters:', chapters)
+    ...mapActions([
+      'savePages'
+    ]),
+    loadChapters (story) {
+      findChaptersByStory(story.id).then((chapters) => {
         this.chapters = chapters.map(chapter => {
-          chapter.active = (chapter.id === this.story.activeChapterOid)
+          chapter.active = (chapter.id === story.activeChapterOid)
           return chapter
         }).sort((a, b) => a.data.chapter - b.data.chapter)
-        console.log('Modified Chapters:', chapters)
-        return findPagesByStory(storyOid)
+        return findPagesByStory(story.id)
       }).then((pages) => {
-        console.log('Found Pages:', pages)
         this.pages = pages
+        this.savePages(pages)
       })
     },
     chapterPages (chapterOid) {
       console.log('filtering pages by chapterOid:', chapterOid)
       return this.pages.filter(p => p.data.chapterOid === chapterOid).sort((a, b) => a.data.page - b.data.page)
     },
-    chapterDisplayName (chapter) {
-      return chapter.data.name ? chapter.data.name : `Chapter ${chapter.data.chapter}`
+    chapterDisplayName (chapter, index) {
+      return chapter.data.name ? chapter.data.name : `Chapter ${index}`
     },
     saveChapterName (event, chapter) {
       if (chapter.data.name !== event.target.value) {
@@ -174,7 +175,7 @@ export default {
       console.log('Adding chapter')
       return addChapter({
         storyOid: this.story.id,
-        chapter: ++this.chapters.length,
+        chapter: ++this.chapters.pop().chapter,
         uid: this.user.uid
       }).then((chapterDocRef) => {
         return this.addNewPage(chapterDocRef.id)
@@ -187,7 +188,7 @@ export default {
       return addPage({
         storyOid: this.story.id,
         chapterOid: chapterOid,
-        page: ++this.chapterPages(chapterOid).length,
+        page: ++this.chapterPages(chapterOid).pop().data.page,
         uid: this.user.uid,
         public: false
       }).then((pageDocRef) => {
