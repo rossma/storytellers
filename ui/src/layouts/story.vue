@@ -51,7 +51,7 @@
               <v-list-tile
                 v-for="(page, pageIdx) in chapterPages(chapter.id)"
                 :key="page.id"
-                class="link-to-page"
+                :class="[page.active ? 'active-page': '', 'link-to-page']"
                 @click="$router.push(`/story/detail/${page.id}`)">
                 <v-list-tile-content>
                   <v-list-tile-title class="grey--text">
@@ -146,12 +146,15 @@ export default {
     loadChapters (story) {
       findChaptersByStory(story.id).then((chapters) => {
         this.chapters = chapters.map(chapter => {
-          chapter.active = (chapter.id === story.activeChapterOid)
+          chapter.active = (chapter.id === story.ext.activePage.data.chapterOid)
           return chapter
         }).sort((a, b) => a.data.chapter - b.data.chapter)
         return findPagesByStory(story.id)
       }).then((pages) => {
-        this.pages = pages
+        this.pages = pages.map(page => {
+          page.active = (page.id === story.ext.activePage.id)
+          return page
+        })
         this.savePages(pages)
       })
     },
@@ -160,7 +163,7 @@ export default {
       return this.pages.filter(p => p.data.chapterOid === chapterOid).sort((a, b) => a.data.page - b.data.page)
     },
     chapterDisplayName (chapter, index) {
-      return chapter.data.name ? chapter.data.name : `Chapter ${index}`
+      return chapter.data.name ? chapter.data.name : `Chapter ${++index}`
     },
     saveChapterName (event, chapter) {
       if (chapter.data.name !== event.target.value) {
@@ -224,6 +227,14 @@ export default {
 
 .chapter-name-in-txt .input-group__details {
   display: none;
+}
+
+.active-page {
+  background-color: dimgrey;
+}
+
+.active-page .list__tile__title {
+  color: white!important;
 }
 
 .link-to-page:hover {

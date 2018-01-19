@@ -46,7 +46,7 @@
             <v-tabs-content :id="'writing-tab'">
               <v-card flat>
                 <v-card-text>
-                  temp text
+                  [[ TODO ]]
                 </v-card-text>
               </v-card>
             </v-tabs-content>
@@ -197,7 +197,8 @@ export default {
         id: null,
         data: {
           summary: null
-        }
+        },
+        ext: {}
       },
       imageDialog: false
     }
@@ -275,7 +276,7 @@ export default {
         if (storyDoc.exists) {
           this.story.id = storyDoc.id
           this.story.data = storyDoc.data()
-          this.story.activeChapterOid = this.page.data.chapterOid
+          this.story.ext.activePage = this.page
           this.saveStory(this.story)
         } else {
           this.$toast.error('Story does not exist')
@@ -345,26 +346,21 @@ export default {
     deleteCurrentPage () {
       this.deletePageDialog = false
 
-      if (this.pages) {
-        const runDelete = () => {
-          if (this.chapterPageCount(this.pages, this.page.data.chapterOid) >= 1) {
-            return deleteChapter(this.page.data.chapterOid)
-          } else {
-            return deletePage(this.page.id)
-          }
+      const runDelete = () => {
+        if (this.chapterPageCount(this.pages, this.page.data.chapterOid) >= 1) {
+          return deleteChapter(this.page.data.chapterOid)
+        } else {
+          return deletePage(this.page.id)
         }
-
-        runDelete().then(() => {
-          // TODO work out the next story to show
-          this.$router.push(`/story/detail/${this.pages.pop().id}`)
-        }).catch((error) => {
-          console.log('There was an error deleting the current page', error)
-          this.$toast.error(error.message)
-        })
-      } else {
-        console.log('Error, expected pages collection to be set in store but it is not defined')
-        this.$toast.error('Oops! There is a bug!')
       }
+
+      runDelete().then(() => {
+        // TODO work out the next story to show
+        this.$router.push(`/story/detail/${this.pages.pop().id}`)
+      }).catch((error) => {
+        console.log('There was an error deleting the current page', error)
+        this.$toast.error(error.message)
+      })
     },
     chapterPageCount (pages, chapterOid) {
       return pages.filter((page) => page.data.chapterOid === chapterOid).length

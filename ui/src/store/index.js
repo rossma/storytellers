@@ -11,7 +11,8 @@ export const state = () => ({
     photoUrl: '',
     created: null
   },
-  story: {}
+  story: {},
+  pages: []
 })
 
 const createStore = () => {
