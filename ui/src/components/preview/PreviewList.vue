@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 import { findStoriesByUser } from '~/service/story'
 import { findPagesByStory } from '~/service/page'
 import { findPreviewsByFilter } from '~/service/preview'
@@ -70,20 +70,23 @@ export default {
   },
   data () {
     return {
-      previews: []
+      previews: [],
+      user: null
     }
-  },
-  computed: {
-    ...mapGetters([
-      'user'
-    ])
   },
   mounted: function () {
     this.$nextTick(() => {
-      this.init()
+      this.loadUser().then((user) => {
+        this.user = user
+        this.init()
+      })
+
     })
   },
   methods: {
+    ...mapActions([
+      'loadUser'
+    ]),
     init () {
       if (this.filterBy.userProfile) {
         this.fetchUserProfileStories()

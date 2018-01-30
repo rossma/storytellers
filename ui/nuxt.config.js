@@ -1,3 +1,6 @@
+const bodyParser = require('body-parser')
+const session = require('express-session')
+
 module.exports = {
   srcDir: 'src/',
   /*
@@ -37,7 +40,7 @@ module.exports = {
     ** Run ESLINT on save
     */
     extend(config, ctx) {
-      if (ctx.isDev && ctx.isClient) {
+      if (!ctx.isDev && ctx.isClient) {
         config.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
@@ -57,14 +60,27 @@ module.exports = {
   },
   modules: [
     '~/modules/material-design-icons',
+    ['@nuxtjs/axios',{debug:true}],
     '@nuxtjs/toast'
   ],
   toast: {
     position: 'top-center'
-  }
-  /*,
-  *router: {
-  *  middleware: 'check-auth'
-  *}
-  */
+  },
+  router: {
+    middleware: 'check-auth'
+  },
+  serverMiddleware: [
+    // body-parser middleware
+    bodyParser.json(),
+    // session middleware
+    session({
+      secret: 'super-secret-key',
+      resave: false,
+      saveUninitialized: false,
+      cookie: { maxAge: 60000 }
+    }),
+    // Api middleware
+    // We add /api/login & /api/logout routes
+    '~/api'
+  ]
 }

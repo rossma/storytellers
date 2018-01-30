@@ -100,7 +100,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['user'])
+    ...mapGetters([
+      'uid'
+    ])
   },
   methods: {
     ...mapActions([
@@ -112,7 +114,7 @@ export default {
         if (this.mutableStory.id) {
           this.updateStory(this.mutableStory)
         } else {
-          this.mutableStory.data.uid = this.user.uid
+          this.mutableStory.data.uid = this.uid
           this.createStory(this.mutableStory)
         }
       } else {
@@ -123,7 +125,7 @@ export default {
     createStory (story) {
       let chapter = {
         chapter: 1,
-        uid: this.user.uid
+        uid: story.data.uid
       }
 
       let page = {

@@ -1,4 +1,4 @@
-import firebaseApp from '~/firebaseApp'
+import firebaseApp from '~/firebase/app'
 
 const DB = firebaseApp.firestore()
 

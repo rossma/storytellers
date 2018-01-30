@@ -4,6 +4,10 @@ import * as types from './mutation-types'
 
 export const mutations = {
 
+  [types.SAVE_UID] (state, uidPayload) {
+    state.uid = uidPayload
+  },
+
   [types.SAVE_USER] (state, userPayload) {
     state.user = userPayload
   },

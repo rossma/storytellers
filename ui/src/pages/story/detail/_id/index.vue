@@ -66,12 +66,13 @@ export default {
           summary: null
         },
         ext: {}
-      }
+      },
+      user: null
     }
   },
   computed: {
     ...mapGetters([
-      'user', 'pages'
+      'pages'
     ]),
     isEditable: function () {
       return this.page.data.uid === this.user.uid
@@ -87,14 +88,18 @@ export default {
   mounted: function () {
     this.$nextTick(() => {
       console.log('[Story Detail] - in mounted, page id:', this.$route.params.id)
-      this.loadPage(this.$route.params.id)
+      this.loadUser().then((user) => {
+        this.user = user
 
-      EventBus.$on('storyImageFileKey', imageDetails => {
-        console.log(`[Story Detail] - storyImageFileKey event received:`, imageDetails)
-        this.page.data.image = {
-          filename: imageDetails.filenameKey,
-          ref: imageDetails.imageSrc
-        }
+        this.loadPage(this.$route.params.id)
+
+        EventBus.$on('storyImageFileKey', imageDetails => {
+          console.log(`[Story Detail] - storyImageFileKey event received:`, imageDetails)
+          this.page.data.image = {
+            filename: imageDetails.filenameKey,
+            ref: imageDetails.imageSrc
+          }
+        })
       })
     })
   },
@@ -103,7 +108,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      'saveStory'
+      'loadUser', 'saveStory'
     ]),
     loadPage (pageOid) {
       findPageByOid(pageOid).then((pageDoc) => {

@@ -1,17 +1,9 @@
 import 'firebase/storage' // this is needed if page is refreshed otherwise error is thrown: ...storage() is not a function
+import firebaseApp from '~/firebase/app'
 
-import firebaseApp from '~/firebaseApp'
-
+const uuidv4 = require('uuid/v4');
 const DB = firebaseApp.firestore()
 const STORAGE_REF = firebaseApp.storage().ref()
-
-function uuidv4 () {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    var r = Math.random() * 16 | 0
-    var v = c === 'x' ? r : (r & 0x3 | 0x8)
-    return v.toString(16)
-  })
-}
 
 function uploadImageToStorage (file, path, metadata) {
   console.log(`[Image Service] - Uploading image:[${path}] to storage`)

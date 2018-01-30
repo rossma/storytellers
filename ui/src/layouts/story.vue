@@ -124,7 +124,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'user'
+      'uid'
     ])
   },
   mounted: function () {
@@ -172,14 +172,14 @@ export default {
       }
     },
     isEditable () {
-      return this.story.data.uid === this.user.uid
+      return this.story.data.uid === this.uid
     },
     addNewChapter () {
       console.log('Adding chapter')
       return addChapter({
         storyOid: this.story.id,
         chapter: ++this.chapters.pop().chapter,
-        uid: this.user.uid
+        uid: this.uid
       }).then((chapterDocRef) => {
         return this.addNewPage(chapterDocRef.id)
       }).catch((error) => {
@@ -192,7 +192,7 @@ export default {
         storyOid: this.story.id,
         chapterOid: chapterOid,
         page: ++this.chapterPages(chapterOid).pop().data.page,
-        uid: this.user.uid,
+        uid: this.uid,
         public: false
       }).then((pageDocRef) => {
         console.log(`Page Document written with ID:${pageDocRef.id}`)
