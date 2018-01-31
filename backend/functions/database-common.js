@@ -3,7 +3,7 @@
  */
 module.exports = {
   deleteCollection: function (db, collectionRef, batchSize) {
-    var query = collectionRef.orderBy('__name__').limit(batchSize);
+    const query = collectionRef.orderBy('__name__').limit(batchSize);
 
     return new Promise(function (resolve, reject) {
       deleteQueryBatch(db, query, batchSize, resolve, reject);
@@ -19,7 +19,7 @@ function deleteQueryBatch (db, query, batchSize, resolve, reject) {
     }
 
     // Delete documents in a batch
-    var batch = db.batch();
+    const batch = db.batch();
     snapshot.docs.forEach(function (doc) {
       batch.delete(doc.ref);
     });

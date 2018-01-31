@@ -56,15 +56,13 @@ export default {
   },
   methods: {
     ...mapActions([
-      'saveUser'
+      'login', 'saveUser'
     ]),
-    submit () {
-      this.$refs.form.$el.submit()
-    },
-    signUp () {
+    async signUp () {
       console.log('[SIGNUP] signing up')
 
-      firebaseApp.auth().createUserWithEmailAndPassword(this.email, this.password).then((firebaseUser) => {
+      try {
+        const firebaseUser = await firebaseApp.auth().createUserWithEmailAndPassword(this.email, this.password)
         console.log('[SIGNUP.vue] successful user creation in firebase', firebaseUser.uid)
         let user = {
           uid: firebaseUser.uid,
@@ -73,14 +71,12 @@ export default {
             created: Date.now()
           }
         }
-        return addUser(user)
-      }).then((user) => {
-        return this.login(user.uid)
-      }).then(() => {
+        await addUser(user)
+        await this.login(user.uid)
         this.$router.push('/')
-      }).catch((error) => {
+      } catch (error) {
         this.$toast.error(error.message)
-      })
+      }
     }
   }
 }
