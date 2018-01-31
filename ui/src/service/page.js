@@ -5,11 +5,10 @@ const DB = firebaseApp.firestore()
 function findPages (pagesRef) {
   return pagesRef.get().then((querySnapshot) => {
     return querySnapshot.docs.map((m) => {
-      let page = {
+      return {
         id: m.id,
         data: m.data()
       }
-      return page
     })
   })
 }

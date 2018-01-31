@@ -3,7 +3,6 @@ import { EventBus } from '~/utils/event-bus.js'
 import firebaseApp from '~/firebase/app'
 import { findUserByOid, updateUserDoc } from '~/service/user'
 
-// nuxtServerInit is called by Nuxt.js before server-rendering every page
 export async function nuxtServerInit ({ dispatch, commit }, { app, req }) {
   console.log('[STORE ACTION]- in nuxServerInit')
 
@@ -20,8 +19,7 @@ export async function loadUser ({ dispatch, state }) {
   } else if (state.uid) {
     await dispatch('initialiseUser', state.uid)
     return state.user
-  } 
-  return
+  }
 }
 
 export async function logout ({ dispatch }) {
@@ -30,7 +28,7 @@ export async function logout ({ dispatch }) {
 
   await dispatch('saveUID', null)
   await dispatch('saveUser', null)
-  
+
   const { status } = await this.$axios.post('/logout')
   console.log('[STORE ACTIONS] - in logout, response:', status)
 }
@@ -58,26 +56,26 @@ export async function initialiseUser ({ dispatch }, uid) {
     console.log('[STORE ACTIONS] - saving user to store:', user)
     await dispatch('saveUser', user)
   } else {
-    throw error('User does not exist in the database')
+    throw new Error('User does not exist in the database')
   }
 }
 
-export async function saveUID ({ commit }, uid) {
+export function saveUID ({ commit }, uid) {
   console.log('[STORE ACTIONS] - saveUID')
   commit(types.SAVE_UID, uid)
 }
 
-export async function saveUser ({ commit }, userPayload) {
+export function saveUser ({ commit }, userPayload) {
   console.log('[STORE ACTIONS] - saveUser')
   commit(types.SAVE_USER, userPayload)
 }
 
-export async function saveStory ({ commit }, storyPayload) {
+export function saveStory ({ commit }, storyPayload) {
   commit(types.SAVE_STORY, storyPayload)
   EventBus.$emit('storyEvent', storyPayload)
 }
 
-export async function savePages ({ commit }, pagesPayload) {
+export function savePages ({ commit }, pagesPayload) {
   commit(types.SAVE_PAGES, pagesPayload)
 }
 
@@ -86,4 +84,3 @@ export async function updateUser ({ dispatch }, user, userPart) {
   await updateUserDoc(user.uid, userPart)
   await dispatch('saveUser', user)
 }
-

@@ -1,3 +1,4 @@
+<!--suppress ALL -->
 <template>
   <div>
     <v-navigation-drawer

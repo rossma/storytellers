@@ -1,4 +1,4 @@
-fd<template>
+<template>
   <v-container grid-list-xl>
     <v-layout>
       <v-flex xs12>
@@ -90,7 +90,6 @@ fd<template>
 <script>
 import { mapActions } from 'vuex'
 import { uploadProfileImage } from '~/service/image'
-import { updateUser } from '~/service/user'
 
 import firebaseApp from '~/firebase/app'
 import PreviewList from '~/components/preview/PreviewList'
@@ -134,7 +133,7 @@ export default {
       if (e.target.files[0]) {
         console.log('profile image selected')
         let file = e.target.files[0]
-        var metadata = {
+        const metadata = {
           'contentType': file.type
         }
         uploadProfileImage(file, metadata, this.user.uid).then((downloadUrl) => {

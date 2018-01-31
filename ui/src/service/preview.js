@@ -5,11 +5,10 @@ const DB = firebaseApp.firestore()
 function findPreviews (previewsRef) {
   return previewsRef.get().then((querySnapshot) => {
     return querySnapshot.docs.map((m) => {
-      let preview = {
+      return {
         id: m.id,
         data: m.data()
       }
-      return preview
     })
   })
 }

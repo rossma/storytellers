@@ -23,7 +23,6 @@ export default function ({store, req, app}) {
   }
 }
 
-
 function getUserFromSession (req) {
   console.log('[CHECK-AUTH] - checking if user is stored in session')
   return req.session ? req.session.user : null
@@ -42,5 +41,3 @@ function getUserFromCookie (req) {
 
   return { uid: decodedToken.sub }
 }
-
-

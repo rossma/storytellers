@@ -80,7 +80,6 @@ export default {
         this.user = user
         this.init()
       })
-
     })
   },
   methods: {

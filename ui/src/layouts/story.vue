@@ -1,3 +1,4 @@
+<!--suppress CssUnusedSymbol -->
 <template>
   <v-app
     toolbar

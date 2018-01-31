@@ -5,11 +5,10 @@ const DB = firebaseApp.firestore()
 function findChapters (chaptersRef) {
   return chaptersRef.get().then((querySnapshot) => {
     return querySnapshot.docs.map((m) => {
-      let chapter = {
+      return {
         id: m.id,
         data: m.data()
       }
-      return chapter
     })
   })
 }
