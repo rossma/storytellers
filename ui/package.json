@@ -16,25 +16,29 @@
     "build-start": "npm run build && npm run start",
     "dev": "nuxt",
     "heroku-postbuild": "npm run build",
-    "start": "node server.js"
+    "start-server": "node server.js",
+    "start": "nuxt start"
   },
   "dependencies": {
+    "@nuxtjs/axios": "^4.5.2",
     "@nuxtjs/toast": "^2.3.3",
+    "ajv": "^6.1.0",
     "body-parser": "^1.18.2",
     "express": "^4.15.4",
     "express-session": "^1.15.5",
     "firebase": "4.8.1",
     "grpc": "^1.7.2",
+    "jwt-decode": "^2.2.0",
     "mdi": "^2.0.46",
-    "nuxt": "^1.0.0",
-    "vue": "^2.5.8",
-    "vue-loader": "^13.5.0",
+    "nuxt": "^1.2.1",
+    "uuid": "^3.2.1",
+    "vue": "^2.5.13",
+    "vue-loader": "^13.7.0",
     "vue-server-renderer": "^2.5.8",
     "vue-template-compiler": "^2.5.8",
     "vue-toasted": "^1.1.24",
     "vuetify": "^0.17.6",
-    "vuex": "^2.3.1",
-    "whatwg-fetch": "^2.0.3"
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",

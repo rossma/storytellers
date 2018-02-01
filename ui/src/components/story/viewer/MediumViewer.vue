@@ -51,13 +51,14 @@
 </template>
 
 <script>
+import { EventBus } from '~/utils/event-bus.js'
 import UploadButton from '~/components/UploadButton'
 import { updatePage } from '~/service/page'
-import { deleteImage, uploadStoryImage } from '~/service/image'
+import { uploadPageImage } from '~/service/image'
 import { updateStory } from '~/service/story'
 
 export default {
-  name: 'ImageViewer',
+  name: 'MediumViewer',
   components: {
     UploadButton
   },
@@ -112,7 +113,6 @@ export default {
   },
   methods: {
     closeDialog () {
-      // imageDialog = false
       this.$emit('close', false)
     },
     previewImageFile (file) {
@@ -130,24 +130,16 @@ export default {
     saveImage () {
       console.log('saving image')
       if (this.imageFile) {
-        var metadata = {
-          'contentType': this.imageFile.type
-        }
-        if (this.currentImageOid) {
-          console.log('Deleting reference to old image')
-          deleteImage(this.currentImageOid).then(() => {
-            console.log(`Old image with name:${this.currentImageOid} deleted`)
+        uploadPageImage(this.pageOid, this.currentImageOid, this.imageFile).then((result) => {
+          EventBus.$emit('storyImageFileKey', {
+            filenameKey: result.filenameKey,
+            imageSrc: result.downloadUrl
           })
-        }
-        console.log('uploading image')
-        const filenameKey = this.uuidv4()
-        const fileExt = this.imageFile.name.split('.').pop()
-        uploadStoryImage(this.imageFile, metadata, filenameKey, fileExt).then((downloadUrl) => {
-          this.saveImageReference(downloadUrl, `${filenameKey}.${fileExt}`)
+          this.closeDialog()
         }).catch((error) => {
+          console.log('There was an error uploading page image', error)
           this.$toast.error(error.message)
         })
-        this.closeDialog()
       } else {
         this.$toast.error('Image file not set')
       }
@@ -180,14 +172,8 @@ export default {
       }).then(() => {
         this.$toast.success('Image updated')
       }).catch((error) => {
+        console.log('There was an error updating story with image details', error)
         this.$toast.error(error.message)
-      })
-    },
-    uuidv4 () {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random() * 16 | 0
-        var v = c === 'x' ? r : (r & 0x3 | 0x8)
-        return v.toString(16)
       })
     }
   }

@@ -12,11 +12,11 @@
         v-for="preview in previews"
         :key="preview.id" >
         <v-card class="preview-card">
-          <div>
+          <div
+            class="preview-detail-link"
+            @click="showDetail(preview.data.storyOid, preview.data.pageOid)">
             <v-card-media
-              class="preview-img"
               :src="preview.data.previewImageUrl"
-              @click="showDetail(preview.data.storyOid, preview.data.pageOid)"
               height="300px"/>
             <v-card-title primary-title>
               <div>
@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 import { findStoriesByUser } from '~/service/story'
 import { findPagesByStory } from '~/service/page'
 import { findPreviewsByFilter } from '~/service/preview'
@@ -70,20 +70,22 @@ export default {
   },
   data () {
     return {
-      previews: []
+      previews: [],
+      user: null
     }
-  },
-  computed: {
-    ...mapGetters([
-      'user'
-    ])
   },
   mounted: function () {
     this.$nextTick(() => {
-      this.init()
+      this.loadUser().then((user) => {
+        this.user = user
+        this.init()
+      })
     })
   },
   methods: {
+    ...mapActions([
+      'loadUser'
+    ]),
     init () {
       if (this.filterBy.userProfile) {
         this.fetchUserProfileStories()
@@ -134,15 +136,15 @@ export default {
       })
     },
     showDetail (storyOid, pageOid) {
-      console.log(`storyOid:${storyOid} previewOid:${pageOid}`)
+      console.log(`storyOid:${storyOid} pageOid:${pageOid}`)
       if (pageOid) {
-        this.$router.push('/story/detail/' + pageOid)
+        this.$router.push(`/story/detail/${pageOid}`)
       } else {
         // in the event no page id is defined in cover take the first page
         findPagesByStory(storyOid).then((pages) => {
           let page = pages.find(p => p.data.page === 1)
           if (page) {
-            this.$router.push('/story/detail/' + page.id)
+            this.$router.push(`/story/detail/${page.id}`)
           } else {
             this.$toast.error('Page does not exits')
           }
@@ -156,7 +158,7 @@ export default {
 </script>
 
 <style>
-.preview-img {
+.preview-detail-link {
   cursor: pointer;
 }
 

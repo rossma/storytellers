@@ -1,4 +1,4 @@
-import firebaseApp from '~/firebaseApp'
+import firebaseApp from '~/firebase/app'
 
 const DB = firebaseApp.firestore()
 
@@ -8,7 +8,7 @@ export function findUserByOid (userOid) {
   return usersRef.get()
 }
 
-export function updateUser (userOid, user) {
+export function updateUserDoc (userOid, user) {
   console.log(`[user Service] - Updating user:[${userOid} with:[${user}]`)
   return DB.collection('users').doc(userOid).set(user, { merge: true })
 }

@@ -5,116 +5,44 @@
       row
       wrap>
       <v-flex xs12>
-        <v-expansion-panel>
-          <v-expansion-panel-content>
-            <div slot="header">
-              <div><h2>{{ story.data.title }}</h2></div>
-              <div v-show="authorUser.displayName"><h5>{{ authorUser.displayName }}</h5></div>
-            </div>
-            <story-detail
-              name="StoryDetail"
-              :story="story"
-              :editable="isEditable"
-              :story-exists="true"
-              style="padding-bottom:10px;"/>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
+        <story-detail
+          name="StoryDetail"
+          :author="authorUser"
+          :story="story"
+          :editable="isEditable"
+          :story-exists="true"/>
       </v-flex>
       <v-flex xs12>
-        <v-tabs
-          dark
-          grow
-          icons>
-          <v-toolbar
-            color="cyan"
-            dark>
-            <v-tabs-bar
-              class="cyan"
-              slot="extension">
-              <v-tabs-slider color="yellow" />
-              <v-tabs-item href="#writing-tab">
-                <v-icon>mdi mdi-book-open-page-variant</v-icon>
-                Writing
-              </v-tabs-item>
-              <v-tabs-item href="#picture-tab">
-                <v-icon>mdi mdi-palette</v-icon>
-                Picture
-              </v-tabs-item>
-            </v-tabs-bar>
-          </v-toolbar>
-          <v-tabs-items>
-            <v-tabs-content :id="'writing-tab'">
-              <v-card flat>
-                <v-card-text>
-                  temp text
-                </v-card-text>
-              </v-card>
-            </v-tabs-content>
-            <v-tabs-content :id="'picture-tab'">
-              <v-card flat>
-                <v-card-text class="text-xs-center">
-                  <img
-                    v-show="pageImageSrc"
-                    class="card-img-top img-fluid thumb"
-                    :src="pageImageSrc"
-                    @click.stop="openImageDialog()"
-                    title="Upload">
-                  <img
-                    v-show="!pageImageSrc"
-                    class="card-img-top img-fluid thumb"
-                    src="/img/missing-image.png"
-                    @click.stop="openImageDialog()"
-                    title="Upload">
-                </v-card-text>
-              </v-card>
-            </v-tabs-content>
-          </v-tabs-items>
-        </v-tabs>
-        <v-btn
-          v-if="canPublish()"
-          dark
-          fab
-          fixed
-          bottom
-          right
-          color="green"
-          @click="publish"
-        >
-          <v-icon>mdi mdi-publish</v-icon>
-        </v-btn>
+        <story-tabs
+          :page="page"
+          :editable="isEditable"
+          :has-story-cover="story.cover" />
+        <action-controls
+          :page="page"
+          :editable="isEditable"
+          :total-story-pages="totalStoryPages"
+          :user="user" />
       </v-flex>
     </v-layout>
-    <image-viewer
-      v-if="(story.id && chapter.id && page.id)"
-      :story-oid="story.id"
-      :chapter-oid="chapter.id"
-      :page-oid="page.id"
-      :current-image-oid="currentImageOid"
-      :editable="isEditable"
-      :has-story-cover="story.cover"
-      :dialog="imageDialog"
-      :src="pageImageSrc"
-      @close="imageDialog = false" />
   </v-container>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
-import { findPageByOid, updatePage } from '~/service/page'
+import { findPageByOid } from '~/service/page'
 import { findUserByOid } from '~/service/user'
 import { findStoryByOid } from '~/service/story'
-import { addPreview } from '~/service/preview'
 import { findChapterByOid } from '~/service/chapter'
-import { findImageByOid } from '~/service/image'
+import ActionControls from '~/components/story/ActionControls.vue'
 import StoryDetail from '~/components/story/StoryDetail.vue'
-import stringUtils from '~/utils/string'
-import ImageViewer from '~/components/story/ImageViewer'
+import StoryTabs from '~/components/story/StoryTabs.vue'
 
 export default {
   components: {
+    ActionControls,
     StoryDetail,
-    ImageViewer
+    StoryTabs
   },
   layout: 'story',
   data () {
@@ -136,38 +64,51 @@ export default {
         id: null,
         data: {
           summary: null
-        }
+        },
+        ext: {}
       },
-      imageDialog: false
+      user: null
     }
   },
   computed: {
     ...mapGetters([
-      'user'
+      'pages'
     ]),
     isEditable: function () {
       return this.page.data.uid === this.user.uid
     },
-    pageImageSrc: function () {
-      if (this.page.data.image && this.page.data.image.ref) {
-        return this.page.data.image.ref
+    totalStoryPages: function () {
+      if (this.pages) {
+        return this.pages.length
       } else {
-        return ''
+        return 0
       }
-    },
-    currentImageOid: function () {
-      return (this.page.data.image && this.page.data.image.filename)
     }
   },
   mounted: function () {
     this.$nextTick(() => {
       console.log('[Story Detail] - in mounted, page id:', this.$route.params.id)
-      this.loadPage(this.$route.params.id)
+      this.loadUser().then((user) => {
+        this.user = user
+
+        this.loadPage(this.$route.params.id)
+
+        EventBus.$on('storyImageFileKey', imageDetails => {
+          console.log(`[Story Detail] - storyImageFileKey event received:`, imageDetails)
+          this.page.data.image = {
+            filename: imageDetails.filenameKey,
+            ref: imageDetails.imageSrc
+          }
+        })
+      })
     })
+  },
+  beforeDestroy () {
+    EventBus.$off('storyImageFileKey')
   },
   methods: {
     ...mapActions([
-      'saveStory'
+      'loadUser', 'saveStory'
     ]),
     loadPage (pageOid) {
       findPageByOid(pageOid).then((pageDoc) => {
@@ -200,8 +141,8 @@ export default {
         if (storyDoc.exists) {
           this.story.id = storyDoc.id
           this.story.data = storyDoc.data()
+          this.story.ext.activePage = this.page
           this.saveStory(this.story)
-          this.publishStoryEvent(this.story)
         } else {
           this.$toast.error('Story does not exist')
         }
@@ -212,7 +153,6 @@ export default {
         if (chapterDoc.exists) {
           this.chapter.id = chapterDoc.id
           this.chapter.data = chapterDoc.data()
-          console.log('chapter.....', this.chapter)
         } else {
           this.$toast.error('Chapter does not exist')
         }
@@ -220,65 +160,7 @@ export default {
     },
     isAuthorised () {
       return this.page.data.public || this.page.data.uid === this.user.uid
-    },
-    canPublish () {
-      return !this.page.data.public && this.page.data.uid === this.user.uid
-    },
-    publishStoryEvent (story) {
-      console.log('publishing story event')
-      EventBus.$emit('storyEvent', story)
-    },
-    openImageDialog () {
-      if (this.pageImageSrc) {
-        this.imagePreviewSrc = this.pageImageSrc
-      } else {
-        this.imagePreviewSrc = ''
-      }
-      this.imageDialog = true
-    },
-    publish () {
-      console.log('publishing story')
-      let page = {public: true}
-      updatePage(this.page.id, page).then(() => {
-        console.log('imageFilenameKey:', this.imageFilenameKey)
-        return findImageByOid(this.imageFilenameKey)
-      }).then((imageDoc) => {
-        let previewUrl = ''
-        if (imageDoc.exists) {
-          console.log('imageDoc:', imageDoc.data())
-          previewUrl = imageDoc.data().previewUrl
-        } else {
-          // possible if the server function hasn't run yet
-          console.log('Image.vue Document not found in DB at this time')
-        }
-        return addPreview({
-          storyOid: this.story.id,
-          chapterOid: this.chapter.id,
-          pageOid: this.page.id,
-          title: this.story.title,
-          summary: stringUtils.truncateWithEllipse(this.story.summary, 100),
-          uid: this.user.uid,
-          userDisplayName: this.user.data.displayName,
-          previewImageUrl: previewUrl,
-          imageFilenameOid: this.imageFilenameKey
-        })
-      }).then(() => {
-        this.$toast.success('Story published')
-      }).catch((error) => {
-        this.$toast.error(error.message)
-      })
     }
   }
 }
 </script>
-<style>
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-img.thumb {
-  max-height: 300px;
-  cursor: pointer;
-}
-</style>

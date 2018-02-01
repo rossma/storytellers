@@ -37,7 +37,7 @@ exports.onDeleteChapter = functions.firestore.document('chapters/{chapterId}').o
 });
 
 exports.onDeletePage = functions.firestore.document('pages/{pageId}').onDelete(event => {
-  return onDeletePageFunction.handler(event, firestoreDatabase, gcs, bucketName);
+  return onDeletePageFunction.handler(event, firestoreDatabase);
 });
 
 exports.onDeleteImage = functions.firestore.document('images/{imageId}').onDelete(event => {

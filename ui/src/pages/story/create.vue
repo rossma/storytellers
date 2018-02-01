@@ -8,7 +8,7 @@
             class="title">Create Story
           </v-card-title>
           <v-card-text>
-            <story-detail :editable="true" />
+            <story-summary :editable="true" />
           </v-card-text>
         </v-card>
       </v-flex>
@@ -17,9 +17,9 @@
 </template>
 
 <script>
-import StoryDetail from '~/components/story/StoryDetail.vue'
+import StorySummary from '~/components/story/StorySummary.vue'
 
 export default {
-  components: {StoryDetail}
+  components: {StorySummary}
 }
 </script>

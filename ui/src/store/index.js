@@ -1,33 +1,21 @@
 import Vuex from 'vuex'
 import { mutations } from './mutations'
-// import * as types from './mutation-types.js'
-
+import { getters } from './getters'
 import * as actions from './actions'
 
 export const state = () => ({
-  user: {
-    uid: '',
-    displayName: '',
-    email: '',
-    photoUrl: '',
-    created: null
-  },
-  story: {}
+  uid: null,
+  user: null,
+  story: {},
+  pages: []
 })
 
 const createStore = () => {
   return new Vuex.Store({
     state: state,
     mutations: mutations,
-    actions: actions,
-    getters: {
-      user: state => {
-        return state.user
-      },
-      story: state => {
-        return state.story
-      }
-    }
+    actions,
+    getters: getters
   })
 }
 

@@ -1,15 +1,14 @@
-import firebaseApp from '~/firebaseApp'
+import firebaseApp from '~/firebase/app'
 
 const DB = firebaseApp.firestore()
 
 function findPages (pagesRef) {
   return pagesRef.get().then((querySnapshot) => {
     return querySnapshot.docs.map((m) => {
-      let page = {
+      return {
         id: m.id,
         data: m.data()
       }
-      return page
     })
   })
 }
@@ -38,4 +37,23 @@ export function addPage (page) {
 export function updatePage (pageOid, page) {
   console.log(`[Page Service] - Updating page:[${pageOid} with:[${JSON.stringify(page)}]`)
   return DB.collection('pages').doc(pageOid).set(page, { merge: true })
+}
+
+export function publishPage (preview) {
+  console.log(`[Page Service] - Publishing page:[${preview.pageOid} for story:[${preview.storyOid}]}]`)
+
+  let batch = DB.batch()
+  let pageRef = DB.collection('pages').doc(preview.pageOid)
+  batch.update(pageRef, { public: true })
+
+  let previewsRef = DB.collection('previews').doc()
+  batch.set(previewsRef, preview)
+
+  return batch.commit()
+}
+
+export function deletePage (pageOid) {
+  console.log(`[Page Service] - Deleting page:[${pageOid}`)
+  let pageRef = DB.collection('pages').doc(pageOid)
+  return pageRef.delete()
 }

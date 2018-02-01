@@ -27,7 +27,8 @@ import PageFooter from '~/components/layout/PageFooter'
 export default {
   components: {
     PageFooter
-  }
+  },
+  middleware: 'anonymous'
 }
 </script>
 

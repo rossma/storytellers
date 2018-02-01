@@ -1,3 +1,4 @@
+<!--suppress ALL -->
 <template>
   <div>
     <v-navigation-drawer
@@ -36,7 +37,7 @@
       </v-tooltip>
       <v-speed-dial
         v-model="profile.fab"
-        :bottom="false"
+        :bottom="profile.bottom"
         :direction="profile.direction"
         :hover="profile.hover"
         :transition="profile.transition">
@@ -79,7 +80,7 @@
 </template>
 
 <script>
-import firebaseApp from '~/firebaseApp'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'NavigationToolbar',
@@ -100,7 +101,7 @@ export default {
         tabs: null,
         top: false,
         right: true,
-        bottom: true,
+        bottom: false,
         left: false,
         transition: 'slide-y-reverse-transition'
       },
@@ -120,27 +121,18 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+      'logout'
+    ]),
     userProfile () {
       this.$router.push('/user/profile')
     },
     signout () {
-      console.log('signing out')
-      firebaseApp.auth().signOut().then(() => {
-        console.log('Signed Out')
-        return fetch('/api/logout', {
-          // Send the client cookies to the server
-          credentials: 'same-origin',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-      }).then((response) => {
-        console.log('User session destroyed:' + response.status)
+      this.logout().then(() => {
+        console.log('after logout')
         this.$router.push('/auth/signin')
-      }).catch(error => {
-        console.error('Sign Out Error', error)
-        // todo raise an alert
+      }).catch((error) => {
+        this.$toast.error(error.message)
       })
     }
   }

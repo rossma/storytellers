@@ -1,15 +1,14 @@
-import firebaseApp from '~/firebaseApp'
+import firebaseApp from '~/firebase/app'
 
 const DB = firebaseApp.firestore()
 
 function findChapters (chaptersRef) {
   return chaptersRef.get().then((querySnapshot) => {
     return querySnapshot.docs.map((m) => {
-      let chapter = {
+      return {
         id: m.id,
         data: m.data()
       }
-      return chapter
     })
   })
 }
@@ -39,6 +38,12 @@ export function updateChapterName (chapterOid, chapterName) {
 }
 
 export function addChapter (chapter) {
-  console.log(`[Chapter Service] - Adding chapter:[${chapter}]`)
+  console.log(`[Chapter Service] - Adding chapter:`, chapter)
   return DB.collection('chapters').add(chapter)
+}
+
+export function deleteChapter (chapterOid) {
+  console.log(`[Chapter Service] - Deleting chapter:[${chapterOid}`)
+  let chapterRef = DB.collection('chapters').doc(chapterOid)
+  return chapterRef.delete()
 }

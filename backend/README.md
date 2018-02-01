@@ -7,7 +7,7 @@ firebase login --reauth --no-localhost
 firebase login --reauth --no-localhost 
 
 ## Deploy all functions
-firebase deploy --only functions:generateThumbnail
+firebase deploy --only functions
 
 ### generate-thumbnail
 > This function is triggered every time an image is uploaded to the Firebase storage in the 'original' folder.

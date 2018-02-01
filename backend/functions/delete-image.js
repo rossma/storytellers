@@ -1,4 +1,3 @@
-const BATCH_SIZE = 100;
 const BASE_ORIG_FILE_PATH = 'images/original'
 const BASE_236X_FILE_PATH = 'images/236x'
 

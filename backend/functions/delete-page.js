@@ -1,25 +1,24 @@
 const commonDB = require('./database-common');
 
 const BATCH_SIZE = 100;
-const BASE_ORIG_FILE_PATH = 'images/original'
-const BASE_236X_FILE_PATH = 'images/236x'
 
 /**
  *  This will run when a page record is deleted from the pages collection. Any other collection referencing this
  *  record deleted is also deleted. Any files uploaded to storage that belong to this page are deleted.
  */
-exports.handler = function(event, database, storage, bucketName) {
+exports.handler = function(event, database) {
   const pageOid = event.params.pageId;
   console.log(`Page:${pageOid} was deleted`);
 
   const deletedValue = event.data.previous.data();
   console.log('Deleted record:', deletedValue);
 
-  const bucket = storage.bucket(bucketName);
-
   let imageFilename = getImageFilename(deletedValue.image);
-  return removePageImagesFromStorage(bucket, imageFilename).then(() => {
-    return pageIsCoverToStory(database, deletedValue.storyOid, imageFilename);
+  console.log(`imageFilename:${imageFilename}`);
+
+  return deleteImageFromDB(database, imageFilename).then(() => {
+    console.log('image deletion complete');
+    return pageIsCoverToStory(database, pageOid, imageFilename);
   }).then((isCover) => {
     if (isCover) {
       console.log('Page image is cover story');
@@ -64,19 +63,11 @@ function updateStoryCoverImage(database, storyOid) {
   return database.collection('stories').doc(storyOid).set({cover: {}}, { merge: true })
 }
 
-function removePageImagesFromStorage(bucket, imageFilename) {
+function deleteImageFromDB(database, imageFilename) {
   if (imageFilename) {
-    const origFile = bucket.file(`${BASE_ORIG_FILE_PATH}/${imageFilename}`)
-    return deleteFileFromStorage(origFile).then(() => {
-      const thumb236xFile = bucket.file(`${BASE_236X_FILE_PATH}/${imageFilename}`)
-      return deleteFileFromStorage(thumb236xFile);
-    });
+    return database.collection('images').doc(imageFilename).delete();
   } else {
-    console.log('Image filename is undefined');
+    console.log('Image filename is empty there nothing to delete');
     return Promise.resolve();
   }
-}
-
-function deleteFileFromStorage(file) {
-  return file.delete();
 }

@@ -88,11 +88,10 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 import { uploadProfileImage } from '~/service/image'
-import { updateUser } from '~/service/user'
 
-import firebaseApp from '~/firebaseApp'
+import firebaseApp from '~/firebase/app'
 import PreviewList from '~/components/preview/PreviewList'
 
 export default {
@@ -109,27 +108,32 @@ export default {
       previewAuthorFilter: {
         byAuthorUid: null,
         userProfile: true
+      },
+      user: {
+        data: {
+          email: null,
+          displayName: null,
+          photoUrl: null
+        }
       }
     }
   },
-  computed: {
-    ...mapGetters([
-      'user'
-    ])
-  },
   created: function () {
-    this.photoUrl = this.user.photoUrl
-    this.previewAuthorFilter.byAuthorUid = this.user.uid
+    this.loadUser().then((user) => {
+      this.user = user
+      this.photoUrl = this.user.data.photoUrl
+      this.previewAuthorFilter.byAuthorUid = this.user.uid
+    })
   },
   methods: {
     ...mapActions([
-      'saveUser'
+      'loadUser', 'updateUser'
     ]),
     profileImageSelected (e) {
       if (e.target.files[0]) {
         console.log('profile image selected')
         let file = e.target.files[0]
-        var metadata = {
+        const metadata = {
           'contentType': file.type
         }
         uploadProfileImage(file, metadata, this.user.uid).then((downloadUrl) => {
@@ -143,20 +147,16 @@ export default {
     },
     submit () {
       if (this.$refs.form.validate()) {
-        let firebaseUser = firebaseApp.auth().currentUser
-        firebaseUser.updateProfile({
+        this.user.data.photoUrl = this.photoUrl
+
+        const userPart = {
           displayName: this.user.data.displayName,
-          photoURL: this.photoUrl
+          photoUrl: this.user.data.photoUrl
+        }
+
+        this.updateUser(this.user, userPart).then(() => {
+          return firebaseApp.auth().currentUser.updateProfile(userPart)
         }).then(() => {
-          return updateUser(firebaseUser.uid,
-            {
-              displayName: this.user.data.displayName,
-              photoUrl: this.photoUrl
-            })
-        }).then(() => {
-          this.user.data.photoUrl = this.photoUrl
-          console.log('user:', this.user)
-          this.saveUser(this.user)
           this.$toast.success('Profile successfully updated')
         }).catch((error) => {
           this.$toast.error(error.message)
