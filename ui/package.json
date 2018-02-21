@@ -1,9 +1,11 @@
 {
   "name": "storytellers",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.4",
   "private": true,
-  "description": "Stories created in collaboration and shared",
-  "author": "Ross Mahony",
+  "description": "Stories created in collaboration and shared to be enjoyed by all",
+  "author": {
+    "name": "Ross Mahony"
+  },
   "engines": {
     "node": "8.9.4"
   },
@@ -20,24 +22,24 @@
     "start": "nuxt start"
   },
   "dependencies": {
-    "@nuxtjs/axios": "^4.5.2",
+    "@nuxtjs/axios": "^5.0.1",
     "@nuxtjs/toast": "^2.3.3",
-    "ajv": "^6.1.0",
+    "ajv": "^6.1.1",
     "body-parser": "^1.18.2",
-    "express": "^4.15.4",
-    "express-session": "^1.15.5",
-    "firebase": "4.8.1",
+    "express": "^4.16.2",
+    "express-session": "^1.15.6",
+    "firebase": "4.9.1",
     "grpc": "^1.7.2",
     "jwt-decode": "^2.2.0",
-    "mdi": "^2.0.46",
+    "mdi": "^2.1.19",
     "nuxt": "^1.2.1",
     "uuid": "^3.2.1",
     "vue": "^2.5.13",
-    "vue-loader": "^13.7.0",
-    "vue-server-renderer": "^2.5.8",
-    "vue-template-compiler": "^2.5.8",
+    "vue-loader": "^14.1.0",
+    "vue-server-renderer": "^2.5.13",
+    "vue-template-compiler": "^2.5.13",
     "vue-toasted": "^1.1.24",
-    "vuetify": "^0.17.6",
+    "vuetify": "^1.0.1",
     "vuex": "^3.0.1"
   },
   "devDependencies": {

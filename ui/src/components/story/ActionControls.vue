@@ -72,9 +72,9 @@
 
 <script>
 import stringUtils from '~/utils/string'
-import { deleteChapter } from '~/service/chapter'
-import { publishPage, deletePage } from '~/service/page'
-import { findImageByOid } from '~/service/image'
+import { deleteChapter } from '~/api/service/chapter'
+import { publishPage, deletePage } from '~/api/service/page'
+import { findImageByOid } from '~/api/service/image'
 
 export default {
   name: 'ActionControls',

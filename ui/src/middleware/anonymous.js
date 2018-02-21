@@ -1,7 +1,7 @@
 export default function ({ store, redirect }) {
-  console.log('[ANONYMOUS] - default')
+  console.log('[ANONYMOUS MIDDLEWARE] - default')
 
-  if (store.getters.isAuthenticated) {
+  if (store.getters['modules/user/isAuthenticated']) {
     return redirect('/')
   }
 }

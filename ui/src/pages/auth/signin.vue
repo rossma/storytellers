@@ -1,7 +1,8 @@
 <template>
   <v-layout
     column
-    align-center>
+    align-center
+    justify-center>
     <v-btn
       color="primary"
       flat
@@ -55,7 +56,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions([
+    ...mapActions('modules/user', [
       'login'
     ]),
     submit () {

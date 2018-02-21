@@ -101,8 +101,8 @@ import { mapGetters, mapActions } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
 import PageFooter from '~/components/layout/PageFooter'
 import NavigationToolbar from '~/components/layout/NavigationToolbar'
-import { addChapter, updateChapterName, findChaptersByStory } from '~/service/chapter'
-import { addPage, findPagesByStory } from '~/service/page'
+import { addChapter, updateChapterName, findChaptersByStory } from '~/api/service/chapter'
+import { addPage, findPagesByStory } from '~/api/service/page'
 
 export default {
   middleware: 'authenticated',
@@ -124,7 +124,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
+    ...mapGetters('modules/user', [
       'uid'
     ])
   },
@@ -141,7 +141,7 @@ export default {
     EventBus.$off('storyEvent')
   },
   methods: {
-    ...mapActions([
+    ...mapActions('modules/page', [
       'savePages'
     ]),
     loadChapters (story) {

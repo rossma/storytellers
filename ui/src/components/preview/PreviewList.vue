@@ -46,10 +46,10 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import { findStoriesByUser } from '~/service/story'
-import { findPagesByStory } from '~/service/page'
-import { findPreviewsByFilter } from '~/service/preview'
+import { mapGetters } from 'vuex'
+import { findStoriesByUser } from '~/api/service/story'
+import { findPagesByStory } from '~/api/service/page'
+import { findPreviewsByFilter } from '~/api/service/preview'
 
 export default {
   name: 'PreviewList',
@@ -70,22 +70,20 @@ export default {
   },
   data () {
     return {
-      previews: [],
-      user: null
+      previews: []
     }
+  },
+  computed: {
+    ...mapGetters('modules/user', [
+      'user'
+    ])
   },
   mounted: function () {
     this.$nextTick(() => {
-      this.loadUser().then((user) => {
-        this.user = user
-        this.init()
-      })
+      this.init()
     })
   },
   methods: {
-    ...mapActions([
-      'loadUser'
-    ]),
     init () {
       if (this.filterBy.userProfile) {
         this.fetchUserProfileStories()

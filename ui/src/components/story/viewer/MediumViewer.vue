@@ -53,9 +53,9 @@
 <script>
 import { EventBus } from '~/utils/event-bus.js'
 import UploadButton from '~/components/UploadButton'
-import { updatePage } from '~/service/page'
-import { uploadPageImage } from '~/service/image'
-import { updateStory } from '~/service/story'
+import { updatePage } from '~/api/service/page'
+import { uploadPageImage } from '~/api/service/image'
+import { updateStory } from '~/api/service/story'
 
 export default {
   name: 'MediumViewer',

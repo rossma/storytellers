@@ -61,8 +61,8 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { findPreviewsByStory, updatePreview } from '~/service/preview'
-import { addStory, updateStory } from '~/service/story'
+import { findPreviewsByStory, updatePreview } from '~/api/service/preview'
+import { addStory, updateStory } from '~/api/service/story'
 import stringUtils from '~/utils/string'
 import StoryDeleteDialog from './StoryDeleteDialog'
 
@@ -100,12 +100,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
+    ...mapGetters('modules/user', [
       'uid'
     ])
   },
   methods: {
-    ...mapActions([
+    ...mapActions('modules/user', [
       'saveStory'
     ]),
     submit () {

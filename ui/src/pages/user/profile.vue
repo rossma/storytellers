@@ -88,8 +88,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import { uploadProfileImage } from '~/service/image'
+import { mapActions, mapGetters } from 'vuex'
+import { uploadProfileImage } from '~/api/service/image'
 
 import firebaseApp from '~/firebase/app'
 import PreviewList from '~/components/preview/PreviewList'
@@ -108,26 +108,21 @@ export default {
       previewAuthorFilter: {
         byAuthorUid: null,
         userProfile: true
-      },
-      user: {
-        data: {
-          email: null,
-          displayName: null,
-          photoUrl: null
-        }
       }
     }
   },
+  computed: {
+    ...mapGetters('modules/user', [
+      'user'
+    ])
+  },
   created: function () {
-    this.loadUser().then((user) => {
-      this.user = user
-      this.photoUrl = this.user.data.photoUrl
-      this.previewAuthorFilter.byAuthorUid = this.user.uid
-    })
+    this.photoUrl = this.user.data.photoUrl
+    this.previewAuthorFilter.byAuthorUid = this.user.uid
   },
   methods: {
-    ...mapActions([
-      'loadUser', 'updateUser'
+    ...mapActions('modules/user', [
+      'updateUser'
     ]),
     profileImageSelected (e) {
       if (e.target.files[0]) {

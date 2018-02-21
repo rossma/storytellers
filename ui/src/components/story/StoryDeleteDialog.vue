@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { deleteStory } from '~/service/story'
+import { deleteStory } from '~/api/service/story'
 
 export default {
   name: 'StoryDeleteDialog',

@@ -1,54 +1,51 @@
 <template>
   <div>
     <v-tabs
+      icons-and-text
+      centered
       dark
+      color="cyan"
+      slot="extension"
+      v-model="tab"
       grow
-      icons>
-      <v-toolbar
-        color="cyan"
-        dark>
-        <v-tabs-bar
-          class="cyan"
-          slot="extension">
-          <v-tabs-slider color="yellow" />
-          <v-tabs-item href="#writing-tab">
-            <v-icon>mdi mdi-book-open-page-variant</v-icon>
-            Writing
-          </v-tabs-item>
-          <v-tabs-item href="#picture-tab">
-            <v-icon>mdi mdi-palette</v-icon>
-            Picture
-          </v-tabs-item>
-        </v-tabs-bar>
-      </v-toolbar>
-      <v-tabs-items>
-        <v-tabs-content :id="'writing-tab'">
-          <v-card flat>
-            <v-card-text>
-              [[ TODO ]]
-            </v-card-text>
-          </v-card>
-        </v-tabs-content>
-        <v-tabs-content :id="'picture-tab'">
-          <v-card flat>
-            <v-card-text class="text-xs-center">
-              <img
-                v-show="pageImageSrc()"
-                class="card-img-top img-fluid thumb"
-                :src="pageImageSrc()"
-                @click.stop="openMediumDialog()"
-                title="Upload">
-              <img
-                v-show="!pageImageSrc()"
-                class="card-img-top img-fluid thumb"
-                src="/img/missing-image.png"
-                @click.stop="openMediumDialog()"
-                title="Upload">
-            </v-card-text>
-          </v-card>
-        </v-tabs-content>
-      </v-tabs-items>
+    >
+      <v-tabs-slider color="yellow" />
+      <v-tab>
+        Writing
+        <v-icon>mdi mdi-book-open-page-variant</v-icon>
+      </v-tab>
+      <v-tab>
+        Picture
+        <v-icon>mdi mdi-palette</v-icon>
+      </v-tab>
     </v-tabs>
+    <v-tabs-items v-model="tab">
+      <v-tab-item>
+        <v-card flat>
+          <v-card-text>
+            [[ TODO ]]
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+      <v-tab-item>
+        <v-card flat>
+          <v-card-text class="text-xs-center">
+            <img
+              v-show="pageImageSrc()"
+              class="card-img-top img-fluid thumb"
+              :src="pageImageSrc()"
+              @click.stop="openMediumDialog()"
+              title="Upload">
+            <img
+              v-show="!pageImageSrc()"
+              class="card-img-top img-fluid thumb"
+              src="/img/missing-image.png"
+              @click.stop="openMediumDialog()"
+              title="Upload">
+          </v-card-text>
+        </v-card>
+      </v-tab-item>
+    </v-tabs-items>
     <medium-viewer
       :story-oid="page.data.storyOid"
       :chapter-oid="page.data.chapterOid"
@@ -86,6 +83,7 @@ export default {
   },
   data () {
     return {
+      tab: null,
       imageDialog: false
     }
   },

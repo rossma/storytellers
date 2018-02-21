@@ -1,7 +1,5 @@
 const express = require('express')
-// const Cookies = require('js-cookie')
 
-// Create express router
 const router = express.Router()
 
 // Transform req & res to have the same API as express
@@ -36,4 +34,3 @@ module.exports = {
   path: '/api',
   handler: router
 }
-console.log('api: out')

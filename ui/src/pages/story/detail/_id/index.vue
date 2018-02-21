@@ -28,12 +28,12 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
-import { findPageByOid } from '~/service/page'
-import { findUserByOid } from '~/service/user'
-import { findStoryByOid } from '~/service/story'
-import { findChapterByOid } from '~/service/chapter'
+import { findPageByOid } from '~/api/service/page'
+import { findUserByOid } from '~/api/service/user'
+import { findStoryByOid } from '~/api/service/story'
+import { findChapterByOid } from '~/api/service/chapter'
 import ActionControls from '~/components/story/ActionControls.vue'
 import StoryDetail from '~/components/story/StoryDetail.vue'
 import StoryTabs from '~/components/story/StoryTabs.vue'
@@ -66,12 +66,14 @@ export default {
           summary: null
         },
         ext: {}
-      },
-      user: null
+      }
     }
   },
   computed: {
-    ...mapGetters([
+    ...mapGetters('modules/user', [
+      'user'
+    ]),
+    ...mapGetters('modules/page', [
       'pages'
     ]),
     isEditable: function () {
@@ -88,18 +90,14 @@ export default {
   mounted: function () {
     this.$nextTick(() => {
       console.log('[Story Detail] - in mounted, page id:', this.$route.params.id)
-      this.loadUser().then((user) => {
-        this.user = user
+      this.loadPage(this.$route.params.id)
 
-        this.loadPage(this.$route.params.id)
-
-        EventBus.$on('storyImageFileKey', imageDetails => {
-          console.log(`[Story Detail] - storyImageFileKey event received:`, imageDetails)
-          this.page.data.image = {
-            filename: imageDetails.filenameKey,
-            ref: imageDetails.imageSrc
-          }
-        })
+      EventBus.$on('storyImageFileKey', imageDetails => {
+        console.log(`[Story Detail] - storyImageFileKey event received:`, imageDetails)
+        this.page.data.image = {
+          filename: imageDetails.filenameKey,
+          ref: imageDetails.imageSrc
+        }
       })
     })
   },
@@ -107,9 +105,7 @@ export default {
     EventBus.$off('storyImageFileKey')
   },
   methods: {
-    ...mapActions([
-      'loadUser', 'saveStory'
-    ]),
+    ...mapActions('modules/story', ['saveStory']),
     loadPage (pageOid) {
       findPageByOid(pageOid).then((pageDoc) => {
         if (pageDoc.exists) {

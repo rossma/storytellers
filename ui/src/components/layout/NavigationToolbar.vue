@@ -121,7 +121,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions([
+    ...mapActions('modules/user', [
       'logout'
     ]),
     userProfile () {

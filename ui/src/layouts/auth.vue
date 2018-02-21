@@ -1,22 +1,21 @@
 <template>
-  <v-app
-    id="example-1"
-    toolbar
-    footer
-    dark>
+  <v-app dark>
     <v-toolbar
       dark
-      fixed>
+      fixed
+      app>
       <v-toolbar-title class="home-title">
         <nuxt-link to="/">Storytellers</nuxt-link>
       </v-toolbar-title>
       <v-spacer />
     </v-toolbar>
-    <main>
-      <v-container fluid>
+    <v-content>
+      <v-container
+        fluid
+        fill-height>
         <nuxt/>
       </v-container>
-    </main>
+    </v-content>
     <page-footer />
   </v-app>
 </template>

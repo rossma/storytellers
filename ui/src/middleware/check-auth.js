@@ -1,24 +1,24 @@
 import jwtDecode from 'jwt-decode'
 
-export default function ({store, req, app}) {
-  if (process.server && !store.getters.isAuthenticated) {
-    console.log('[CHECK-AUTH] - is server')
+export default function ({store, req}) {
+  if (process.server && !store.getters['modules/user/isAuthenticated']) {
+    console.log('[CHECK-AUTH MIDDLEWARE] - is server')
     // console.log('Request Headers:', req.headers)
 
     /* On login we save the user in the session and the token in the cookie. Most of the time we can just get the user
-      from the session but there are time when we need to fetch the token from the cookie and decode it to find the uid.
+      from the session but there are times when we need to fetch the token from the cookie and decode it to find the uid.
       Firebase by default uses persisted state which keeps a user signed in even if they close their browser and reopen it.
      */
     let user = getUserFromSession(req)
-    console.log('user from session:', user)
+    console.log('[CHECK-AUTH MIDDLEWARE] - user from session:', user)
     if (!user) {
-      console.log('User not found in session, looking up in cookie')
+      console.log('[CHECK-AUTH MIDDLEWARE] - User not found in session, looking up in cookie')
       user = getUserFromCookie(req)
     }
 
     if (user) {
-      console.log('User found, going to initialise the user object by uid in the store')
-      store.dispatch('saveUID', user.uid)
+      console.log('[CHECK-AUTH MIDDLEWARE] - User found, going to initialise the user object by uid in the store')
+      store.dispatch('modules/user/saveUID', user.uid)
     }
   }
 }

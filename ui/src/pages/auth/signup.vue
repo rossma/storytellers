@@ -39,7 +39,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { addUser } from '~/service/user'
+import { addUser } from '~/api/service/user'
 import firebaseApp from '~/firebase/app'
 
 export default {
@@ -55,7 +55,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions([
+    ...mapActions('modules/user', [
       'login', 'saveUser'
     ]),
     async signUp () {

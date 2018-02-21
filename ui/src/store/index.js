@@ -1,22 +1,17 @@
-import Vuex from 'vuex'
-import { mutations } from './mutations'
-import { getters } from './getters'
-import * as actions from './actions'
 
-export const state = () => ({
-  uid: null,
-  user: null,
-  story: {},
-  pages: []
-})
+export const actions = {
 
-const createStore = () => {
-  return new Vuex.Store({
-    state: state,
-    mutations: mutations,
-    actions,
-    getters: getters
-  })
+  async nuxtServerInit ({ dispatch }, { req }) {
+    console.log('[STORE ACTION]- in nuxServerInit:', req.session)
+
+    // if (req.session && req.session.userId) {
+    //   console.log(`[STORE ACTION] found uid in session:${JSON.stringify(req.session.userId)}`)
+    //   await dispatch('saveUID', req.session.userId)
+    // }
+    if (req.session && req.session.user) {
+      console.log(`[STORE ACTION] found user in session:${JSON.stringify(req.session.user)}`)
+      await dispatch('saveUser', req.session.user)
+    }
+  }
+
 }
-
-export default createStore
