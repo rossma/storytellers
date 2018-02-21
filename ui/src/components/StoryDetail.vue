@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import StorySummary from '~/components/story/StorySummary.vue'
+import StorySummary from '~/components/StorySummary.vue'
 
 export default {
   name: 'StoryDetail',

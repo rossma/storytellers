@@ -4,7 +4,7 @@
     toolbar
     footer
     dark>
-    <navigation-toolbar>
+    <the-navigation-toolbar>
       <v-divider
         slot="nav-drawer"
         light />
@@ -53,7 +53,7 @@
                 v-for="(page, pageIdx) in chapterPages(chapter.id)"
                 :key="page.id"
                 :class="[page.active ? 'active-page': '', 'link-to-page']"
-                @click="$router.push(`/story/detail/${page.id}`)">
+                @click="$router.push(`/story/${page.id}`)">
                 <v-list-tile-content>
                   <v-list-tile-title class="grey--text">
                     {{ chapter.data.chapter }}-{{ ++pageIdx }}
@@ -88,27 +88,27 @@
           </v-flex>
         </v-layout>
       </v-list>
-    </navigation-toolbar>
+    </the-navigation-toolbar>
     <v-content>
       <nuxt/>
     </v-content>
-    <page-footer/>
+    <the-page-footer />
   </v-app>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
-import PageFooter from '~/components/layout/PageFooter'
-import NavigationToolbar from '~/components/layout/NavigationToolbar'
+import ThePageFooter from '~/components/ThePageFooter'
+import TheNavigationToolbar from '~/components/TheNavigationToolbar'
 import { addChapter, updateChapterName, findChaptersByStory } from '~/api/service/chapter'
 import { addPage, findPagesByStory } from '~/api/service/page'
 
 export default {
   middleware: 'authenticated',
   components: {
-    NavigationToolbar,
-    PageFooter
+    TheNavigationToolbar,
+    ThePageFooter
   },
   data () {
     return {
@@ -197,7 +197,7 @@ export default {
         public: false
       }).then((pageDocRef) => {
         console.log(`Page Document written with ID:${pageDocRef.id}`)
-        this.$router.push(`/story/detail/${pageDocRef.id}`)
+        this.$router.push(`/story/${pageDocRef.id}`)
       }).catch((error) => {
         this.$toast.error(`Error adding page:${error.message}`)
       })

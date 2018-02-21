@@ -17,7 +17,7 @@
           :page="page"
           :editable="isEditable"
           :has-story-cover="story.cover" />
-        <action-controls
+        <story-action-controls
           :page="page"
           :editable="isEditable"
           :total-story-pages="totalStoryPages"
@@ -34,13 +34,13 @@ import { findPageByOid } from '~/api/service/page'
 import { findUserByOid } from '~/api/service/user'
 import { findStoryByOid } from '~/api/service/story'
 import { findChapterByOid } from '~/api/service/chapter'
-import ActionControls from '~/components/story/ActionControls.vue'
-import StoryDetail from '~/components/story/StoryDetail.vue'
-import StoryTabs from '~/components/story/StoryTabs.vue'
+import StoryActionControls from '~/components/StoryActionControls.vue'
+import StoryDetail from '~/components/StoryDetail.vue'
+import StoryTabs from '~/components/StoryTabs.vue'
 
 export default {
   components: {
-    ActionControls,
+    StoryActionControls,
     StoryDetail,
     StoryTabs
   },

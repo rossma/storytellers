@@ -77,8 +77,7 @@
       <v-flex xs12>
         <v-card dark>
           <v-card-title primary><h2>My Stories</h2></v-card-title>
-          <preview-list
-            name="PreviewList"
+          <stories-preview-list
             :show-action="false"
             :filter-by="previewAuthorFilter" />
         </v-card>
@@ -92,11 +91,11 @@ import { mapActions, mapGetters } from 'vuex'
 import { uploadProfileImage } from '~/api/service/image'
 
 import firebaseApp from '~/firebase/app'
-import PreviewList from '~/components/preview/PreviewList'
+import StoriesPreviewList from '~/components/StoriesPreviewList'
 
 export default {
   components: {
-    PreviewList
+    StoriesPreviewList
   },
   data () {
     return {

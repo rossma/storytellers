@@ -77,7 +77,7 @@ import { publishPage, deletePage } from '~/api/service/page'
 import { findImageByOid } from '~/api/service/image'
 
 export default {
-  name: 'ActionControls',
+  name: 'StoryActionControls',
   props: {
     page: {
       type: Object,
@@ -160,7 +160,7 @@ export default {
       }
 
       runDelete().then(() => {
-        this.$router.push(`/story/detail/${this.pages.pop().id}`)
+        this.$router.push(`/story/${this.pages.pop().id}`)
       }).catch((error) => {
         console.log('There was an error deleting the current page', error)
         this.$toast.error(error.message)

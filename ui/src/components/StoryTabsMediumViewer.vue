@@ -58,7 +58,7 @@ import { uploadPageImage } from '~/api/service/image'
 import { updateStory } from '~/api/service/story'
 
 export default {
-  name: 'MediumViewer',
+  name: 'StoryTabsMediumViewer',
   components: {
     UploadButton
   },

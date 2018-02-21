@@ -83,16 +83,10 @@
 import { mapActions } from 'vuex'
 
 export default {
-  name: 'NavigationToolbar',
-  props: {
-    immutableDrawer: {
-      type: Boolean,
-      default: false
-    }
-  },
+  name: 'TheNavigationToolbar',
   data () {
     return {
-      drawer: this.immutableDrawer,
+      drawer: false,
       profile: {
         direction: 'bottom',
         fab: false,

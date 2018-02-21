@@ -52,7 +52,7 @@ import { findPagesByStory } from '~/api/service/page'
 import { findPreviewsByFilter } from '~/api/service/preview'
 
 export default {
-  name: 'PreviewList',
+  name: 'StoriesPreviewList',
   props: {
     showAction: {
       type: Boolean,
@@ -136,13 +136,13 @@ export default {
     showDetail (storyOid, pageOid) {
       console.log(`storyOid:${storyOid} pageOid:${pageOid}`)
       if (pageOid) {
-        this.$router.push(`/story/detail/${pageOid}`)
+        this.$router.push(`/story/${pageOid}`)
       } else {
         // in the event no page id is defined in cover take the first page
         findPagesByStory(storyOid).then((pages) => {
           let page = pages.find(p => p.data.page === 1)
           if (page) {
-            this.$router.push(`/story/detail/${page.id}`)
+            this.$router.push(`/story/${page.id}`)
           } else {
             this.$toast.error('Page does not exits')
           }

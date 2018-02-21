@@ -1,15 +1,13 @@
 <template>
-  <preview-list
-    name="PreviewList"
-    :filter-by="filterBy" />
+  <stories-preview-list :filter-by="filterBy" />
 </template>
 
 <script>
-import PreviewList from '~/components/preview/PreviewList'
+import StoriesPreviewList from '~/components/StoriesPreviewList'
 
 export default {
   components: {
-    PreviewList
+    StoriesPreviewList
   },
   data () {
     return {

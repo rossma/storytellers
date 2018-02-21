@@ -46,7 +46,7 @@
         </v-card>
       </v-tab-item>
     </v-tabs-items>
-    <medium-viewer
+    <story-tabs-medium-viewer
       :story-oid="page.data.storyOid"
       :chapter-oid="page.data.chapterOid"
       :page-oid="page.id"
@@ -60,12 +60,12 @@
 </template>
 
 <script>
-import MediumViewer from '~/components/story/viewer/MediumViewer'
+import StoryTabsMediumViewer from '~/components/StoryTabsMediumViewer'
 
 export default {
   name: 'StoryTabs',
   components: {
-    MediumViewer
+    StoryTabsMediumViewer
   },
   props: {
     page: {

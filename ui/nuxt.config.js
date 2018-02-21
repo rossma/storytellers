@@ -60,7 +60,10 @@ module.exports = {
   },
   modules: [
     '~/modules/material-design-icons',
-    ['@nuxtjs/axios',{debug:true}],
+    ['@nuxtjs/axios',{
+      debug: true,
+      prefix: '/api'
+    }],
     '@nuxtjs/toast'
   ],
   toast: {
@@ -79,8 +82,6 @@ module.exports = {
       saveUninitialized: false,
       cookie: { maxAge: 60000 }
     }),
-    // Api middleware
-    // We add /api/login & /api/logout routes
     '~/api'
   ]
 }

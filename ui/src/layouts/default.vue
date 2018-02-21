@@ -1,21 +1,21 @@
 <template>
   <v-app dark>
-    <navigation-toolbar :immutable-drawer="false" />
+    <the-navigation-toolbar />
     <v-content>
       <nuxt />
     </v-content>
-    <page-footer />
+    <the-page-footer />
   </v-app>
 </template>
 
 <script>
-import PageFooter from '~/components/layout/PageFooter'
-import NavigationToolbar from '~/components/layout/NavigationToolbar'
+import ThePageFooter from '~/components/ThePageFooter'
+import TheNavigationToolbar from '~/components/TheNavigationToolbar'
 
 export default {
   components: {
-    NavigationToolbar,
-    PageFooter
+    TheNavigationToolbar,
+    ThePageFooter
   },
   middleware: 'authenticated'
 }

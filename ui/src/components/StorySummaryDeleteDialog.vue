@@ -23,7 +23,7 @@
 import { deleteStory } from '~/api/service/story'
 
 export default {
-  name: 'StoryDeleteDialog',
+  name: 'StorySummaryDeleteDialog',
   props: {
     story: {
       type: Object,

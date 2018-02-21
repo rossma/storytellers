@@ -51,8 +51,7 @@
         <span>Save Story</span>
       </v-tooltip>
     </v-form>
-    <story-delete-dialog
-      name="StoryDeleteDialog"
+    <story-summary-delete-dialog
       :story="mutableStory"
       :dialog="deleteDialog"
       @close="deleteDialog = false" />
@@ -64,11 +63,11 @@ import { mapGetters, mapActions } from 'vuex'
 import { findPreviewsByStory, updatePreview } from '~/api/service/preview'
 import { addStory, updateStory } from '~/api/service/story'
 import stringUtils from '~/utils/string'
-import StoryDeleteDialog from './StoryDeleteDialog'
+import StorySummaryDeleteDialog from './StorySummaryDeleteDialog'
 
 export default {
   name: 'StorySummary',
-  components: {StoryDeleteDialog},
+  components: {StorySummaryDeleteDialog},
   props: {
     editable: {
       type: Boolean,
@@ -138,7 +137,7 @@ export default {
         story.id = result.storyOid
         this.mutableStory = story
         this.saveStory(story)
-        this.$router.push(`/story/detail/${result.pageOid}`)
+        this.$router.push(`/story/${result.pageOid}`)
       }).catch((error) => {
         console.log('Error adding story', error)
         this.$toast.error(`Error adding story:${error.message}`)

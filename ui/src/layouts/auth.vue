@@ -16,16 +16,16 @@
         <nuxt/>
       </v-container>
     </v-content>
-    <page-footer />
+    <the-page-footer />
   </v-app>
 </template>
 
 <script>
-import PageFooter from '~/components/layout/PageFooter'
+import ThePageFooter from '~/components/ThePageFooter'
 
 export default {
   components: {
-    PageFooter
+    ThePageFooter
   },
   middleware: 'anonymous'
 }
