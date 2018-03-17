@@ -23,7 +23,19 @@
       <v-tab-item>
         <v-card flat>
           <v-card-text>
-            [[ TODO ]]
+            <div id="viewer" />
+            <div id="pagination">
+              <a
+                id="prev"
+                href="#prev"
+                class="arrow"
+                @click="prev($event)">...</a>
+              <a
+                id="next"
+                href="#next"
+                class="arrow"
+                @click="next($event)">...</a>
+            </div>
           </v-card-text>
         </v-card>
       </v-tab-item>
@@ -61,6 +73,21 @@
 
 <script>
 import StoryTabsMediumViewer from '~/components/StoryTabsMediumViewer'
+// https://github.com/futurepress/epub.js/tree/v0.3/libs
+import Epub from 'epubjs/lib/index'
+
+// global.ePub = Epub
+window.ePub = Epub
+
+var url = 'https://firebasestorage.googleapis.com/v0/b/storytellers2-13997.appspot.com/o/pg19033.epub?alt=media&token=06a11974-4ef1-41bf-a11c-b4a573af8f30'
+var book = window.ePub(url)
+var rendition = book.renderTo('viewer', {
+  width: 400,
+  height: 400
+})
+
+var displayed = rendition.display()
+console.log('displayed:', displayed)
 
 export default {
   name: 'StoryTabs',
@@ -93,6 +120,16 @@ export default {
     }
   },
   methods: {
+    next (event) {
+      console.log('ssssssssssssssssssssss next')
+      rendition.next()
+      event.preventDefault()
+    },
+    prev (event) {
+      console.log('ssssssssssssssssssssss prev')
+      rendition.prev()
+      event.preventDefault()
+    },
     pageImageSrc () {
       if (this.page.data.image && this.page.data.image.ref) {
         return this.page.data.image.ref
@@ -117,4 +154,69 @@ export default {
     max-height: 300px;
     cursor: pointer;
   }
+
+  body {
+    overflow: auto;
+    background: #eee;
+  }
+
+  /*#wrapper {*/
+    /*width: 480px;*/
+    /*height: 640px;*/
+    /*overflow: hidden;*/
+    /*border: 1px solid #ccc;*/
+    /*margin: 20px auto;*/
+    /*background: #fff;*/
+    /*border-radius: 0 5px 5px 0;*/
+  /*}*/
+
+  /*#area {*/
+    /*width: 480px;*/
+    /*height: 650px;*/
+    /*margin: -5px auto;*/
+    /*-moz-box-shadow:      inset 10px 0 20px rgba(0,0,0,.1);*/
+    /*-webkit-box-shadow:   inset 10px 0 20px rgba(0,0,0,.1);*/
+    /*box-shadow:           inset 10px 0 20px rgba(0,0,0,.1);*/
+    /*padding: 40px 40px;*/
+  /*}*/
+
+  #viewer {
+    overflow: hidden;
+    width: 800px;
+    /*height: 400px;*/
+    margin: 0 50px;
+    /*background: url('ajax-loader.gif') center center no-repeat;*/
+  }
+  #viewer .epub-view {
+    background: white;
+    box-shadow: 0 0 4px #ccc;
+    /*margin: 10px;*/
+    /*padding: 40px 80px;*/
+  }
+
+  #pagination {
+    text-align: center;
+    margin-left: 80px;
+    /*padding: 0 50px;*/
+  }
+  .arrow {
+    margin: 14px;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    color: #ccc;
+  }
+  .arrow:hover {
+    color: #777;
+  }
+  .arrow:active {
+    color: #000;
+  }
+  #prev {
+    float: left;
+  }
+  #next {
+    float: right;
+  }
+
 </style>
