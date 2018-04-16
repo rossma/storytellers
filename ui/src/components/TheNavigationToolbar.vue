@@ -2,10 +2,10 @@
 <template>
   <div>
     <v-navigation-drawer
+      v-model="drawer"
       fixed
       clipped
       app
-      v-model="drawer"
       disable-route-watcher
       dark>
       <v-list dense>
@@ -18,18 +18,18 @@
       clipped-left
       fixed>
       <v-toolbar-side-icon
-        @click.stop="drawer = !drawer"
-        v-if="hasNavDrawerSlot" />
+        v-if="hasNavDrawerSlot"
+        @click.stop="drawer = !drawer"/>
       <v-toolbar-title class="home-title">
         <nuxt-link to="/">Storytellers</nuxt-link>
       </v-toolbar-title>
       <v-spacer />
       <v-tooltip left>
         <v-btn
+          slot="activator"
           fab
           dark
           small
-          slot="activator"
           to="/story/create">
           <v-icon>mdi mdi-feather</v-icon>
         </v-btn>
@@ -41,23 +41,12 @@
         :direction="profile.direction"
         :hover="profile.hover"
         :transition="profile.transition">
-        <v-btn
-          slot="activator"
-          color="darken-2"
-          dark
-          fab
-          small
-          hover
-          v-model="profile.fab">
-          <v-icon>account_circle</v-icon>
-          <v-icon>close</v-icon>
-        </v-btn>
         <v-tooltip left>
           <v-btn
+            slot="activator"
             fab
             dark
             small
-            slot="activator"
             @click="userProfile">
             <v-icon>mdi mdi-account-edit</v-icon>
           </v-btn>
@@ -65,16 +54,27 @@
         </v-tooltip>
         <v-tooltip left>
           <v-btn
+            slot="activator"
             fab
             dark
             small
-            slot="activator"
             @click="signout">
             <v-icon>mdi mdi-logout</v-icon>
           </v-btn>
           <span>SignOut</span>
         </v-tooltip>
       </v-speed-dial>
+      <v-btn
+        slot="activator"
+        v-model="profile.fab"
+        color="darken-2"
+        dark
+        fab
+        small
+        hover>
+        <v-icon>account_circle</v-icon>
+        <v-icon>close</v-icon>
+      </v-btn>
     </v-toolbar>
   </div>
 </template>

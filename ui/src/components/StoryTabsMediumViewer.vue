@@ -4,17 +4,17 @@
     justify-center>
     <v-dialog
       v-model="dialog"
+      :overlay="false"
       fullscreen
-      transition="dialog-bottom-transition"
-      :overlay="false">
+      transition="dialog-bottom-transition">
       <v-card>
         <v-toolbar
           dark
           color="primary">
           <v-btn
             icon
-            @click.native="closeDialog()"
-            dark>
+            dark
+            @click.native="closeDialog()">
             <v-icon>close</v-icon>
           </v-btn>
           <v-toolbar-title>Illustration</v-toolbar-title>
@@ -22,9 +22,8 @@
           <v-toolbar-items>
             <upload-button
               v-if="editable"
-              name="Upload"
-              icon="mdi mdi-palette"
-              :selected-callback="previewImageFile" />
+              :selected-callback="previewImageFile"
+              icon="mdi mdi-palette"/>
             <v-btn
               v-if="editable"
               dark
@@ -38,8 +37,8 @@
         <v-card-text class="text-xs-center">
           <img
             v-show="previewImageSrc"
-            class="card-img-top"
-            :src="previewImageSrc">
+            :src="previewImageSrc"
+            class="card-img-top">
           <img
             v-show="!previewImageSrc"
             class="card-img-top"

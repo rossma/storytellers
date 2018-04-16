@@ -4,13 +4,13 @@
       row
       wrap>
       <v-flex
+        v-for="preview in previews"
+        :key="preview.id"
+        class="pa-2"
         d-flex
         xs12
         sm6
-        md3
-        class="pa-2"
-        v-for="preview in previews"
-        :key="preview.id" >
+        md3>
         <v-card class="preview-card">
           <div
             class="preview-detail-link"

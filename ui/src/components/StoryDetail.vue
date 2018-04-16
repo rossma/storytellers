@@ -6,7 +6,6 @@
         <div v-show="author.displayName"><h5>{{ author.displayName }}</h5></div>
       </div>
       <story-summary
-        name="StorySummary"
         :story="story"
         :editable="editable"
         :story-exists="true"

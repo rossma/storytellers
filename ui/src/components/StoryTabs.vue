@@ -1,12 +1,12 @@
 <template>
   <div>
     <v-tabs
+      slot="extension"
+      v-model="tab"
       icons-and-text
       centered
       dark
       color="cyan"
-      slot="extension"
-      v-model="tab"
       grow
     >
       <v-tabs-slider color="yellow" />
@@ -44,16 +44,16 @@
           <v-card-text class="text-xs-center">
             <img
               v-show="pageImageSrc()"
-              class="card-img-top img-fluid thumb"
               :src="pageImageSrc()"
-              @click.stop="openMediumDialog()"
-              title="Upload">
+              class="card-img-top img-fluid thumb"
+              title="Upload"
+              @click.stop="openMediumDialog()">
             <img
               v-show="!pageImageSrc()"
               class="card-img-top img-fluid thumb"
               src="/img/missing-image.png"
-              @click.stop="openMediumDialog()"
-              title="Upload">
+              title="Upload"
+              @click.stop="openMediumDialog()">
           </v-card-text>
         </v-card>
       </v-tab-item>

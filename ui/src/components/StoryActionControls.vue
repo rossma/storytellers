@@ -11,25 +11,23 @@
       <v-btn
         v-if="canPublish() || canDeletePage()"
         slot="activator"
+        v-model="dial.fab"
         color="blue darken-2"
         dark
         fab
-        hover
-        v-model="dial.fab"
-      >
+        hover>
         <v-icon>mdi mdi-radiobox-marked</v-icon>
         <v-icon>mdi mdi-radiobox-blank</v-icon>
       </v-btn>
       <v-tooltip left>
         <v-btn
           v-if="canPublish()"
+          slot="activator"
+          color="green"
           fab
           dark
           small
-          color="green"
-          @click="publish"
-          slot="activator"
-        >
+          @click="publish">
           <v-icon>mdi mdi-publish</v-icon>
         </v-btn>
         <span>Publish Page</span>
@@ -37,13 +35,12 @@
       <v-tooltip left>
         <v-btn
           v-if="canDeletePage()"
+          slot="activator"
+          color="red"
           fab
           dark
           small
-          color="red"
-          @click.stop="deletePageDialog = true"
-          slot="activator"
-        >
+          @click.stop="deletePageDialog = true">
           <v-icon>mdi mdi-delete</v-icon>
         </v-btn>
         <span>Delete Page</span>

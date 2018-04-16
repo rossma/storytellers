@@ -16,15 +16,15 @@
         <form @submit.prevent="signUp">
           <v-card-text ref="form">
             <v-text-field
-              label="email"
-              v-model="email" />
+              v-model="email"
+              label="email" />
             <v-text-field
-              name="password-in-txt"
-              label="password"
-              v-model="password"
               :append-icon="showPassword ? 'visibility' : 'visibility_off'"
               :append-icon-cb="() => (showPassword = !showPassword)"
               :type="showPassword ? 'password' : 'text'"
+              v-model="password"
+              name="password-in-txt"
+              label="password"
               counter/>
           </v-card-text>
           <v-divider class="mt-5" />

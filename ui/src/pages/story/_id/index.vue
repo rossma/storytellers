@@ -6,7 +6,6 @@
       wrap>
       <v-flex xs12>
         <story-detail
-          name="StoryDetail"
           :author="authorUser"
           :story="story"
           :editable="isEditable"

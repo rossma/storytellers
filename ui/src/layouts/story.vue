@@ -32,16 +32,16 @@
               :value="chapter.active"
               :key="chapter.id">
               <v-list-tile
-                class="chapter-tile"
-                slot="item">
+                slot="item"
+                class="chapter-tile">
                 <v-list-tile-content @click="enableChapterInput($event)">
                   <v-text-field
+                    :value="chapterDisplayName(chapter, chapterIdx)"
                     name="chapterNameTxt"
                     label="Chapter"
                     class="chapter-name-in-txt"
                     hide-details
                     single-line
-                    :value="chapterDisplayName(chapter, chapterIdx)"
                     @blur="saveChapterName($event, chapter)"
                   />
                 </v-list-tile-content>

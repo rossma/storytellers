@@ -1,28 +1,28 @@
 <template>
   <div>
     <v-form
-      class="text-xs-right"
-      v-model="valid"
       ref="form"
+      v-model="valid"
+      class="text-xs-right"
       lazy-validation>
       <v-card
         color="secondary"
         flat>
         <v-card-text>
           <v-container
-            fluid
-            v-if="editable">
+            v-if="editable"
+            fluid>
             <v-layout row>
               <v-flex xs12>
                 <v-text-field
-                  label="Title"
                   v-model="mutableStory.data.title"
+                  label="Title"
                   required/>
                 <v-text-field
+                  v-model="mutableStory.data.summary"
                   name="summary"
                   label="Summary"
                   textarea
-                  v-model="mutableStory.data.summary"
                   dark/>
               </v-flex>
             </v-layout>
@@ -34,19 +34,19 @@
       </v-card>
       <v-tooltip top>
         <v-btn
-          @click.stop="deleteDialog = true"
-          color="red"
           v-if="storyExists && editable"
-          slot="activator">delete
+          slot="activator"
+          color="red"
+          @click.stop="deleteDialog = true">delete
         </v-btn>
         <span>Delete Story</span>
       </v-tooltip>
       <v-tooltip top>
         <v-btn
-          @click="submit"
-          :disabled="!valid"
           v-if="editable"
-          slot="activator">save
+          slot="activator"
+          :disabled="!valid"
+          @click="submit">save
         </v-btn>
         <span>Save Story</span>
       </v-tooltip>

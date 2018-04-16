@@ -17,18 +17,18 @@
                   flat>
                   <v-tooltip top>
                     <v-avatar
-                      class="indigo jbtn-file"
                       v-show="!photoUrl"
-                      slot="activator">
+                      slot="activator"
+                      class="indigo jbtn-file">
                       <v-icon dark>account_circle</v-icon>
                       <input
                         type="file"
                         @change="profileImageSelected">
                     </v-avatar>
                     <v-avatar
-                      class="jbtn-file"
                       v-show="photoUrl"
-                      slot="activator">
+                      slot="activator"
+                      class="jbtn-file">
                       <img
                         :src="photoUrl"
                         alt="no photo">
@@ -43,19 +43,19 @@
               <v-flex xs10>
                 <v-card flat>
                   <v-form
-                    v-model="valid"
                     ref="form"
+                    v-model="valid"
                     lazy-validation>
                     <v-text-field
-                      label="Email"
                       v-model="user.data.email"
+                      label="Email"
                       readonly
                       disabled />
                     <v-text-field
-                      label="Display Name"
                       v-model="user.data.displayName"
-                      required
-                      :rules="nameRules" />
+                      :rules="nameRules"
+                      label="Display Name"
+                      required />
                   </v-form>
                 </v-card>
               </v-flex>
@@ -63,8 +63,8 @@
                 xs12
                 text-xs-right>
                 <v-btn
-                  @click="submit"
-                  :disabled="!valid">submit</v-btn>
+                  :disabled="!valid"
+                  @click="submit">submit</v-btn>
               </v-flex>
             </v-layout>
           </v-expansion-panel-content>
