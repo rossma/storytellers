@@ -22,35 +22,35 @@
     "start": "nuxt start"
   },
   "dependencies": {
-    "@nuxtjs/axios": "^5.0.1",
-    "@nuxtjs/toast": "^2.3.3",
+    "@nuxtjs/axios": "^5.1.0",
+    "@nuxtjs/toast": "^3.0.0",
     "ajv": "^6.1.1",
     "body-parser": "^1.18.2",
     "epubjs": "^0.3.58",
-    "express": "^4.16.2",
+    "express": "^4.16.3",
     "express-session": "^1.15.6",
-    "firebase": "4.9.1",
+    "firebase": "4.12.1",
     "grpc": "^1.7.2",
     "jwt-decode": "^2.2.0",
     "mdi": "^2.1.19",
-    "nuxt": "^1.2.1",
+    "nuxt": "^1.4.0",
     "uuid": "^3.2.1",
     "vue-toasted": "^1.1.24",
-    "vuetify": "^1.0.1"
+    "vuetify": "^1.0.15"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
-    "eslint": "^4.12.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-friendly-formatter": "^3.0.0",
-    "eslint-loader": "^1.9.0",
-    "eslint-plugin-html": "^3.1.1",
-    "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-node": "^5.1.1",
-    "eslint-plugin-promise": "^3.5.0",
+    "eslint": "^4.19.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-friendly-formatter": "^4.0.1",
+    "eslint-loader": "^2.0.0",
+    "eslint-plugin-html": "^4.0.3",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-standard": "^3.0.1",
-    "eslint-plugin-vue": "^4.0.0-beta.0",
+    "eslint-plugin-vue": "^4.4.0",
     "stylus": "^0.54.5",
-    "stylus-loader": "^3.0.1"
+    "stylus-loader": "^3.0.2"
   }
 }

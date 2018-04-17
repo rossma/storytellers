@@ -60,14 +60,15 @@ module.exports = {
   },
   modules: [
     '~/modules/material-design-icons',
-    ['@nuxtjs/axios',{
-      debug: true,
-      prefix: '/api'
-    }],
+    '@nuxtjs/axios',
     '@nuxtjs/toast'
   ],
   toast: {
     position: 'top-center'
+  },
+  axios: {
+    debug: true,
+    prefix: '/api'
   },
   router: {
     middleware: 'check-auth'
