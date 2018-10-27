@@ -1,0 +1,90 @@
+<template>
+  <v-layout
+    column
+    align-center
+    justify-center>
+    <nuxt-link
+      to="/auth/signin"
+      class="signin-link">Already a user? Sign in</nuxt-link>
+    <v-flex
+      xs12
+      sm10
+      md8
+      lg6>
+      <v-card>
+        <form @submit.prevent="signUp">
+          <v-card-text ref="form">
+            <v-text-field
+              v-model="email"
+              label="email" />
+            <v-text-field
+              :append-icon="showPassword ? 'visibility' : 'visibility_off'"
+              :type="showPassword ? 'text' : 'password'"
+              name="password-in-txt"
+              label="password"
+              @click:append="showPassword = !showPassword"
+              />
+          </v-card-text>
+          <v-divider class="mt-5" />
+          <v-card-actions>
+            <v-btn
+              flat
+              color="blue darken-1"
+              type="submit">Sign Up</v-btn>
+          </v-card-actions>
+        </form>
+      </v-card>
+    </v-flex>
+  </v-layout>
+</template>
+
+<script>
+import { mapActions } from 'vuex'
+import { addUser } from '~/api/service/user'
+import firebaseApp from '~/firebase/app'
+
+export default {
+  layout: 'auth',
+  data () {
+    return {
+      email: '',
+      password: '',
+      showPassword: false,
+      alert: {
+        show: false
+      }
+    }
+  },
+  methods: {
+    ...mapActions('modules/user', [
+      'login', 'saveUser'
+    ]),
+    async signUp () {
+      console.log('[SIGNUP] signing up')
+
+      try {
+        const firebaseUser = await firebaseApp.auth().createUserWithEmailAndPassword(this.email, this.password)
+        console.log('[SIGNUP.vue] successful user creation in firebase', firebaseUser.uid)
+        let user = {
+          uid: firebaseUser.uid,
+          data: {
+            email: this.email,
+            created: Date.now()
+          }
+        }
+        await addUser(user)
+        await this.login(user.uid)
+        this.$toast.clear();
+        this.$router.push('/')
+      } catch (error) {
+        this.$toast.error(error.message)
+      }
+    }
+  }
+}
+</script>
+<style>
+  .signin-link:hover {
+    text-decoration: none;
+  }
+</style>
