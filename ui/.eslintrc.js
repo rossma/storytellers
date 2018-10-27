@@ -1,17 +1,24 @@
-// running in command line
-// $ eslint "src/**/*.{js,vue}"
-// # or
-// $ eslint src --ext .vue
 module.exports = {
   root: true,
-  parser: 'vue-eslint-parser',
-  extends: [
-    'standard',
-    'plugin:vue/recommended'
-  ],
+  env: {
+    browser: true,
+    node: true
+  },
   parserOptions: {
-    parser: 'babel-eslint',
-    ecmaVersion: 2017,
-    sourceType: 'module'
+    parser: 'babel-eslint'
+  },
+  extends: [
+    'plugin:vue/recommended',
+    'plugin:prettier/recommended'
+  ],
+  // required to lint *.vue files
+  plugins: [
+    'vue',
+    'prettier'
+  ],
+  // add your custom rules here
+  rules: {
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
   }
 }

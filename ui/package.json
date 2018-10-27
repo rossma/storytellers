@@ -1,11 +1,9 @@
 {
   "name": "storytellers",
   "version": "1.0.0-alpha.4",
-  "private": true,
   "description": "Stories created in collaboration and shared to be enjoyed by all",
-  "author": {
-    "name": "Ross Mahony"
-  },
+  "author": "Ross Mahony",
+  "private": true,
   "engines": {
     "node": "8.9.4"
   },
@@ -14,43 +12,49 @@
     "url": "git@github.com:rossma/storytellers.git"
   },
   "scripts": {
+    "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server",
     "build": "nuxt build",
-    "build-start": "npm run build && npm run start",
-    "dev": "nuxt",
-    "heroku-postbuild": "npm run build",
-    "start-server": "node server.js",
-    "start": "nuxt start"
+    "start": "cross-env NODE_ENV=production node server/index.js",
+    "generate": "nuxt generate",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "precommit": "npm run lint"
   },
   "dependencies": {
-    "@nuxtjs/axios": "^5.1.0",
-    "@nuxtjs/toast": "^3.0.0",
-    "ajv": "^6.1.1",
-    "body-parser": "^1.18.2",
-    "epubjs": "^0.3.58",
-    "express": "^4.16.3",
-    "express-session": "^1.15.6",
+    "@nuxtjs/axios": "5.3.3",
+    "@nuxtjs/dotenv": "1.1.1",
+    "@nuxtjs/toast": "3.0.1",
+    "ajv": "6.5.4",
+    "body-parser": "1.18.3",
+    "core-js": "2.5.7",
+    "cross-env": "5.2.0",
+    "epubjs": "0.3.72",
+    "express": "4.16.3",
+    "express-session": "1.15.6",
     "firebase": "4.12.1",
-    "grpc": "^1.7.2",
-    "jwt-decode": "^2.2.0",
-    "mdi": "^2.1.19",
-    "nuxt": "^1.4.0",
-    "uuid": "^3.2.1",
-    "vue-toasted": "^1.1.24",
-    "vuetify": "^1.0.15"
+    "jwt-decode": "2.2.0",
+    "node-pre-gyp": "^0.11.0",
+    "nuxt": "2.0.0",
+    "standard": "^12.0.1",
+    "uuid": "3.3.2",
+    "vuetify": "1.2.5"
   },
   "devDependencies": {
-    "babel-eslint": "^7.2.3",
-    "eslint": "^4.19.1",
-    "eslint-config-standard": "^11.0.0",
-    "eslint-friendly-formatter": "^4.0.1",
-    "eslint-loader": "^2.0.0",
-    "eslint-plugin-html": "^4.0.3",
-    "eslint-plugin-import": "^2.11.0",
-    "eslint-plugin-node": "^6.0.1",
-    "eslint-plugin-promise": "^3.7.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "eslint-plugin-vue": "^4.4.0",
-    "stylus": "^0.54.5",
-    "stylus-loader": "^3.0.2"
+    "babel-eslint": "10.0.1",
+    "eslint": "^5.6.1",
+    "eslint-config-prettier": "3.1.0",
+    "eslint-config-standard": "12.0.0",
+    "eslint-friendly-formatter": "4.0.1",
+    "eslint-loader": "2.1.1",
+    "eslint-plugin-html": "4.0.6",
+    "eslint-plugin-import": "2.14.0",
+    "eslint-plugin-node": "7.0.1",
+    "eslint-plugin-prettier": "2.7.0",
+    "eslint-plugin-promise": "4.0.1",
+    "eslint-plugin-standard": "4.0.0",
+    "eslint-plugin-vue": "4.7.1",
+    "nodemon": "1.18.4",
+    "prettier": "1.14.3",
+    "stylus": "0.54.5",
+    "stylus-loader": "3.0.2"
   }
 }
