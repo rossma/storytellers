@@ -12,15 +12,19 @@ const fs = require('fs');
  * After the thumbnail has been generated and uploaded to Cloud Storage,
  * we write the public URL to the images table in the Firestore Database.
  */
-exports.handler = function(event, database, storage) {
+exports.handler = function(object, database, storage) {
   /* Note: Cloud Functions has a read-only filesystem except for the /tmp directory. */
 
   // File and directory paths.
-  const filePath = event.data.name;
-  console.log('FilePath:', filePath)
+  // const filePath = event.data.name;
+  const filePath = object.name; // Path of the File
+  console.log('FilePath:', filePath);
+
+  const contentType = object.contentType; // Mime type of the file
+  console.log('contentType:', contentType);
 
   // Exit if this is triggered on a file that is not an image.
-  if (!event.data.contentType.startsWith('image/')) {
+  if (!contentType.startsWith('image/')) {
     console.log('This is not an image.');
     return Promise.resolve();
   }
@@ -31,7 +35,7 @@ exports.handler = function(event, database, storage) {
   }
 
   // Exit if this is a move or deletion event.
-  if (event.data.resourceState === 'not_exists') {
+  if (object.resourceState === 'not_exists') {
     console.log('This is a deletion event.');
     return Promise.resolve();
   }
@@ -52,7 +56,7 @@ exports.handler = function(event, database, storage) {
   const tempLocalThumb236xDir = path.dirname(tempLocalThumb236xFile);
 
   // Cloud Storage files.
-  const bucket = storage.bucket(event.data.bucket);
+  const bucket = storage.bucket(object.bucket);
   const originalFile = bucket.file(filePath);
   const thumb236xFile = bucket.file(thumb236xFilePath);
 
@@ -101,18 +105,19 @@ exports.handler = function(event, database, storage) {
     }).then(() => {
       console.log('Thumbnail URLs saved to database.');
       /* Update Preview Record if it exists */
-      return database.collection('previews').where("imageFilenameOid", "==", filenameDBKey).limit(1).get()
-          .then(function(querySnapshot) {
-            if (!querySnapshot.empty) {
-              console.log('Preview record exists for file');
-              querySnapshot.docs[0].ref.update({
-                previewImageUrl: thumb236xFileUrl
-              });
-            }
-          })
-          .catch(function(error) {
-            console.log("Error getting preview documents:", error);
-          });
+      return database.collection('previews').where('imageFilenameOid', '==', filenameDBKey).limit(1).get()
+        .then((querySnapshot) => {
+          if (!querySnapshot.empty) {
+            console.log('Preview record exists for file');
+            querySnapshot.docs[0].ref.update({
+              previewImageUrl: thumb236xFileUrl
+            });
+          }
+          return true;
+        })
+        .catch((error) => {
+          console.log('Error getting preview documents:', error);
+        });
     });
   }).then(() => console.log('Generate Thumbnail Function Completed'));
 }

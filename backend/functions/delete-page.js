@@ -6,11 +6,11 @@ const BATCH_SIZE = 100;
  *  This will run when a page record is deleted from the pages collection. Any other collection referencing this
  *  record deleted is also deleted. Any files uploaded to storage that belong to this page are deleted.
  */
-exports.handler = function(event, database) {
-  const pageOid = event.params.pageId;
+exports.handler = function(snap, context, database) {
+  const pageOid = context.params.pageId;
   console.log(`Page:${pageOid} was deleted`);
 
-  const deletedValue = event.data.previous.data();
+  const deletedValue = snap.data();
   console.log('Deleted record:', deletedValue);
 
   let imageFilename = getImageFilename(deletedValue.image);
@@ -33,6 +33,7 @@ exports.handler = function(event, database) {
     return commonDB.deleteCollection(database, previewsRef, BATCH_SIZE);
   }).then(() => {
     console.log('Preview deleted');
+    return true;
   }).catch((error) => {
     console.log(`Error: There was an error in the onDeletePage function for page:${pageOid}`, error);
   });

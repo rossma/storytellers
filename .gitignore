@@ -86,4 +86,4 @@
 **/.editorconfig
 
 # Firebase functions
-service-account-credentials.json
+**/service-account-credentials.json

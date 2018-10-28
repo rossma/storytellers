@@ -5,7 +5,7 @@ module.exports = {
   deleteCollection: function (db, collectionRef, batchSize) {
     const query = collectionRef.orderBy('__name__').limit(batchSize);
 
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       deleteQueryBatch(db, query, batchSize, resolve, reject);
     });
   },
@@ -20,23 +20,23 @@ function deleteQueryBatch (db, query, batchSize, resolve, reject) {
 
     // Delete documents in a batch
     const batch = db.batch();
-    snapshot.docs.forEach(function (doc) {
+    snapshot.docs.forEach((doc) => {
       batch.delete(doc.ref);
     });
 
-    return batch.commit().then(function () {
+    return batch.commit().then(() => {
       return snapshot.size;
     });
-  }).then(function (numDeleted) {
+  }).then((numDeleted) => {
     if (numDeleted <= batchSize) {
       resolve();
-      return;
+    } else {
+      // Recurse on the next process tick, to avoid
+      // exploding the stack.
+      process.nextTick(() => {
+        deleteQueryBatch(db, query, batchSize, resolve, reject);
+      });
     }
-
-    // Recurse on the next process tick, to avoid
-    // exploding the stack.
-    process.nextTick(function () {
-      deleteQueryBatch(db, query, batchSize, resolve, reject);
-    });
+    return true;
   }).catch(reject);
 }
