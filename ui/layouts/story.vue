@@ -192,7 +192,13 @@ export default {
     },
     addNewPage (chapterOid) {
       const pages = this.chapterPages(chapterOid)
-      const chapterPage = pages[pages.length - 1].page + 1
+      const chapterPage = (() => {
+        if (pages && pages.length > 1)
+          return pages[pages.length - 1].page + 1
+        else
+          return 1
+      })();
+
       return addPage({
         storyOid: this.story.id,
         chapterOid: chapterOid,
