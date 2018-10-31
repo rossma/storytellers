@@ -83,46 +83,6 @@
           <span>SignOut</span>
         </v-tooltip>
       </v-speed-dial>
-      <!--<v-speed-dial-->
-        <!--v-model="profile.fab"-->
-        <!--:bottom="profile.bottom"-->
-        <!--:direction="profile.direction"-->
-        <!--:hover="profile.hover"-->
-        <!--:transition="profile.transition">-->
-        <!--<v-tooltip left>-->
-          <!--<v-btn-->
-            <!--slot="activator"-->
-            <!--fab-->
-            <!--dark-->
-            <!--small-->
-            <!--@click="userProfile">-->
-            <!--<v-icon>mdi mdi-account-edit</v-icon>-->
-          <!--</v-btn>-->
-          <!--<span>User Profile</span>-->
-        <!--</v-tooltip>-->
-        <!--<v-tooltip left>-->
-          <!--<v-btn-->
-            <!--slot="activator"-->
-            <!--fab-->
-            <!--dark-->
-            <!--small-->
-            <!--@click="signout">-->
-            <!--<v-icon>mdi mdi-logout</v-icon>-->
-          <!--</v-btn>-->
-          <!--<span>SignOut</span>-->
-        <!--</v-tooltip>-->
-      <!--</v-speed-dial>-->
-      <!--<v-btn-->
-        <!--slot="activator"-->
-        <!--v-model="profile.fab"-->
-        <!--color="darken-2"-->
-        <!--dark-->
-        <!--fab-->
-        <!--small-->
-        <!--hover>-->
-        <!--<v-icon>account_circle</v-icon>-->
-        <!--<v-icon>close</v-icon>-->
-      <!--</v-btn>-->
     </v-toolbar>
   </div>
 </template>

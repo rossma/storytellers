@@ -1,11 +1,11 @@
 <template>
-  <label class="btn btn--flat theme--dark custom-file-upload">
+  <label class="v-btn v-btn--icon theme--dark custom-file-upload">
     <input
       id="selectFile"
       type="file"
       @change="fileSelected">
     <div class="btn__content">
-      <v-icon left>{{ icon }}</v-icon>
+      <v-icon>{{ icon }}</v-icon>
       {{ name }}
     </div>
   </label>
@@ -49,7 +49,7 @@ input[type="file"] {
 }
 
 .custom-file-upload {
-  display: inline-block;
+  /*display: inline-block;*/
   cursor: pointer;
 }
 </style>

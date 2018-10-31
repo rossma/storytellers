@@ -5,6 +5,7 @@ const onDeleteStoryFunction = require('./delete-story');
 const onDeleteChapterFunction = require('./delete-chapter');
 const onDeletePageFunction = require('./delete-page');
 const onDeleteImageFunction = require('./delete-image');
+const onDeleteBookFunction = require('./delete-book');
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
@@ -49,4 +50,8 @@ exports.onDeletePage = functions.firestore.document('pages/{pageId}').onDelete((
 
 exports.onDeleteImage = functions.firestore.document('images/{imageId}').onDelete((snap, context) => {
   return onDeleteImageFunction.handler(snap, context, firestoreDatabase, storage, bucketName);
+});
+
+exports.onDeleteBook = functions.firestore.document('book/{bookId}').onDelete((snap, context) => {
+  return onDeleteBookFunction.handler(snap, context, firestoreDatabase, storage, bucketName);
 });

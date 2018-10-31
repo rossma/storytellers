@@ -3,7 +3,7 @@ import { findUserByOid, updateUserDoc } from '~/api/service/user'
 
 const defaultState = () => ({
   uid: null,
-  user: null
+  user: {}
 })
 
 export const state = defaultState
@@ -20,7 +20,7 @@ export const getters = {
   },
 
   isAuthenticated (state) {
-    return !!state.uid || !!state.user
+    return !!state.uid || !!state.user.uid
   }
 
 }

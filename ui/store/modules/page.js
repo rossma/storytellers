@@ -7,8 +7,6 @@ export const state = defaultState
 export const getters = {
 
   pages: state => {
-    console.log('store...........getPages', state.pages)
-
     return state.pages
   }
 
@@ -21,7 +19,6 @@ export const actions = {
   },
 
   async savePages ({ commit }, pagesPayload) {
-    console.log('store...........savePages')
     commit('savePages', pagesPayload)
   }
 

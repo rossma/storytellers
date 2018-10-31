@@ -13,6 +13,16 @@ exports.handler = function(snap, context, database) {
   const deletedValue = snap.data();
   console.log('Deleted record:', deletedValue);
 
+  let bookFilename = getBookFilename(deletedValue.book);
+  console.log(`bookFilename:${bookFilename}`);
+
+  deleteBookFromDB(database, bookFilename).then(() => {
+    console.log('book deletion complete');
+    return true;
+  }).catch((error) => {
+    console.log(`Error: There was an error in the onDeletePage function deleting book:${bookFilename} for page:${pageOid}`, error);
+  });
+
   let imageFilename = getImageFilename(deletedValue.image);
   console.log(`imageFilename:${imageFilename}`);
 
@@ -39,6 +49,14 @@ exports.handler = function(snap, context, database) {
   });
 }
 
+function getBookFilename(book) {
+  if (book && book.filename) {
+    return book.filename;
+  } else {
+    return null;
+  }
+}
+
 function getImageFilename(image) {
   if (image && image.filename) {
     return image.filename;
@@ -62,6 +80,16 @@ function pageIsCoverToStory(database, pageOid, imageFilename) {
 function updateStoryCoverImage(database, storyOid) {
   console.log(`Setting story cover image to blank`);
   return database.collection('stories').doc(storyOid).set({cover: {}}, { merge: true })
+}
+
+
+function deleteBookFromDB(database, bookFilename) {
+  if (bookFilename) {
+    return database.collection('books').doc(bookFilename).delete();
+  } else {
+    console.log('Book filename is empty there nothing to delete');
+    return Promise.resolve();
+  }
 }
 
 function deleteImageFromDB(database, imageFilename) {

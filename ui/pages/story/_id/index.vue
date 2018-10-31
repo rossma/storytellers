@@ -35,6 +35,7 @@ import { findPageByOid } from '~/api/service/page'
 import { findUserByOid } from '~/api/service/user'
 import { findStoryByOid } from '~/api/service/story'
 import { findChapterByOid } from '~/api/service/chapter'
+import clonedepp from 'lodash.clonedeep'
 import StoryActionControls from '~/components/StoryActionControls.vue'
 import StoryDetail from '~/components/StoryDetail.vue'
 import StoryTabs from '~/components/StoryTabs.vue'
@@ -56,6 +57,10 @@ export default {
       page: {
         id: null,
         image: {
+          filename: null,
+          ref: null
+        },
+        book: {
           filename: null,
           ref: null
         },
@@ -104,6 +109,14 @@ export default {
         }
       })
 
+      EventBus.$on('storyBookFileKey', bookDetails => {
+        console.log(`[Story Detail] - storyBookFileKey event received:`, bookDetails)
+        this.page.book = {
+          filename: bookDetails.filenameKey,
+          ref: bookDetails.bookSrc
+        }
+      })
+
       EventBus.$on('deletePage', page => {
         console.log(`[Story Detail] - deletePage event received:`, page)
         this.deletePage(page)
@@ -117,6 +130,7 @@ export default {
   },
   beforeDestroy () {
     EventBus.$off('storyImageFileKey')
+    EventBus.$off('storyBookFileKey')
     EventBus.$off('deletePage')
     EventBus.$off('savePages')
   },
@@ -133,6 +147,7 @@ export default {
             storyOid: pageDoc.data().storyOid,
             uid: pageDoc.data().uid,
             image: { ...pageDoc.data().image },
+            book: { ...pageDoc.data().book }
           }
 
           if (this.isAuthorised()) {
@@ -163,7 +178,7 @@ export default {
           this.story.summary = storyDoc.data().summary
           this.story.title = storyDoc.data().title
           this.story.uid = storyDoc.data().uid
-          this.story.ext.activePage = this.page
+          this.story.ext.activePage = clonedepp(this.page)
           this.saveStory(this.story)
         } else {
           this.$toast.error('Story does not exist')

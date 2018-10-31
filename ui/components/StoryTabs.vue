@@ -23,19 +23,6 @@
       <v-tab-item>
         <v-card flat>
           <v-card-text>
-            <div id="viewer" />
-            <div id="pagination">
-              <a
-                id="prev"
-                href="#prev"
-                class="arrow"
-                @click="prev($event)">...</a>
-              <a
-                id="next"
-                href="#next"
-                class="arrow"
-                @click="next($event)">...</a>
-            </div>
           </v-card-text>
         </v-card>
       </v-tab-item>
@@ -63,31 +50,18 @@
       :chapter-oid="page.chapterOid"
       :page-oid="page.id"
       :current-image-oid="currentImageOid"
+      :current-book-oid="currentBookOid"
       :editable="editable"
       :has-story-cover="hasStoryCover"
       :dialog="imageDialog"
-      :src="pageImageSrc()"
+      :image-src="pageImageSrc()"
+      :book-src="pageBookSrc()"
       @close="imageDialog = false" />
   </div>
 </template>
 
 <script>
 import StoryTabsMediumViewer from '~/components/StoryTabsMediumViewer'
-// https://github.com/futurepress/epub.js/tree/v0.3/libs
-import Epub from 'epubjs/lib/index'
-
-// global.ePub = Epub
-window.ePub = Epub
-
-var url = 'https://firebasestorage.googleapis.com/v0/b/storytellers2-13997.appspot.com/o/pg19033.epub?alt=media&token=06a11974-4ef1-41bf-a11c-b4a573af8f30'
-var book = window.ePub(url)
-var rendition = book.renderTo('viewer', {
-  width: 400,
-  height: 400
-})
-
-var displayed = rendition.display()
-console.log('displayed:', displayed)
 
 export default {
   name: 'StoryTabs',
@@ -111,28 +85,28 @@ export default {
   data () {
     return {
       tab: null,
-      imageDialog: false
+      imageDialog: true
     }
   },
   computed: {
     currentImageOid: function () {
       return (this.page.image && this.page.image.filename)
+    },
+    currentBookOid: function () {
+      return (this.page.book && this.page.book.filename)
     }
   },
   methods: {
-    next (event) {
-      console.log('ssssssssssssssssssssss next')
-      rendition.next()
-      event.preventDefault()
-    },
-    prev (event) {
-      console.log('ssssssssssssssssssssss prev')
-      rendition.prev()
-      event.preventDefault()
-    },
     pageImageSrc () {
       if (this.page.image && this.page.image.ref) {
         return this.page.image.ref
+      } else {
+        return ''
+      }
+    },
+    pageBookSrc () {
+      if (this.page.book && this.page.book.ref) {
+        return this.page.book.ref
       } else {
         return ''
       }
@@ -179,20 +153,6 @@ export default {
     /*box-shadow:           inset 10px 0 20px rgba(0,0,0,.1);*/
     /*padding: 40px 40px;*/
   /*}*/
-
-  #viewer {
-    overflow: hidden;
-    width: 800px;
-    /*height: 400px;*/
-    margin: 0 50px;
-    /*background: url('ajax-loader.gif') center center no-repeat;*/
-  }
-  #viewer .epub-view {
-    background: white;
-    box-shadow: 0 0 4px #ccc;
-    /*margin: 10px;*/
-    /*padding: 40px 80px;*/
-  }
 
   #pagination {
     text-align: center;

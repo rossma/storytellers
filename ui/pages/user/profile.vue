@@ -122,9 +122,9 @@ export default {
   created: function () {
     console.log('in created, user:', this.user)
     this.mutableUser = {
-      photoUrl: this.user.photoUrl,
-      email: this.user.email,
-      displayName: this.user.displayName
+      photoUrl: this.user.data.photoUrl,
+      email: this.user.data.email,
+      displayName: this.user.data.displayName
     }
 
     console.log('in created, mutable user:', this.mutableUser)

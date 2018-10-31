@@ -12,7 +12,8 @@ function findPages (pagesRef) {
         public: m.data().public,
         storyOid: m.data().storyOid,
         uid: m.data().uid,
-        image: { ...m.data().image }
+        image: { ...m.data().image },
+        book: { ...m.data().book }
       }
       console.log('page:', page)
       return page

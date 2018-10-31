@@ -11,12 +11,12 @@ export default function ({ store, req }) {
      */
     let user = getUserFromSession(req)
     console.log('[CHECK-AUTH MIDDLEWARE] - user from session:', user)
-    if (!user) {
+    if (!user || !user.uid) {
       console.log('[CHECK-AUTH MIDDLEWARE] - User not found in session, looking up in cookie')
       user = getUserFromCookie(req)
     }
 
-    if (user) {
+    if (user && user.uid) {
       console.log('[CHECK-AUTH MIDDLEWARE] - User found, going to initialise the user object by uid in the store')
       store.dispatch('modules/user/saveUID', user.uid)
     }
