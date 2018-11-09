@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="medium-viewer-book-container">
     <epub-container :book-src="bookSrc" />
     <!--<epub-container-->
       <!--:book-src="bookSrc"-->
@@ -38,4 +38,15 @@ export default {
   }
 }
 </script>
+
+<style>
+.medium-viewer-book-container {
+  /*border: 10px solid red;*/
+  /*background-color: blue;*/
+  /*height: 100vh;*/
+  /*width: 100vw;*/
+  /*top: 0;*/
+  /*left: 0;*/
+}
+</style>
 

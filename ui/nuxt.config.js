@@ -67,7 +67,7 @@ module.exports = {
   },
 
   router: {
-    middleware: 'check-auth'
+    middleware: ['check-auth']
   },
 
   // serverMiddleware: [

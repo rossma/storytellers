@@ -3,6 +3,7 @@
     <v-layout
       row
       wrap>
+      {{ user }}
       <v-flex
         v-for="preview in previews"
         :key="preview.id"
@@ -46,13 +47,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import { findStoriesByUser } from '~/api/service/story'
 import { findPagesByStory } from '~/api/service/page'
 import { findPreviewsByFilter } from '~/api/service/preview'
+import UserStateMixin from '~/mixins/UserStateMixin'
 
 export default {
   name: 'StoriesPreviewList',
+  mixins: [ UserStateMixin ],
   props: {
     showAction: {
       type: Boolean,
@@ -68,15 +70,21 @@ export default {
       }
     }
   },
+  watch: {
+    user: function (val) {
+      console.log('user watch triggered', val)
+      if (this.filterBy.userProfile && this.user.uid) {
+        this.fetchUserProfileStories()
+      }
+    }
+  },
   data () {
     return {
       previews: []
     }
   },
   computed: {
-    ...mapGetters('modules/user', [
-      'user'
-    ])
+
   },
   mounted: function () {
     this.$nextTick(() => {
@@ -85,13 +93,15 @@ export default {
   },
   methods: {
     init () {
-      if (this.filterBy.userProfile) {
+      console.log('this.filterBy.userProfile', this.filterBy.userProfile)
+      if (this.filterBy.userProfile && this.user.uid) {
         this.fetchUserProfileStories()
-      } else {
+      } else if (!this.filterBy.userProfile) {
         this.fetchPublicStories()
       }
     },
     fetchUserProfileStories () {
+      console.log('qqqqqqqqqqqqqqqqqqqqqqqqqq:', this.user.uid)
       let stories = null
       findStoriesByUser(this.user.uid).then((storiesSnapshot) => {
         stories = storiesSnapshot
@@ -125,6 +135,8 @@ export default {
       })
     },
     fetchPublicStories () {
+      console.log('fetchUserProfileStories :1', JSON.stringify(this.user))
+
       findPreviewsByFilter(this.filterBy).then((previewsSnapshot) => {
         this.previews = previewsSnapshot
       }).catch((error) => {

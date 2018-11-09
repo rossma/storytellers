@@ -18,6 +18,9 @@ export default function ({ store, req }) {
 
     if (user && user.uid) {
       console.log('[CHECK-AUTH MIDDLEWARE] - User found, going to initialise the user object by uid in the store')
+      /* not calling saveUserByUid as this requires the user to be signed in, on the server here not signing user in
+        instead using authenticated middleware to saveUserByUid  on the client when uid is not null but user is
+       */
       store.dispatch('modules/user/saveUID', user.uid)
     }
   }

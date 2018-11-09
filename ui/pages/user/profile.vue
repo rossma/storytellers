@@ -1,6 +1,6 @@
 <template>
   <v-container grid-list-xl>
-    <v-layout>
+    <v-layout v-if="user.uid">
       <v-flex xs12>
         <v-expansion-panel>
           <v-expansion-panel-content>
@@ -87,13 +87,15 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 import { uploadProfileImage } from '~/api/service/image'
 
 import firebaseApp from '~/firebase/app'
 import StoriesPreviewList from '~/components/StoriesPreviewList'
+import UserStateMixin from '~/mixins/UserStateMixin'
 
 export default {
+  mixins: [ UserStateMixin ],
   components: {
     StoriesPreviewList
   },
@@ -103,33 +105,47 @@ export default {
       nameRules: [
         (v) => !!v || 'Name is required'
       ],
-      previewAuthorFilter: {
-        byAuthorUid: null,
-        userProfile: true
-      },
-      mutableUser: {
-        photoUrl: null,
-        email: null,
-        displayName: null
-      }
+      // previewAuthorFilter: {
+      //   byAuthorUid: null,
+      //   userProfile: true
+      // }
     }
   },
   computed: {
-    ...mapGetters('modules/user', [
-      'user'
-    ])
+    mutableUser () {
+      // because we have v-if in template to check if uid is set this only gets called when mounted (uid is present)
+      console.log('in mutable user computation')
+      return {
+        photoUrl: this.user.data.photoUrl,
+        email: this.user.data.email,
+        displayName: this.user.data.displayName
+      }
+
+      // if (this.user.uid) {
+      //   console.log('user uid is set', this.user)
+      // } else {
+      //   console.log('user uid is not set', this.user)
+      // }
+      // return this.user
+    },
+    previewAuthorFilter () {
+      return {
+        byAuthorUid: this.user.uid,
+        userProfile: true
+      }
+    }
   },
   created: function () {
-    console.log('in created, user:', this.user)
-    this.mutableUser = {
-      photoUrl: this.user.data.photoUrl,
-      email: this.user.data.email,
-      displayName: this.user.data.displayName
-    }
-
-    console.log('in created, mutable user:', this.mutableUser)
-
-    this.previewAuthorFilter.byAuthorUid = this.user.uid
+    console.log('in created, user:', JSON.stringify(this.user))
+    // this.mutableUser = {
+    //   photoUrl: this.user.data.photoUrl,
+    //   email: this.user.data.email,
+    //   displayName: this.user.data.displayName
+    // }
+    //
+    // console.log('in created, mutable user:', this.mutableUser)
+    //
+    // this.previewAuthorFilter.byAuthorUid = this.user.uid
   },
   methods: {
     ...mapActions('modules/user', [

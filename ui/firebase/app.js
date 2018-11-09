@@ -11,4 +11,14 @@ const config = {
   storageBucket: `${process.env.FIREBASE_CLIENT_PROJECT_ID}.appspot.com`
 }
 
-export default !firebase.apps.length ? firebase.initializeApp(config) : firebase.app()
+const firebaseApp = !firebase.apps.length ? firebase.initializeApp(config) : firebase.app()
+
+firebaseApp.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    console.log('[FIREBASE] - User is logged in', user)
+  } else {
+    console.log('[FIREBASE] - User is not logged in')
+  }
+})
+
+export default firebaseApp

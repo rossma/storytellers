@@ -17,7 +17,7 @@
             @click.native="closeDialog()">
             <v-icon>close</v-icon>
           </v-btn>
-          <v-toolbar-title>Illustration</v-toolbar-title>
+          <v-toolbar-title>{{ story.title }}</v-toolbar-title>
           <v-spacer />
           <v-toolbar-items class="medium-viewer-toolbar">
             <v-tooltip bottom>
@@ -75,6 +75,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
 import StoryTabsMediumViewerBook from '~/components/StoryTabsMediumViewerBook'
 import StoryTabsMediumViewerImage from '~/components/StoryTabsMediumViewerImage'
@@ -143,6 +144,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('modules/story', [
+      'story'
+    ]),
     previewImageSrc: function () {
       if (this.imagePreviewSrc) {
         return this.imagePreviewSrc
