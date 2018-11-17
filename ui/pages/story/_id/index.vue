@@ -1,7 +1,7 @@
 <template>
   <v-container grid-list-xl>
     <v-layout
-      v-if="story.id"
+      v-if="user.uid && story.id"
       row
       wrap>
       <v-flex xs12>
@@ -39,8 +39,10 @@ import clonedepp from 'lodash.clonedeep'
 import StoryActionControls from '~/components/StoryActionControls.vue'
 import StoryDetail from '~/components/StoryDetail.vue'
 import StoryTabs from '~/components/StoryTabs.vue'
+import UserStateMixin from '~/mixins/UserStateMixin'
 
 export default {
+  mixins: [ UserStateMixin ],
   components: {
     StoryActionControls,
     StoryDetail,
@@ -76,9 +78,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('modules/user', [
-      'user'
-    ]),
     ...mapGetters('modules/page', [
       'pages'
     ]),
@@ -91,6 +90,12 @@ export default {
       } else {
         return 0
       }
+    }
+  },
+  watch: {
+    user: function (val) {
+      console.log('user watch triggered', val)
+      this.loadPage(this.$route.params.id)
     }
   },
   created: function () {
@@ -137,30 +142,32 @@ export default {
   methods: {
     ...mapActions('modules/story', ['saveStory']),
     loadPage (pageOid) {
-      findPageByOid(pageOid).then((pageDoc) => {
-        if (pageDoc.exists) {
-          this.page = {
-            id: pageOid,
-            chapterOid: pageDoc.data().chapterOid,
-            page: pageDoc.data().page,
-            public: pageDoc.data().public,
-            storyOid: pageDoc.data().storyOid,
-            uid: pageDoc.data().uid,
-            image: { ...pageDoc.data().image },
-            book: { ...pageDoc.data().book }
-          }
+      if (this.user.uid) {
+        findPageByOid(pageOid).then((pageDoc) => {
+          if (pageDoc.exists) {
+            this.page = {
+              id: pageOid,
+              chapterOid: pageDoc.data().chapterOid,
+              page: pageDoc.data().page,
+              public: pageDoc.data().public,
+              storyOid: pageDoc.data().storyOid,
+              uid: pageDoc.data().uid,
+              image: {...pageDoc.data().image},
+              book: {...pageDoc.data().book}
+            }
 
-          if (this.isAuthorised()) {
-            this.initAuthorUser(this.page.uid)
-            this.initStory(this.page.storyOid)
-            this.initChapter(this.page.chapterOid)
+            if (this.isAuthorised()) {
+              this.initAuthorUser(this.page.uid)
+              this.initStory(this.page.storyOid)
+              this.initChapter(this.page.chapterOid)
+            } else {
+              this.$toast.error('User not authorised to view this page')
+            }
           } else {
-            this.$toast.error('User not authorised to view this page')
+            this.$toast.error('Page does not exist')
           }
-        } else {
-          this.$toast.error('Page does not exist')
-        }
-      })
+        })
+      }
     },
     initAuthorUser (userOid) {
       findUserByOid(userOid).then((userDoc) => {

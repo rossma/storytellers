@@ -18,6 +18,7 @@
               v-model="email"
               label="email" />
             <v-text-field
+              v-model="password"
               :append-icon="showPassword ? 'visibility' : 'visibility_off'"
               :type="showPassword ? 'text' : 'password'"
               name="password-in-txt"

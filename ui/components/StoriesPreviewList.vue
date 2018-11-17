@@ -3,7 +3,6 @@
     <v-layout
       row
       wrap>
-      {{ user }}
       <v-flex
         v-for="preview in previews"
         :key="preview.id"
@@ -83,9 +82,6 @@ export default {
       previews: []
     }
   },
-  computed: {
-
-  },
   mounted: function () {
     this.$nextTick(() => {
       this.init()
@@ -101,7 +97,6 @@ export default {
       }
     },
     fetchUserProfileStories () {
-      console.log('qqqqqqqqqqqqqqqqqqqqqqqqqq:', this.user.uid)
       let stories = null
       findStoriesByUser(this.user.uid).then((storiesSnapshot) => {
         stories = storiesSnapshot

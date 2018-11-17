@@ -26,7 +26,7 @@
                 icon
                 dark
                 :color="!isImageViewer ? 'green' : ''"
-                @click.native="isImageViewer = false">
+                @click.native="initEbook();isImageViewer = false">
                 <v-icon>book</v-icon>
               </v-btn>
               <span>Words</span>
@@ -186,6 +186,9 @@ export default {
           reader.readAsArrayBuffer(file)
         }
       }
+    },
+    initEbook () {
+      EventBus.$emit('initEbook')
     },
     saveMediaFile () {
       if (this.isImageViewer) {

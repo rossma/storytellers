@@ -148,7 +148,7 @@ export default {
     loadChapters (story) {
       findChaptersByStory(story.id).then((chapters) => {
         this.chapters = chapters.map(chapter => {
-          chapter.active = (chapter.id === story.ext.activePage.chapterOid)
+          chapter.active = (chapter.id === story.ext.activePage.chapterOid) // todo bug -- on saving story title this story.ext.activePage is null
           return chapter
         }).sort((a, b) => a.chapter - b.chapter)
         return findPagesByStory(story.id)

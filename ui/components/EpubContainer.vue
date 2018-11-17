@@ -1,32 +1,11 @@
 <template>
   <div>
-    <div v-if="bookSrc">
-      <div id="navigation" class="ebook-navigation">
-        <h1 id="title">...</h1>
-        <image id="cover" width="150px"/>
-        <h2 id="author">...</h2>
-        <div id="toc" class="ebook-toc"></div>
-      </div>
+    <div v-if="hasBookUrl">
       <div id="main">
-        <div id="viewer" class="ebook-viewer"/>
-        <div
-          id="pagination"
-          class="ebook-pagination">
-          <v-icon
-            large
-            class="ebook-prev"
-            @click="prevPage($event)"
-          >
-            keyboard_arrow_left
-          </v-icon>
-          <v-icon
-            large
-            class="ebook-next"
-            @click="nextPage($event)"
-          >
-            keyboard_arrow_right
-          </v-icon>
-        </div>
+        <div id="viewer"
+             :class="[spreadLayout ? '' : 'single', 'ebook-viewer-spreads']" />
+        <a id="prev" href="#prev" class="arrow prev" @click.prevent="prevPage()" v-show="hasPrev">‹</a>
+        <a id="next" href="#next" class="arrow next" @click.prevent="nextPage()" v-show="hasNext">›</a>
       </div>
     </div>
     <img
@@ -53,6 +32,7 @@
     data () {
       return {
         book: null,
+        mutableBookSrc: null,
         displayed: null,
         rendition: null,
         nextNav: null,
@@ -64,32 +44,58 @@
         prevLabel: null,
         prev: {
           textContent: null
-        }
+        },
+        hasPrev: false,
+        hasNext: false,
+        spreadLayout: true
       }
     },
     computed: {
+      hasBookUrl: function () {
+        console.log('this.bookSrc', this.mutableBookSrc)
+        if (this.mutableBookSrc) {
+          return true
+        } else {
+          return false
+        }
+      }
+    },
+    created: () => {
+
     },
     mounted: function () {
       console.log('mounted')
       this.$nextTick(() => {
-        this.createBook(this.bookSrc)
+        EventBus.$on('initEbook', () => {
+          this.init()
+        })
 
         EventBus.$on('epubBookSrc', src => {
           this.createBook(src)
         })
-
       })
     },
     beforeDestroy () {
+      EventBus.$off('initEbook')
       EventBus.$off('epubBookSrc')
     },
     methods: {
+      init () {
+        if (!this.book && this.bookSrc) {
+          this.createBook(this.bookSrc)
+        }
+      },
       createBook (src) {
         console.log('In epub create book')
         // console.log(src)
 
         if (src) {
+          // this.bookSrc = src
+          this.mutableBookSrc = src
+
+          console.log('a')
           if (this.book) {
+            console.log('b')
             this.book.destroy()
           }
 
@@ -97,128 +103,69 @@
           window.ePub = Epub
 
           // const url = 'https://firebasestorage.googleapis.com/v0/b/storytellers2-13997.appspot.com/o/pg19033.epub?alt=media&token=06a11974-4ef1-41bf-a11c-b4a573af8f30'
-          // const book = window.ePub(src)
-          this.book = new Book(src, {
-            // fixedLayout: true,
-            // layoutOveride : { layout: 'pre-paginated' }
-          })
-          // this.book = window.ePub(src, {})
+          console.log('c')
 
-          // this.book.forceSingle(true) method not a function
+          this.book = window.ePub(src, {})
+          // this.book = window.ePub(url)
 
           this.rendition = this.book.renderTo('viewer', {
-            flow: "scrolled-doc"
-            // fixedLayout: true
-             // width: 400,
-             // height: 400
-            // layoutOveride : { layout: 'pre-paginated' }
+            width: "100%",
+            height: 600,
+            spread: "always"
           })
 
-          console.log('rendition:', this.rendition)
+          console.log('d. rendition:', this.rendition)
 
-          // this.rendition.layout('pre-paginated')
-          // this.rendition.layout('reflowable')
+          // this.rendition.display(currentSectionIndex)
+          const display = this.rendition.display()
+          console.log('display:', display)
 
+          this.book.ready.then(() => {
+            console.log('e. book is ready................')
 
+            var keyListener = (e) => {
 
-          this.book.on('renderer:resized', (data) => { // doesnt get called?
-            console.log('resizing', data)
-          })
-
-          this.displayed = this.rendition.display()
-          console.log('displayed:', this.displayed) // this is a promise
-
-          this.displayed.then(data => console.log('displayed data:', data))
-
-          this.rendition.on("rendered", (section) => {
-            var nextSection = section.next()
-            var prevSection = section.prev()
-            if(nextSection) {
-              this.nextNav = this.book.navigation.get(nextSection.href)
-              if(this.nextNav) {
-                this.nextLabel = nextNav.label
-              } else {
-                this.nextLabel = "next"
+              if ((e.keyCode || e.which) == 37) {
+                this.prevPage()
               }
-              this.next.textContent = this.nextLabel + " »"
-            } else {
-              this.next.textContent = ""
-            }
-            if(prevSection) {
-              this.prevNav = this.book.navigation.get(prevSection.href)
-              if(this.prevNav) {
-                this.prevLabel = prevNav.label
-              } else {
-                this.prevLabel = "previous"
+
+              if ((e.keyCode || e.which) == 39) {
+                this.nextPage()
               }
-              this.prev.textContent = "« " + this.prevLabel
-            } else {
-              this.prev.textContent = ""
+
             }
-            // Add CFI fragment to the history
-            //history.pushState({}, '', section.href)
-            window.location.hash = "#/"+section.href
+
+            this.rendition.on("keyup", keyListener)
+            document.addEventListener("keyup", keyListener, false)
+
           })
+
+          // this.rendition.on("rendered", (section) => {
+          // })
 
           this.rendition.on("relocated", (location) => {
-            console.log(location)
+            console.log('relocated: ', location)
+
+            this.hasNext = !location.atEnd
+            this.hasPrev = !location.atStart
+
           })
 
-          this.book.loaded.navigation.then( (toc) => {
-            var $nav = document.getElementById("toc"),
-              docfrag = document.createDocumentFragment()
-            var addTocItems = (parent, tocItems) => {
-              var $ul = document.createElement("ul")
-              tocItems.forEach( (chapter) => {
-                var item = document.createElement("li")
-                var link = document.createElement("a")
-                link.textContent = chapter.label
-                link.href = chapter.href
-                item.appendChild(link)
-                if (chapter.subitems) {
-                  addTocItems(item, chapter.subitems)
-                }
-                link.onclick = () => {
-                  var url = link.getAttribute("href")
-                  this.rendition.display(url)
-                  return false
-                }
-                $ul.appendChild(item)
-              })
-              parent.appendChild($ul)
-            }
-            addTocItems(docfrag, toc)
-            $nav.appendChild(docfrag)
-            if ($nav.offsetHeight + 60 < window.innerHeight) {
-              $nav.classList.add("fixed")
-            }
-          })
+          // this.rendition.on("layout", (layout) => {
+          //   console.log('rendition on layout', layout)
+          // })
 
-          this.book.loaded.metadata.then( (meta) => {
-            var $title = document.getElementById("title")
-            var $author = document.getElementById("author")
-            var $cover = document.getElementById("cover")
-            $title.textContent = meta.title
-            $author.textContent = meta.creator
-            if (this.book.archive) {
-              this.book.archive.createUrl(this.book.cover)
-                .then( (url) => {
-                  $cover.src = url
-                })
-            } else {
-              $cover.src = this.book.cover
-            }
+          window.addEventListener("unload", () => {
+            console.log("unloading")
+            this.book.destroy()
           })
-
         }
       },
-      nextPage (event) {
-        this.rendition.next()
-        event.preventDefault()
+      nextPage () {
+        this.book.package.metadata.direction === "rtl" ? this.rendition.prev() : this.rendition.next()
       },
-      prevPage (event) {
-        this.rendition.prev()
-        event.preventDefault()
+      prevPage () {
+        this.book.package.metadata.direction === "rtl" ? this.rendition.next() : this.rendition.prev()
       }
     }
   }
@@ -230,122 +177,116 @@
   /*width: 100px;*/
 }
 
-.ebook-navigation {
-  width: 300px;
+body {
+  margin: 0;
+  background: #fafafa;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #333;
+
   position: absolute;
-  overflow: auto;
-  top: 60px;
-  left: 1000px
-}
-.ebook-navigation.fixed {
-  position: fixed;
-}
-.ebook-navigation h1 {
-  width: 200px;
-  font-size: 16px;
-  font-weight: normal;
-  color: #777;
-  margin-bottom: 10px;
-}
-.ebook-navigation h2 {
-  font-size: 14px;
-  font-weight: normal;
-  color: #B0B0B0;
-  margin-bottom: 20px;
-}
-.ebook-navigation ul {
-  padding-left: 18px;
-  margin-left: 0;
-  margin-top: 12px;
-  margin-bottom: 12px;
-}
-.ebook-navigation ul li {
-  list-style: decimal;
-  margin-bottom: 10px;
-  color: #cccddd;
-  font-size: 12px;
-  padding-left: 0;
-  margin-left: 0;
-}
-.ebook-navigation ul li a {
-  color: #ccc;
-  text-decoration: none;
-}
-.ebook-navigation ul li a:hover {
-  color: #777;
-  text-decoration: underline;
-}
-.ebook-navigation ul li a.active {
-  color: #000;
+  height: 100%;
+  width: 100%;
+  min-height: 800px;
 }
 
-/*.ebook-viewer {*/
-  /*!*overflow: hidden;*!*/
-  /*!*width: 800px;*!*/
-  /*!*height: 400px;*!*/
-  /*!*margin: 0 50px;*!*/
-  /*!*background: url('ajax-loader.gif') center center no-repeat;*!*/
-  /*!*height:100vh;*!*/
-/*}*/
+.ebook-viewer-spreads {
+  width: 900px;
+  height: 600px;
+  box-shadow: 0 0 4px #ccc;
+  border-radius: 5px;
+  padding: 0;
+  position: relative;
+  margin: 10px auto;
+  background: white url('/img/ajax-loader.gif') center center no-repeat;
+  /*background: white center center no-repeat;*/
+  top: calc(50vh - 400px);
+}
 
+.ebook-viewer-spreads .epub-view > iframe {
+  background: white;
+}
 
-/*.ebook-viewer .epub-view {*/
-  /*background: white;*/
-  /*box-shadow: 0 0 4px #ccc;*/
-  /*!*margin: 10px;*!*/
-  /*!*padding: 40px 80px;*!*/
-/*}*/
-
-.ebook-viewer {
+.ebook-viewer.scrolled {
   overflow: hidden;
   width: 800px;
-  margin: 0 50px;
-  /*background: url('ajax-loader.gif') center center no-repeat;*/
+  margin: 0 auto;
+  position: relative;
+  background: url('/img/ajax-loader.gif') center center no-repeat;
+
 }
-.ebook-viewer .epub-view {
+
+.ebook-viewer.scrolled .epub-container {
   background: white;
   box-shadow: 0 0 4px #ccc;
-  /*margin: 10px;*/
-  /*padding: 40px 80px;*/
+  margin: 10px;
+  padding: 20px;
 }
-.ebook-main {
-  position: absolute;
-  top: 50px;
-  left: 50px;
-  width: 800px;
-  z-index: 2;
-  transition: left .15s cubic-bezier(.55, 0, .2, .8) .08s;
+
+.ebook-viewer.scrolled .epub-view > iframe {
+  background: white;
 }
-.ebook-main.open {
+
+.prev {
   left: 0;
 }
-.ebook-pagination {
-  text-align: center;
-  margin-left: 80px;
-  /*padding: 0 50px;*/
+
+.next {
+  right: 0;
 }
+
+@media (min-width: 1000px) {
+  .ebook-viewer-spreads:after {
+    position: absolute;
+    width: 1px;
+    border-right: 1px #000 solid;
+    height: 90%;
+    z-index: 1;
+    left: 50%;
+    margin-left: -1px;
+    top: 5%;
+    opacity: .15;
+    box-shadow: -2px 0 15px rgba(0, 0, 0, 1);
+    content:  "";
+  }
+
+  .ebook-viewer-spreads.single:after {
+    display: none;
+  }
+
+  .prev {
+    left: 40px;
+  }
+
+  .next {
+    right: 40px;
+  }
+}
+
 .arrow {
-  margin: 14px;
-  display: inline-block;
-  text-align: center;
+  position: fixed;
+  top: 50%;
+  margin-top: -32px;
+  font-size: 64px;
+  color: #E2E2E2;
+  font-family: arial, sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
   text-decoration: none;
-  color: #ccc;
 }
-.arrow:hover {
+
+.arrow:hover, .navlink:hover {
   color: #777;
 }
-.arrow:active {
+
+.arrow:active, .navlink:hover {
   color: #000;
 }
-.ebook-prev {
-  float: left;
-}
-.ebook-next {
-  float: right;
-}
-.ebook-toc {
+
+svg {
   display: block;
-  margin: 10px auto;
 }
 
 </style>

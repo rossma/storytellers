@@ -17,7 +17,7 @@
                   flat>
                   <v-tooltip top>
                     <v-avatar
-                      v-show="!mutableUser.photoUrl"
+                      v-show="!computedUser.photoUrl"
                       slot="activator"
                       class="indigo jbtn-file">
                       <v-icon dark>account_circle</v-icon>
@@ -26,11 +26,11 @@
                         @change="profileImageSelected">
                     </v-avatar>
                     <v-avatar
-                      v-show="mutableUser.photoUrl"
+                      v-show="computedUser.photoUrl"
                       slot="activator"
                       class="jbtn-file">
                       <img
-                        :src="mutableUser.photoUrl"
+                        :src="formUser.photoUrl"
                         alt="no photo">
                       <input
                         type="file"
@@ -47,12 +47,12 @@
                     v-model="valid"
                     lazy-validation>
                     <v-text-field
-                      v-model="mutableUser.email"
+                      v-model="computedUser.email"
                       label="Email"
                       readonly
                       disabled />
                     <v-text-field
-                      v-model="mutableUser.displayName"
+                      v-model="formUser.displayName"
                       :rules="nameRules"
                       label="Display Name"
                       required />
@@ -105,28 +105,21 @@ export default {
       nameRules: [
         (v) => !!v || 'Name is required'
       ],
-      // previewAuthorFilter: {
-      //   byAuthorUid: null,
-      //   userProfile: true
-      // }
+      formUser: {
+        photoUrl: '',
+        displayName: ''
+      },
+      newProfileImageFile: null
     }
   },
   computed: {
-    mutableUser () {
-      // because we have v-if in template to check if uid is set this only gets called when mounted (uid is present)
-      console.log('in mutable user computation')
-      return {
-        photoUrl: this.user.data.photoUrl,
-        email: this.user.data.email,
-        displayName: this.user.data.displayName
+    computedUser: {
+      get: function () {
+        return this.user.data
+      },
+      set: function (newValue) {
+        this.initFormUser(newValue)
       }
-
-      // if (this.user.uid) {
-      //   console.log('user uid is set', this.user)
-      // } else {
-      //   console.log('user uid is not set', this.user)
-      // }
-      // return this.user
     },
     previewAuthorFilter () {
       return {
@@ -135,52 +128,79 @@ export default {
       }
     }
   },
+
+  watch: {
+    computedUser: function (newValue) {
+      this.initFormUser(newValue)
+    }
+  },
+
   created: function () {
     console.log('in created, user:', JSON.stringify(this.user))
-    // this.mutableUser = {
-    //   photoUrl: this.user.data.photoUrl,
-    //   email: this.user.data.email,
-    //   displayName: this.user.data.displayName
-    // }
-    //
-    // console.log('in created, mutable user:', this.mutableUser)
-    //
-    // this.previewAuthorFilter.byAuthorUid = this.user.uid
+    this.computedUser = this.user.data
   },
   methods: {
     ...mapActions('modules/user', [
       'updateUser'
     ]),
+    initFormUser(formValue) {
+      if (formValue) {
+        this.formUser.photoUrl = formValue.photoUrl,
+        this.formUser.displayName = formValue.displayName
+      }
+    },
     profileImageSelected (e) {
       if (e.target.files[0]) {
         console.log('profile image selected')
-        let file = e.target.files[0]
-        const metadata = {
-          'contentType': file.type
+        this.newProfileImageFile = e.target.files[0]
+        this.computedUser = {
+          photoUrl: URL.createObjectURL(this.newProfileImageFile),
+          displayName: this.formUser.displayName
         }
-        uploadProfileImage(file, metadata, this.user.uid).then((downloadUrl) => {
-          this.mutableUser.photoUrl = downloadUrl
-        }).catch((error) => {
-          this.$toast.error(error.message)
-        })
+        // uploadProfileImage(file, metadata, this.user.uid).then((downloadUrl) => {
+        //   this.computedUser = {
+        //     photoUrl: downloadUrl,
+        //     displayName: this.formUser.displayName
+        //   }
+        // }).catch((error) => {
+        //   this.$toast.error(error.message)
+        // })
       } else {
         this.$toast.error('No profile image selected')
       }
     },
+    uploadProfileImage() {
+      if (this.newProfileImageFile) {
+        const metadata = {
+          'contentType': this.newProfileImageFile.type
+        }
+        return uploadProfileImage(this.newProfileImageFile, metadata, this.user.uid).then((downloadUrl) => {
+          this.newProfileImageFile = null
+          return downloadUrl
+        })
+      } else {
+        return Promise.resolve(null)
+      }
+    },
     submit () {
       if (this.$refs.form.validate()) {
-        const userPart = {
-          displayName: this.mutableUser.displayName,
-          photoUrl: this.mutableUser.photoUrl
-        }
+        this.uploadProfileImage().then((downloadUrl) => {
+          console.log('downloadUrl:', downloadUrl)
 
-        const payload = { user: this.user, userPart: userPart }
-        this.updateUser(payload).then(() => {
-          return firebaseApp.auth().currentUser.updateProfile(userPart)
-        }).then(() => {
-          this.$toast.success('Profile successfully updated')
-        }).catch((error) => {
-          this.$toast.error(error.message)
+          const userPart = {
+            photoUrl: downloadUrl ? downloadUrl : this.formUser.photoUrl,
+            displayName: this.formUser.displayName
+          }
+
+          const payload = { user: this.user, userPart: userPart }
+          this.updateUser(payload).then(() => {
+            return firebaseApp.auth().currentUser.updateProfile(userPart)
+          }).then(() => {
+            this.$toast.success('Profile successfully updated')
+          }).catch((error) => {
+            this.$toast.error(error.message)
+          })
+
         })
       }
     }
