@@ -60,9 +60,6 @@
         }
       }
     },
-    created: () => {
-
-    },
     mounted: function () {
       console.log('mounted')
       this.$nextTick(() => {
@@ -87,10 +84,8 @@
       },
       createBook (src) {
         console.log('In epub create book')
-        // console.log(src)
 
         if (src) {
-          // this.bookSrc = src
           this.mutableBookSrc = src
 
           console.log('a')
@@ -99,14 +94,9 @@
             this.book.destroy()
           }
 
-          // global.ePub = Epub
           window.ePub = Epub
 
-          // const url = 'https://firebasestorage.googleapis.com/v0/b/storytellers2-13997.appspot.com/o/pg19033.epub?alt=media&token=06a11974-4ef1-41bf-a11c-b4a573af8f30'
-          console.log('c')
-
           this.book = window.ePub(src, {})
-          // this.book = window.ePub(url)
 
           this.rendition = this.book.renderTo('viewer', {
             width: "100%",
@@ -114,15 +104,10 @@
             spread: "always"
           })
 
-          console.log('d. rendition:', this.rendition)
-
-          // this.rendition.display(currentSectionIndex)
           const display = this.rendition.display()
           console.log('display:', display)
 
           this.book.ready.then(() => {
-            console.log('e. book is ready................')
-
             var keyListener = (e) => {
 
               if ((e.keyCode || e.which) == 37) {
@@ -145,10 +130,8 @@
 
           this.rendition.on("relocated", (location) => {
             console.log('relocated: ', location)
-
             this.hasNext = !location.atEnd
             this.hasPrev = !location.atStart
-
           })
 
           // this.rendition.on("layout", (layout) => {
@@ -172,11 +155,6 @@
 </script>
 
 <style scoped>
-.epub-container {
-  /*height:100px;*/
-  /*width: 100px;*/
-}
-
 body {
   margin: 0;
   background: #fafafa;

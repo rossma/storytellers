@@ -1,19 +1,22 @@
 import 'firebase/storage' // this is needed if page is refreshed otherwise error is thrown: ...storage() is not a function
 import firebaseApp from '~/firebase/app'
+import * as firebase from 'firebase'
 
 const uuidv4 = require('uuid/v4')
 const DB = firebaseApp.firestore()
-const STORAGE_REF = firebaseApp.storage().ref()
+const STORAGE = firebaseApp.storage()
+const STORAGE_REF = STORAGE.ref()
 
 function uploadImageToStorage (file, path, metadata) {
   console.log(`[Image Service] - Uploading image:[${path}] to storage`)
-  return STORAGE_REF.child(path)
-    .put(file, metadata).then((snapshot) => {
-      console.log('[Image Service] - Uploaded', snapshot.totalBytes, 'bytes.')
-      console.log('[Image Service] - Metadata:', snapshot.metadata)
-      console.log('[Image Service] - DownloadURL:', snapshot.downloadURL)
-      return snapshot.downloadURL
-    })
+  let uploadTask = STORAGE_REF.child(path).put(file, metadata)
+
+  return uploadTask.then((snapshot) => {
+    console.log('[Image Service] - Uploaded', snapshot.totalBytes, 'bytes.')
+    console.log('[Image Service] - Metadata:', snapshot.metadata)
+    console.log('[Image Service] - DownloadURL:', snapshot.downloadURL)
+    return snapshot.ref.getDownloadURL()
+  })
 }
 
 export function uploadPageImage (pageOid, currentImageOid, imageFile) {
@@ -27,6 +30,8 @@ export function uploadPageImage (pageOid, currentImageOid, imageFile) {
   }
 
   return uploadImageToStorage(imageFile, `images/original/${imageOid}.${imageExt}`, metadata).then((downloadUrl) => {
+    console.log('in here download URL:', downloadUrl)
+
     const pageImageData = {
       image: {
         filename: `${imageOid}.${imageExt}`,

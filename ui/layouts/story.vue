@@ -116,9 +116,9 @@ export default {
       pages: [],
       story: {
         id: '',
-        ext: {
-          activePage: null
-        },
+        // ext: {
+        //   activePage: null
+        // },
         uid: '',
         title: ''
       }
@@ -148,16 +148,15 @@ export default {
     loadChapters (story) {
       findChaptersByStory(story.id).then((chapters) => {
         this.chapters = chapters.map(chapter => {
-          chapter.active = (chapter.id === story.ext.activePage.chapterOid) // todo bug -- on saving story title this story.ext.activePage is null
+          // chapter.active = (chapter.id === story.ext.activePage.chapterOid) // todo bug -- on saving story title this story.ext.activePage is null
           return chapter
         }).sort((a, b) => a.chapter - b.chapter)
         return findPagesByStory(story.id)
       }).then((pages) => {
         this.pages = pages.map(page => {
-          page.active = (page.id === story.ext.activePage.id)
+          // page.active = (page.id === story.ext.activePage.id) // todo get active page
           return page
         })
-        console.log('ROSS....savePages')
         this.savePages(pages)
         EventBus.$emit('savePages', pages)
       })

@@ -33,7 +33,7 @@ export const actions = {
   },
 
   async login ({ dispatch, state }, uid) {
-    console.log('[USER ACTIONS] - login')
+    console.log('[USER ACTIONS] - login', uid)
     const token = await firebaseApp.auth().currentUser.getIdToken(true)
 
     const { status } = await this.$axios.$post('/login', { user: state.user, token: token })

@@ -100,20 +100,27 @@ export default {
       let stories = null
       findStoriesByUser(this.user.uid).then((storiesSnapshot) => {
         stories = storiesSnapshot
+
         if (stories.length > 0) {
-          // todo initialise previews from cover image
           this.previews = stories.map((story) => {
-            if (!story.cover) {
-              story.cover = {
-                chapterOid: null,
-                pageOid: null,
-                imageRef: '/img/missing-image.png'
+            const storyCover = () => {
+              if (story.cover && story.cover.ref) {
+                return story.cover
+              } else {
+                return {
+                  chapterOid: null,
+                  pageOid: null,
+                  ref: '/img/missing-image.png'
+                }
               }
             }
+
+            let cover = storyCover()
+
             return {
-              chapterOid: story.cover.chapterOid,
-              pageOid: story.cover.pageOid,
-              previewImageUrl: story.cover.imageRef,
+              chapterOid: cover.chapterOid,
+              pageOid: cover.pageOid,
+              previewImageUrl: cover.ref,
               storyOid: story.id,
               summary: story.summary,
               title: story.title,

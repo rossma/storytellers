@@ -12,10 +12,10 @@
           :story-exists="true"/>
       </v-flex>
       <v-flex xs12>
-        <story-tabs
+        <page-detail
           :page="page"
           :editable="isEditable"
-          :has-story-cover="story.cover" />
+          :story-cover="story.cover" />
         <story-action-controls
           :page="page"
           :editable="isEditable"
@@ -33,20 +33,20 @@ import { deleteChapter } from '~/api/service/chapter'
 import { deletePage } from '~/api/service/page'
 import { findPageByOid } from '~/api/service/page'
 import { findUserByOid } from '~/api/service/user'
-import { findStoryByOid } from '~/api/service/story'
+import { deleteCover, findStoryByOid } from '~/api/service/story'
 import { findChapterByOid } from '~/api/service/chapter'
 import clonedepp from 'lodash.clonedeep'
+import PageDetail from '~/components/PageDetail'
 import StoryActionControls from '~/components/StoryActionControls.vue'
 import StoryDetail from '~/components/StoryDetail.vue'
-import StoryTabs from '~/components/StoryTabs.vue'
 import UserStateMixin from '~/mixins/UserStateMixin'
 
 export default {
   mixins: [ UserStateMixin ],
   components: {
+    PageDetail,
     StoryActionControls,
     StoryDetail,
-    StoryTabs
   },
   layout: 'story',
   data () {
@@ -73,6 +73,7 @@ export default {
         id: null,
         title: null,
         summary: null,
+        cover: {},
         ext: {}
       }
     }
@@ -185,7 +186,8 @@ export default {
           this.story.summary = storyDoc.data().summary
           this.story.title = storyDoc.data().title
           this.story.uid = storyDoc.data().uid
-          this.story.ext.activePage = clonedepp(this.page)
+          this.story.cover = { ...storyDoc.data().cover }
+          // this.story.ext.activePage = clonedepp(this.page)
           this.saveStory(this.story)
         } else {
           this.$toast.error('Story does not exist')
@@ -209,6 +211,16 @@ export default {
       return this.page.public || this.page.uid === this.user.uid
     },
     deletePage (page) {
+      const deleteStoryCover = () => {
+        if (this.story.cover && this.story.cover.pageOid === page.id) {
+          console.log('in deleteCover for story:', this.story.id)
+          return deleteCover(this.storyOid)
+        } else {
+          console.log('page being deleted is not story cover')
+          return Promise.resolve()
+        }
+      }
+
       const runDelete = () => {
         console.log('in deletePage mutablePages:', this.mutablePages)
 
@@ -226,7 +238,10 @@ export default {
       }
 
       if (this.totalStoryPages > 1) {
-        runDelete().then(() => {
+        deleteStoryCover().then(() => {
+          console.log('cover removed from page')
+          return runDelete()
+        }).then(() => {
           this.mutablePages = this.mutablePages.filter(p => p.id !== page.id)
           this.$router.push(`/story/${this.mutablePages[0].id}`)
         }).catch((error) => {
@@ -241,5 +256,6 @@ export default {
       return pages.filter((page) => page.chapterOid === chapterOid).length
     }
   }
+
 }
 </script>

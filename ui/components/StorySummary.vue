@@ -79,8 +79,7 @@ export default {
         return {
           id: null,
           title: '',
-          summary: '',
-          created: Date.now()
+          summary: ''
         }
       }
     },
@@ -94,9 +93,9 @@ export default {
       deleteDialog: false,
       mutableStory: {
         id: null,
-        ext: {
-          activePage: null
-        },
+        // ext: {
+        //   activePage: null
+        // },
         summary: null,
         title: null,
         uid: null
@@ -112,9 +111,9 @@ export default {
   created: function () {
     this.mutableStory = {
       id: this.story.id,
-      ext: {
-        activePage: null
-      },
+      // ext: {
+      //   activePage: null
+      // },
       summary: this.story.summary,
       title: this.story.title,
       uid: this.story.uid
@@ -131,28 +130,35 @@ export default {
           this.updateStory(this.mutableStory)
         } else {
           this.mutableStory.uid = this.uid
+          this.mutableStory.created = Date.now()
           this.createStory(this.mutableStory)
         }
       } else {
-        // todo implement form validation
         this.$toast.error('Form validation failed')
       }
     },
-    createStory (story) {
+    createStory (mutableStory) {
+      let story = {
+        title: mutableStory.title,
+        summary: mutableStory.summary,
+        uid: mutableStory.uid,
+        created: mutableStory.created
+      }
+
       let chapter = {
         chapter: 1,
-        uid: story.uid
+        uid: mutableStory.uid
       }
 
       let page = {
         page: 1,
-        uid: story.uid,
+        uid: mutableStory.uid,
         public: false
       }
 
       addStory(story, chapter, page).then((result) => {
         this.mutableStory.id = result.storyOid
-        this.mutableStory.ext.activePage = page
+        // this.mutableStory.ext.activePage = page
         this.saveStory(this.mutableStory)
         this.$router.push(`/story/${result.pageOid}`)
       }).catch((error) => {
@@ -160,9 +166,13 @@ export default {
         this.$toast.error(`Error adding story:${error.message}`)
       })
     },
-    updateStory (story) {
-      updateStory(story.id, story).then((storyDoc) => {
-        this.saveStory(story)
+    updateStory (mutableStory) {
+      let story = {
+        title: mutableStory.title,
+        summary: mutableStory.summary
+      }
+      updateStory(mutableStory.id, story).then(() => {
+        this.saveStory(mutableStory)
         this.$toast.success('Story updated')
         this.updatePreviews(story)
       }).catch((error) => {

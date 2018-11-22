@@ -9,7 +9,7 @@
 import EpubContainer from './EpubContainer'
 
 export default {
-  name: 'StoryTabsMediumViewerBook',
+  name: 'MediumViewerBook',
   components: {
     EpubContainer
   },

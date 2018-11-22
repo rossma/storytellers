@@ -1,6 +1,6 @@
 import firebase from 'firebase'
-
-require('firebase/firestore')
+import 'firebase/firestore'
+// require('firebase/firestore')
 
 const config = {
   apiKey: process.env.FIREBASE_CLIENT_API_KEY,
@@ -22,3 +22,8 @@ firebaseApp.auth().onAuthStateChanged(function(user) {
 })
 
 export default firebaseApp
+
+export const DB = firebaseApp.firestore()
+const settings = {/* your settings... */ timestampsInSnapshots: true}
+DB.settings(settings)
+

@@ -67,6 +67,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
 import stringUtils from '~/utils/string'
 import { publishPage } from '~/api/service/page'
@@ -104,6 +105,11 @@ export default {
       isPublicPage: this.page.public
     }
   },
+  computed: {
+    ...mapGetters('modules/story', [
+      'story'
+    ])
+  },
   methods: {
     canPublish () {
       return !this.isPublicPage && this.page.uid === this.user.uid
@@ -121,14 +127,15 @@ export default {
         if (imageDoc.exists) {
           let preview = {
             storyOid: this.story.id,
-            chapterOid: this.chapter.id,
+            chapterOid: this.page.chapterOid,
             pageOid: this.page.id,
             title: this.story.title,
             summary: stringUtils.truncateWithEllipse(this.story.summary, 100),
             uid: this.user.uid,
-            userDisplayName: this.user.displayName,
+            userDisplayName: this.user.data.displayName,
             previewImageUrl: imageDoc.data().previewUrl,
-            imageFilenameOid: imageDoc.id
+            imageFilenameOid: imageDoc.id,
+            created: Date.now()
           }
           return publishPage(preview)
         } else {

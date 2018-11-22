@@ -61,7 +61,7 @@ export default {
     ]),
     submit () {
       firebaseApp.auth().signInWithEmailAndPassword(this.email, this.password).then((firebaseUser) => {
-        return this.login(firebaseUser.uid)
+        return this.login(firebaseUser.user.uid)
       }).then(() => {
         this.$toast.clear();
         this.$router.push('/')

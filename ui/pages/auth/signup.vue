@@ -65,9 +65,9 @@ export default {
 
       try {
         const firebaseUser = await firebaseApp.auth().createUserWithEmailAndPassword(this.email, this.password)
-        console.log('[SIGNUP.vue] successful user creation in firebase', firebaseUser.uid)
+        console.log('[SIGNUP.vue] successful user creation in firebase', firebaseUser.user.uid)
         let user = {
-          uid: firebaseUser.uid,
+          uid: firebaseUser.user.uid,
           data: {
             email: this.email,
             created: Date.now()
