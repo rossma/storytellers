@@ -175,8 +175,8 @@ body {
   padding: 0;
   position: relative;
   margin: 10px auto;
-  background: white url('/img/ajax-loader.gif') center center no-repeat;
-  /*background: white center center no-repeat;*/
+  /*background: white url('/img/ajax-loader.gif') center center no-repeat;*/
+  background: white center center no-repeat;
   top: calc(50vh - 400px);
 }
 
