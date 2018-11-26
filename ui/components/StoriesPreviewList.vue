@@ -133,6 +133,7 @@ export default {
           console.log('There are no stories for this user')
         }
       }).catch((error) => {
+        console.log(error)
         this.$toast.error(error.message)
       })
     },

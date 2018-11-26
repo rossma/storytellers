@@ -123,7 +123,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('modules/user', [
+    ...mapActions('auth', [
       'logout'
     ]),
     userProfile () {

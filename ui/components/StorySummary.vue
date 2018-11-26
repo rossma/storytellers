@@ -90,12 +90,11 @@ export default {
   },
   data () {
     return {
+      currentPageOid: null,
+      currentChapterOid: null,
       deleteDialog: false,
       mutableStory: {
         id: null,
-        // ext: {
-        //   activePage: null
-        // },
         summary: null,
         title: null,
         uid: null
@@ -104,23 +103,20 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('modules/user', [
+    ...mapGetters('auth', [
       'uid'
     ])
   },
   created: function () {
     this.mutableStory = {
       id: this.story.id,
-      // ext: {
-      //   activePage: null
-      // },
       summary: this.story.summary,
       title: this.story.title,
       uid: this.story.uid
     }
   },
   methods: {
-    ...mapActions('modules/story', [
+    ...mapActions('story', [
       'saveStory'
     ]),
     submit () {
@@ -157,8 +153,11 @@ export default {
       }
 
       addStory(story, chapter, page).then((result) => {
+        console.log('[StorySummary] Finished saving story, result', result)
         this.mutableStory.id = result.storyOid
-        // this.mutableStory.ext.activePage = page
+        this.currentPageOid = result.pageOid
+        this.currentChapterOid = result.chapterOid
+        //this.mutableStory.activePage = result.pageOid
         this.saveStory(this.mutableStory)
         this.$router.push(`/story/${result.pageOid}`)
       }).catch((error) => {
@@ -172,7 +171,7 @@ export default {
         summary: mutableStory.summary
       }
       updateStory(mutableStory.id, story).then(() => {
-        this.saveStory(mutableStory)
+        this.saveStory(mutableStory, this.currentChapterOid, this.currentPageOid)
         this.$toast.success('Story updated')
         this.updatePreviews(story)
       }).catch((error) => {

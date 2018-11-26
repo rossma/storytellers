@@ -18,7 +18,6 @@ export default {
     TheNavigationToolbar,
     ThePageFooter
   },
-  // middleware: 'authenticated',
-  // mixins: [ UserStateMixin ]
+  middleware: 'authenticated'
 }
 </script>

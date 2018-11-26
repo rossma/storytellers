@@ -1,6 +1,5 @@
 import 'firebase/storage' // this is needed if page is refreshed otherwise error is thrown: ...storage() is not a function
 import firebaseApp from '~/firebase/app'
-import * as firebase from 'firebase'
 
 const uuidv4 = require('uuid/v4')
 const DB = firebaseApp.firestore()

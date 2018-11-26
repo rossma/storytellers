@@ -125,7 +125,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('modules/user', [
+    ...mapGetters('auth', [
       'uid'
     ])
   },
@@ -133,7 +133,10 @@ export default {
     this.$nextTick(() => {
       EventBus.$on('storyEvent', story => {
         console.log(`[Story Layout] storyEvent received payload:[${story.id}]`)
-        this.story = { ...this.story, ...story }
+        // this.story = { ...this.story, ...story }
+        console.log('[Story Layout] story in store', story)
+        this.story = Object.assign(story)
+        console.log('[Story Layout] story values copied from store', this.story)
         this.loadChapters(this.story)
       })
     })
@@ -142,19 +145,23 @@ export default {
     EventBus.$off('storyEvent')
   },
   methods: {
-    ...mapActions('modules/page', [
+    ...mapActions('page', [
       'savePages'
     ]),
     loadChapters (story) {
       findChaptersByStory(story.id).then((chapters) => {
         this.chapters = chapters.map(chapter => {
-          // chapter.active = (chapter.id === story.ext.activePage.chapterOid) // todo bug -- on saving story title this story.ext.activePage is null
+          if (story.activePage && story.activePage.chapterOid) {
+            chapter.active = (chapter.id === story.activePage.chapterOid)
+          }
           return chapter
         }).sort((a, b) => a.chapter - b.chapter)
         return findPagesByStory(story.id)
       }).then((pages) => {
         this.pages = pages.map(page => {
-          // page.active = (page.id === story.ext.activePage.id) // todo get active page
+          if (story.activePage) {
+            page.active = (page.id === story.activePage.id) // todo get active page
+          }
           return page
         })
         this.savePages(pages)
@@ -192,7 +199,7 @@ export default {
     addNewPage (chapterOid) {
       const pages = this.chapterPages(chapterOid)
       const chapterPage = (() => {
-        if (pages && pages.length > 1)
+        if (pages && pages.length > 0)
           return pages[pages.length - 1].page + 1
         else
           return 1

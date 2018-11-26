@@ -57,8 +57,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions('modules/user', [
-      'login', 'saveUser'
+    ...mapActions('auth', [
+      'login'
+    ]),
+    ...mapActions('user', [
+      'saveUser'
     ]),
     async signUp () {
       console.log('[SIGNUP] signing up')
@@ -68,10 +71,8 @@ export default {
         console.log('[SIGNUP.vue] successful user creation in firebase', firebaseUser.user.uid)
         let user = {
           uid: firebaseUser.user.uid,
-          data: {
-            email: this.email,
-            created: Date.now()
-          }
+          email: this.email,
+          created: Date.now()
         }
         await addUser(user)
         await this.login(user.uid)

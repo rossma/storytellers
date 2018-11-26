@@ -3,17 +3,19 @@ import firebaseApp from '~/firebase/app'
 
 const uuidv4 = require('uuid/v4')
 const DB = firebaseApp.firestore()
-const STORAGE_REF = firebaseApp.storage().ref()
+const STORAGE = firebaseApp.storage()
+const STORAGE_REF = STORAGE.ref()
 
 function uploadBookToStorage (file, path, metadata) {
   console.log(`[Book Service] - Uploading book:[${path}] to storage`)
-  return STORAGE_REF.child(path)
-    .put(file, metadata).then((snapshot) => {
-      console.log('[Book Service] - Uploaded', snapshot.totalBytes, 'bytes.')
-      console.log('[Book Service] - Metadata:', snapshot.metadata)
-      console.log('[Book Service] - DownloadURL:', snapshot.downloadURL)
-      return snapshot.downloadURL
-    })
+  let uploadTask = STORAGE_REF.child(path).put(file, metadata)
+
+  return uploadTask.then((snapshot) => {
+    console.log('[Book Service] - Uploaded', snapshot.totalBytes, 'bytes.')
+    console.log('[Book Service] - Metadata:', snapshot.metadata)
+    console.log('[Book Service] - DownloadURL:', snapshot.downloadURL)
+    return snapshot.ref.getDownloadURL()
+  })
 }
 
 export function uploadPageBook (pageOid, currentBookOid, bookFile) {

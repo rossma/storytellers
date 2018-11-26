@@ -1,6 +1,6 @@
 // import firebaseApp, { DB } from '~/firebase/app'
+import firebase from 'firebase/app'
 import { DB } from '~/firebase/app'
-import * as firebase from 'firebase'
 
 // const DB = firebaseApp.firestore()
 
@@ -21,7 +21,7 @@ function findStories (storiesRef) {
 
 export function findStoriesByUser (userOid) {
   console.log(`[Story Service] - Finding stories by user:[${userOid}]`)
-  return findStories(DB.collection('stories').where('uid', '==', userOid))
+  return findStories(DB.collection('stories').where('uid', '==', userOid).orderBy('created', 'desc'))
 }
 
 export function findStoryByOid (storyOid) {

@@ -56,7 +56,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('modules/user', [
+    ...mapActions('auth', [
       'login'
     ]),
     submit () {

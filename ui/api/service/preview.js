@@ -23,7 +23,7 @@ function findPreviews (previewsRef) {
 
 export function findPreviewsByFilter (filterBy) {
   console.log(`[Preview Service] - Finding previews by filter:[${JSON.stringify(filterBy)}]`)
-  let previewsRef = DB.collection('previews')
+  let previewsRef = DB.collection('previews').orderBy('created', 'desc')
   if (filterBy.byAuthorUid) {
     previewsRef = previewsRef.where('uid', '==', filterBy.byAuthorUid)
   }

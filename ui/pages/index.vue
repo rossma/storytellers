@@ -9,6 +9,7 @@
     components: {
       StoriesPreviewList
     },
+    layout: 'default-protected',
     data () {
       return {
         filterBy: {}

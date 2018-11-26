@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import { deleteStory } from '~/api/service/story'
 
 export default {
@@ -35,11 +36,15 @@ export default {
     }
   },
   methods: {
+    ...mapActions('story', [
+      'resetState'
+    ]),
     closeDialog () {
       this.$emit('close', false)
     },
     deleteStory () {
       deleteStory(this.story.id).then(() => {
+        this.resetState()
         this.$router.push('/user/profile')
       }).catch((error) => {
         console.log('Error deleting story:', error)

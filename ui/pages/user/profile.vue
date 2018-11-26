@@ -99,6 +99,7 @@ export default {
   components: {
     StoriesPreviewList
   },
+  layout: 'default-protected',
   data () {
     return {
       valid: true,
@@ -140,7 +141,7 @@ export default {
     this.computedUser = this.user.data
   },
   methods: {
-    ...mapActions('modules/user', [
+    ...mapActions('user', [
       'updateUser'
     ]),
     initFormUser(formValue) {

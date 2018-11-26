@@ -162,7 +162,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('modules/story', [
+    ...mapGetters('story', [
       'story'
     ]),
     previewImageSrc: function () {

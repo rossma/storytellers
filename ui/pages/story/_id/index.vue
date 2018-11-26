@@ -73,13 +73,14 @@ export default {
         id: null,
         title: null,
         summary: null,
-        cover: {},
-        ext: {}
+        cover: {}
+        // ,
+        // ext: {}
       }
     }
   },
   computed: {
-    ...mapGetters('modules/page', [
+    ...mapGetters('page', [
       'pages'
     ]),
     isEditable: function () {
@@ -141,7 +142,7 @@ export default {
     EventBus.$off('savePages')
   },
   methods: {
-    ...mapActions('modules/story', ['saveStory']),
+    ...mapActions('story', ['saveStory']),
     loadPage (pageOid) {
       if (this.user.uid) {
         findPageByOid(pageOid).then((pageDoc) => {
@@ -187,7 +188,9 @@ export default {
           this.story.title = storyDoc.data().title
           this.story.uid = storyDoc.data().uid
           this.story.cover = { ...storyDoc.data().cover }
-          // this.story.ext.activePage = clonedepp(this.page)
+          this.story.activePage = clonedepp(this.page)
+
+          console.log('saving story with updated active page.............................')
           this.saveStory(this.story)
         } else {
           this.$toast.error('Story does not exist')

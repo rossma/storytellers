@@ -1,5 +1,8 @@
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/storage'
 import 'firebase/firestore'
+
 // require('firebase/firestore')
 
 const config = {
@@ -12,14 +15,14 @@ const config = {
 }
 
 const firebaseApp = !firebase.apps.length ? firebase.initializeApp(config) : firebase.app()
-
-firebaseApp.auth().onAuthStateChanged(function(user) {
-  if (user) {
-    console.log('[FIREBASE] - User is logged in', user)
-  } else {
-    console.log('[FIREBASE] - User is not logged in')
-  }
-})
+//
+// let unsubscribe = firebaseApp.auth().onAuthStateChanged(function(user) {
+//   if (user) {
+//     console.log('[FIREBASE] - User is logged in', user)
+//   } else {
+//     console.log('[FIREBASE] - User is not logged in')
+//   }
+// })
 
 export default firebaseApp
 

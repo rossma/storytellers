@@ -20,6 +20,7 @@
 import StorySummary from '~/components/StorySummary.vue'
 
 export default {
-  components: { StorySummary }
+  components: { StorySummary },
+  layout: 'default-protected'
 }
 </script>

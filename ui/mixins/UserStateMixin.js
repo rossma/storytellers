@@ -7,15 +7,18 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
   computed: {
-    ...mapGetters('modules/user', [
-      'uid', 'user'
+    ...mapGetters('auth', [
+      'uid'
+    ]),
+    ...mapGetters('user', [
+      'user'
     ])
   },
   created: function () {
     this.loadUser()
   },
   methods: {
-    ...mapActions('modules/user', [
+    ...mapActions('user', [
       'saveUserByUid'
     ]),
     async loadUser () {
