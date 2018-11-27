@@ -23,5 +23,5 @@ Storytellers makes use of <a href="https://vuetifyjs.com/">Vuetify.js</a>, a sem
 ### ui
 Frontend module of the application built using <a href="https://vuejs.org/">Vue.js</a>.
 
-### firebase-functions
+### backend
 Server-side javascript functions within <a href="https://firebase.google.com/">Firebase</a>.

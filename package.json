@@ -1,0 +1,10 @@
+{
+  "name": "storytellers",
+  "version": "1.0.0-alpha.4",
+  "scripts": {
+    "postinstall": "npm install --prefix ui"
+  }
+}
+
+
+
