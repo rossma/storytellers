@@ -5,15 +5,23 @@ const onDeleteStoryFunction = require('./delete-story');
 const onDeleteChapterFunction = require('./delete-chapter');
 const onDeletePageFunction = require('./delete-page');
 const onDeleteImageFunction = require('./delete-image');
+const onDeleteBookFunction = require('./delete-book');
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const gcs = require('@google-cloud/storage')({keyFilename: 'service-account-credentials.json'});
 const bucketName = 'storytellers2-13997.appspot.com';
 
-admin.initializeApp(functions.config().firebase);
-// const firebaseDatabase = admin.database();
+var serviceAccount = require('./service-account-credentials.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: 'https://storytellers2-13997.firebaseio.com'
+});
+
+const storage = admin.storage();
+
 const firestoreDatabase = admin.firestore();
+firestoreDatabase.settings({ timestampsInSnapshots: true });
 
 /*
  * Examples:
@@ -24,22 +32,26 @@ const firestoreDatabase = admin.firestore();
  * exports.analyticsFunction = functions.analytics.event('in_app_purchase').onLog(event => {
  */
 
-exports.generateThumbnail = functions.storage.object().onChange(event => {
-  return generateThumbnailFunction.handler(event, firestoreDatabase, gcs);
+exports.generateThumbnail = functions.storage.object().onFinalize(async (object) => {
+  return generateThumbnailFunction.handler(object, firestoreDatabase, storage);
 });
 
-exports.onDeleteStory = functions.firestore.document('stories/{storyId}').onDelete(event => {
-  return onDeleteStoryFunction.handler(event, firestoreDatabase);
+exports.onDeleteStory = functions.firestore.document('stories/{storyId}').onDelete((snap, context) => {
+  return onDeleteStoryFunction.handler(snap, context, firestoreDatabase);
 });
 
-exports.onDeleteChapter = functions.firestore.document('chapters/{chapterId}').onDelete(event => {
-  return onDeleteChapterFunction.handler(event, firestoreDatabase);
+exports.onDeleteChapter = functions.firestore.document('chapters/{chapterId}').onDelete((snap, context) => {
+  return onDeleteChapterFunction.handler(snap, context, firestoreDatabase);
 });
 
-exports.onDeletePage = functions.firestore.document('pages/{pageId}').onDelete(event => {
-  return onDeletePageFunction.handler(event, firestoreDatabase);
+exports.onDeletePage = functions.firestore.document('pages/{pageId}').onDelete((snap, context) => {
+  return onDeletePageFunction.handler(snap, context, firestoreDatabase);
 });
 
-exports.onDeleteImage = functions.firestore.document('images/{imageId}').onDelete(event => {
-  return onDeleteImageFunction.handler(event, firestoreDatabase, gcs, bucketName);
+exports.onDeleteImage = functions.firestore.document('images/{imageId}').onDelete((snap, context) => {
+  return onDeleteImageFunction.handler(snap, context, firestoreDatabase, storage, bucketName);
+});
+
+exports.onDeleteBook = functions.firestore.document('book/{bookId}').onDelete((snap, context) => {
+  return onDeleteBookFunction.handler(snap, context, firestoreDatabase, storage, bucketName);
 });

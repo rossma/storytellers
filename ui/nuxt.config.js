@@ -1,45 +1,96 @@
-const bodyParser = require('body-parser')
-const session = require('express-session')
+const pkg = require('./package')
+// const bodyParser = require('body-parser')
+// const session = require('express-session')
+
+require('dotenv').config()
 
 module.exports = {
-  srcDir: 'src/',
+  mode: 'universal',
+
   /*
   ** Headers of the page
   */
   head: {
-    title: 'Storytellers',
+    title: pkg.name,
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: 'StoryTellers Community Website' }
+      { hid: 'description', name: 'description', content: pkg.description }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' }
     ]
   },
-  plugins: [
-    '~/plugins/vuetify'
-  ],
-  css: [
-    '~/assets/style/app.styl'
-  ],
+
   /*
   ** Customize the progress-bar color
   */
-  loading: { color: '#3B8070' },
+  loading: { color: '#fff' },
+
+  /*
+  ** Global CSS
+  */
+  css: [
+    '~/assets/style/app.styl'
+  ],
+
+  /*
+  ** Plugins to load before mounting the App
+  */
+  plugins: [
+    '@/plugins/vuetify'
+  ],
+
+  /*
+  ** Nuxt.js modules
+  */
+  modules: [
+    // Doc: https://github.com/nuxt-community/axios-module#usage
+    '@nuxtjs/axios',
+    ['@nuxtjs/dotenv'],
+    // https://github.com/nuxt-community/modules/tree/master/packages/toast
+    '@nuxtjs/toast'
+  ],
+  /*
+  ** Axios module configuration
+  */
+  axios: {
+    // See https://github.com/nuxt-community/axios-module#option
+    prefix: '/api',
+    debug: true
+  },
+
+  toast: {
+    duration: '5000',
+    position: 'top-center'
+  },
+
+  router: {
+    middleware: ['check-auth']
+  },
+
+  // serverMiddleware: [
+  //   // body-parser middleware
+  //   bodyParser.json(),
+  //   // session middleware
+  //   session({
+  //     secret: 'super-secret-key',
+  //     resave: false,
+  //     saveUninitialized: false,
+  //     cookie: { maxAge: 60000 }
+  //   })
+  // ],
+
   /*
   ** Build configuration
   */
   build: {
-    vendor: [
-      'vuetify'
-    ],
-    extractCSS: true,
     /*
-    ** Run ESLINT on save
+    ** You can extend webpack config here
     */
     extend(config, ctx) {
+      // Run ESLint on save
       if (ctx.isDev && ctx.isClient) {
         config.module.rules.push({
           enforce: 'pre',
@@ -47,40 +98,15 @@ module.exports = {
           loader: 'eslint-loader',
           exclude: /(node_modules)/,
           options: {
-            formatter: require('eslint-friendly-formatter')
+            fix: true
           }
         })
       }
-      if (ctx.isDev) {
-        config.resolve.alias['config'] = '~/config/development'
-      } else {
-        config.resolve.alias['config'] = '~/config/production'
-      }
     }
   },
-  modules: [
-    '~/modules/material-design-icons',
-    ['@nuxtjs/axios',{debug:true}],
-    '@nuxtjs/toast'
-  ],
-  toast: {
-    position: 'top-center'
-  },
-  router: {
-    middleware: 'check-auth'
-  },
-  serverMiddleware: [
-    // body-parser middleware
-    bodyParser.json(),
-    // session middleware
-    session({
-      secret: 'super-secret-key',
-      resave: false,
-      saveUninitialized: false,
-      cookie: { maxAge: 60000 }
-    }),
-    // Api middleware
-    // We add /api/login & /api/logout routes
-    '~/api'
-  ]
+  env: {
+    FIREBASE_CLIENT_API_KEY: process.env.FIREBASE_CLIENT_API_KEY,
+    FIREBASE_CLIENT_MESSAGING_SENDER_ID: process.env.FIREBASE_CLIENT_MESSAGING_SENDER_ID,
+    FIREBASE_CLIENT_PROJECT_ID: process.env.FIREBASE_CLIENT_PROJECT_ID
+  }
 }

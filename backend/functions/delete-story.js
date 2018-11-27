@@ -6,12 +6,14 @@ const BATCH_SIZE = 100;
  *  This will run when a story record is deleted from the stories collection. Any other collection referencing this
  *  record deleted is also deleted
  */
-exports.handler = function(event, database) {
-  const storyOid = event.params.storyId;
+exports.handler = function(snap, context, database) {
+  // const storyOid = event.params.storyId;
+  const storyOid = context.params.storyId;
   console.log(`Story:${storyOid} was deleted`);
 
   // Get an object representing the document prior to deletion
-  const deletedValue = event.data.previous.data();
+  // const deletedValue = event.data.previous.data();
+  const deletedValue = snap.data();
   console.log('Deleted record:', deletedValue);
 
   let pagesRef = database.collection('pages').where('storyOid', '==', storyOid);
@@ -34,6 +36,7 @@ exports.handler = function(event, database) {
     }
   }).then(() => {
     console.log('story and all referenced documents deleted');
+    return true;
   }).catch((error) => {
     console.log(`Error: There was an error running the onDeleteStory function for story:${storyOid}`, error);
   });

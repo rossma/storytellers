@@ -15,15 +15,12 @@ This module is the UI frontend.
 # install dependencies
 npm install
 
-# Build your application with webpack and minify the JS & CSS (for production).
-npm run build	
+# serve with hot reload at localhost:3000
+$ npm run dev
 
-# Launch a custom development server on localhost:3000 with hot-reloading.
-npm run dev-custom-server
-
-# Build your application with webpack and minify the JS & CSS (for production) and then start the server in production mode.
-npm run start
-
+# build for production and launch server
+$ npm run build
+$ npm start
 ```
 
 ## Application Architecture
@@ -36,4 +33,5 @@ Storytellers is built on top of <a href="https://nuxtjs.org/">NUXT.js</a>, a fra
 
 ### Vuetify
 Storytellers makes use of <a href="https://vuetifyjs.com/">Vuetify.js</a>, a semantic component framework for Vue.js. 
+
 
