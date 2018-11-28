@@ -5,6 +5,8 @@ import 'firebase/firestore'
 
 // require('firebase/firestore')
 
+console.log('firebase process.env.FIREBASE_CLIENT_PROJECT_ID:', process.env.FIREBASE_CLIENT_PROJECT_ID)
+
 const config = {
   apiKey: process.env.FIREBASE_CLIENT_API_KEY,
   authDomain: `${process.env.FIREBASE_CLIENT_PROJECT_ID}.firebaseapp.com`,

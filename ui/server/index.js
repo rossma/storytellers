@@ -5,7 +5,7 @@ const { Nuxt, Builder } = require('nuxt')
 const auth = require('./auth')
 
 const app = express()
-const host = process.env.HOST || '127.0.0.1'
+const host = process.env.HOST || '0.0.0.0'
 const port = process.env.PORT || 3000
 
 const session = require('express-session')
