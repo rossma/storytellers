@@ -4,9 +4,7 @@ const pkg = require('./package')
 
 require('dotenv').config()
 
-const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
-const host = process.env.HOST || '0.0.0.0'
-const port = process.env.PORT || 3000
+const baseUrl = process.env.BASE_URL || 'http://localhost:3000'
 
 module.exports = {
   mode: 'universal',
@@ -52,7 +50,7 @@ module.exports = {
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
     ['@nuxtjs/axios', {
-      baseURL: `${protocol}://${host}:${port}`
+      baseURL: baseUrl
     }],
     ['@nuxtjs/dotenv'],
     // https://github.com/nuxt-community/modules/tree/master/packages/toast
