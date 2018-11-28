@@ -1,8 +1,13 @@
 {
   "name": "storytellers",
   "version": "1.0.0-alpha.4",
+  "engines": {
+    "node": "8.9.4",
+    "npm": "6.4.1"
+  },
   "scripts": {
-    "postinstall": "npm install --prefix ui"
+    "postinstall": "npm install --prefix ui",
+    "heroku-postbuild": "npm run build"
   }
 }
 
