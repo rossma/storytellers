@@ -1,1 +1,1 @@
-web: npm run start --prefix ui 
+web: npm run start
