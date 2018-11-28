@@ -4,6 +4,8 @@ const pkg = require('./package')
 
 require('dotenv').config()
 
+console.log('in nuxt config:', process.env.NODE_ENV === 'production')
+
 module.exports = {
   mode: 'universal',
 
@@ -48,7 +50,9 @@ module.exports = {
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
     ['@nuxtjs/axios', {
-      https: process.env.NODE_ENV === 'production'
+      https: process.env.NODE_ENV === 'production',
+      prefix: '/api',
+      debug: true
     }],
     ['@nuxtjs/dotenv'],
     // https://github.com/nuxt-community/modules/tree/master/packages/toast
@@ -57,11 +61,11 @@ module.exports = {
   /*
   ** Axios module configuration
   */
-  axios: {
-    // See https://github.com/nuxt-community/axios-module#option
-    prefix: '/api',
-    debug: true
-  },
+  // axios: {
+  //   // See https://github.com/nuxt-community/axios-module#option
+  //   prefix: '/api',
+  //   debug: true
+  // },
 
   toast: {
     duration: '5000',
