@@ -60,7 +60,7 @@ export default {
       'login'
     ]),
     submit () {
-      firebaseApp.auth().signInWithEmailAndPassword(this.email, this.password).then((firebaseUser) => {
+      firebaseApp.auth().signInWithEmailAndPassword(this.email.trim(), this.password).then((firebaseUser) => {
         return this.login(firebaseUser.user.uid)
       }).then(() => {
         this.$toast.clear();
