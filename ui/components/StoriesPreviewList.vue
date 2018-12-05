@@ -125,7 +125,7 @@ export default {
               summary: story.summary,
               title: story.title,
               uid: story.uid,
-              userDisplayName: this.user.displayName
+              userDisplayName: this.user.data.displayName
             }
           })
           console.log('previews:', this.previews)

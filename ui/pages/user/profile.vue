@@ -158,14 +158,6 @@ export default {
           photoUrl: URL.createObjectURL(this.newProfileImageFile),
           displayName: this.formUser.displayName
         }
-        // uploadProfileImage(file, metadata, this.user.uid).then((downloadUrl) => {
-        //   this.computedUser = {
-        //     photoUrl: downloadUrl,
-        //     displayName: this.formUser.displayName
-        //   }
-        // }).catch((error) => {
-        //   this.$toast.error(error.message)
-        // })
       } else {
         this.$toast.error('No profile image selected')
       }

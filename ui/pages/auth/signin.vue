@@ -60,7 +60,7 @@ export default {
       'login'
     ]),
     submit () {
-      firebaseApp.auth().signInWithEmailAndPassword(this.email, this.password).then((firebaseUser) => {
+      firebaseApp.auth().signInWithEmailAndPassword(this.email.trim(), this.password).then((firebaseUser) => {
         return this.login(firebaseUser.user.uid)
       }).then(() => {
         this.$toast.clear();
@@ -72,7 +72,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 .signin-link:hover {
   text-decoration: none;
 }

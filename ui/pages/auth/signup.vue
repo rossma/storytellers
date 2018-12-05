@@ -67,11 +67,11 @@ export default {
       console.log('[SIGNUP] signing up')
 
       try {
-        const firebaseUser = await firebaseApp.auth().createUserWithEmailAndPassword(this.email, this.password)
+        const firebaseUser = await firebaseApp.auth().createUserWithEmailAndPassword(this.email.trim(), this.password)
         console.log('[SIGNUP.vue] successful user creation in firebase', firebaseUser.user.uid)
         let user = {
           uid: firebaseUser.user.uid,
-          email: this.email,
+          email: this.email.trim(),
           created: Date.now()
         }
         await addUser(user)
@@ -85,7 +85,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
   .signin-link:hover {
     text-decoration: none;
   }

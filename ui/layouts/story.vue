@@ -61,6 +61,7 @@
                 </v-list-tile-content>
               </v-list-tile>
               <v-layout
+                v-if="isEditable"
                 row
                 align-center>
                 <v-flex
@@ -76,6 +77,7 @@
           </v-list>
         </template>
         <v-layout
+          v-if="isEditable"
           row
           align-center>
           <v-flex
@@ -127,7 +129,10 @@ export default {
   computed: {
     ...mapGetters('auth', [
       'uid'
-    ])
+    ]),
+    isEditable () {
+      return this.story.uid === this.uid
+    }
   },
   mounted: function () {
     this.$nextTick(() => {
@@ -179,9 +184,6 @@ export default {
         chapter.name = event.target.value
         updateChapterName(chapter.id, chapter.name)
       }
-    },
-    isEditable () {
-      return this.story.uid === this.uid
     },
     addNewChapter () {
       console.log('Adding chapter')
