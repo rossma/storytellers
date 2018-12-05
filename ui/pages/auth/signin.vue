@@ -72,7 +72,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 .signin-link:hover {
   text-decoration: none;
 }

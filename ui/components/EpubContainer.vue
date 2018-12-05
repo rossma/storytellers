@@ -1,12 +1,18 @@
 <template>
   <div>
     <div v-if="hasBookUrl">
-      <div id="main">
-        <div id="viewer"
-             :class="[spreadLayout ? '' : 'single', 'ebook-viewer-spreads']" />
-        <a id="prev" href="#prev" class="arrow prev" @click.prevent="prevPage()" v-show="hasPrev">‹</a>
-        <a id="next" href="#next" class="arrow next" @click.prevent="nextPage()" v-show="hasNext">›</a>
-      </div>
+      <v-card>
+        <v-responsive :aspect-ratio="16/9">
+          <v-card-text>
+            <div id="main">
+              <div id="viewer"
+                   :class="[spreadLayout ? '' : 'single', 'ebook-viewer-spreads']" />
+              <a id="prev" href="#prev" class="arrow prev" @click.prevent="prevPage()" v-show="hasPrev">‹</a>
+              <a id="next" href="#next" class="arrow next" @click.prevent="nextPage()" v-show="hasNext">›</a>
+            </div>
+          </v-card-text>
+        </v-responsive>
+      </v-card>
     </div>
     <img
       v-else

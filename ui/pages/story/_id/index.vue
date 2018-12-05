@@ -190,7 +190,7 @@ export default {
           this.story.cover = { ...storyDoc.data().cover }
           this.story.activePage = clonedepp(this.page)
 
-          console.log('saving story with updated active page.............................')
+          console.log('saving story with updated active page')
           this.saveStory(this.story)
         } else {
           this.$toast.error('Story does not exist')

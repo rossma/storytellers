@@ -23,7 +23,7 @@ export const getters = {
 export const actions = {
 
   resetState ({ dispatch, commit }) {
-    console.log('[AUTH ACTIONS] - user reset state')
+    console.log('[AUTH ACTIONS] - auth reset state')
     dispatch('user/resetState', {}, { root: true })
     commit('resetState')
   },
