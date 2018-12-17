@@ -1,6 +1,7 @@
-import firebaseApp from '~/firebase/app'
+// import firebaseApp from 'fire/app'
+import { DB } from 'fire/app'
 
-const DB = firebaseApp.firestore()
+// const DB = firebaseApp.firestore()
 
 export function findUserByOid (userOid) {
   console.log(`[User Service] - Finding user by oid:[${userOid}]`)

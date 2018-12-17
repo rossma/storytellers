@@ -124,16 +124,13 @@ export default {
     // },
     drawer: {
       get () {
-        console.log('in sidebar getter', this.sidebar)
         return this.sidebar.visible
       },
       set (val) {
-        console.log('in sidebar setter', val)
         this.updateSidebar({ visible: val })
       }
     },
     username () {
-      console.log('in computed username')
       if (this.user.data) {
         return this.user.data.displayName ? this.user.data.displayName : this.user.data.email
       } else {
@@ -146,11 +143,6 @@ export default {
       } else {
         return ''
       }
-    }
-  },
-  watch: {
-    user: function (val) {
-      console.log('user watch triggered', val)
     }
   },
   methods: {

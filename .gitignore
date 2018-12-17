@@ -7,8 +7,6 @@
 **/yarn-debug.log*
 **/yarn-error.log*
 
-**/package-lock.json
-
 # Runtime data
 **/pids
 **/*.pid
@@ -85,5 +83,5 @@
 **/*.iml
 **/.editorconfig
 
-# Firebase functions
+# Firebase functions and firebase admin service account credentials
 **/service-account-credentials.json

@@ -41,7 +41,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import firebaseApp from '~/firebase/app'
+import firebaseApp from 'fire/app'
 
 export default {
   layout: 'auth',

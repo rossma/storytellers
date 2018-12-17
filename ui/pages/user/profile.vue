@@ -90,7 +90,7 @@
 import { mapActions } from 'vuex'
 import { uploadProfileImage } from '~/api/service/image'
 
-import firebaseApp from '~/firebase/app'
+import firebaseApp from 'fire/app'
 import StoriesPreviewList from '~/components/StoriesPreviewList'
 import UserStateMixin from '~/mixins/UserStateMixin'
 

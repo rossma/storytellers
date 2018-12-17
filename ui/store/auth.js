@@ -1,4 +1,4 @@
-import firebaseApp from '~/firebase/app'
+import { AUTH, onAuthStateChanged } from 'fire/app'
 import { findUserByOid } from '~/api/service/user'
 
 const defaultState = () => ({
@@ -28,45 +28,62 @@ export const actions = {
     commit('resetState')
   },
 
-  initAuthentication ({ dispatch, commit, state }) {
-    console.log('[AUTH ACTIONS] - initAuthentication ')
+  async initUserOnAuthStateChange ({ dispatch, commit, state }) {
+    console.log('[AUTH ACTIONS] - initUserOnAuthStateChange')
 
-    return new Promise((resolve, reject) => {
+    let user = null
+    return new Promise(async (resolve, reject) => {
       if (state.unsubscribeAuthObserver) {
         state.unsubscribeAuthObserver()
       }
 
-      const unsubscribe = firebaseApp.auth().onAuthStateChanged(user => {
+      // const unsubscribe = AUTH.onAuthStateChanged(user => {
+      const unsubscribe = await onAuthStateChanged(user => {
         console.log('[AUTH ACTION] firebase user has changed', user)
         if (user) {
-          dispatch('fetchAuthUser').then(dbUser => resolve(dbUser))
-        } else {
-          resolve(null)
+          dispatch('user/saveUserByUid', user.uid, { root: true }).then(() => {
+            console.log('[AUTH ACTION] - finished saving user to store')
+            this.user = user
+            // resolve(user)
+          }).catch((error) => {
+            console.log('Error saving the user by uid', error)
+            // resolve(null)
+          })
         }
       })
-      // console.log('[AUTH ACTION] committing unsubscriber for auth observer')
-      commit('setUnsubscribeAuthObserver', unsubscribe)
+      if (unsubscribe) {
+        console.log('[AUTH ACTION] committing unsubscriber for auth observer', unsubscribe)
+        commit('setUnsubscribeAuthObserver', unsubscribe)
+      }
+      resolve(user)
     })
   },
 
-  fetchAuthUser ({ dispatch, commit }) {
-    const uid = firebaseApp.auth().currentUser.uid
-    return new Promise((resolve, reject) => {
-      // check if user exists in the database
-      findUserByOid(uid).then((userDoc) => {
-        if (userDoc.exists) {
-          resolve(userDoc)
-          // return dispatch('user/fetchUser', { id: uid }, { root: true })
-          //   .then(user => {
-          //     commit('saveUID', uid)
-          //     resolve(user)
-          //   })
-        } else {
-          resolve(null)
-        }
-      })
-    })
-  },
+  // fetchAuthUser ({ dispatch, commit }) {
+  //   console.log('[AUTH ACTION] - fetchAuthUser')
+  //
+  //   const uid = AUTH.currentUser.uid
+  //   return new Promise((resolve, reject) => {
+  //     // check if user exists in the database
+  //     findUserByOid(uid).then((userDoc) => {
+  //       if (userDoc.exists) {
+  //         console.log('[AUTH ACTION] - fetchAuthUser - user exists', userDoc)
+  //         // return dispatch('user/saveUser', userDoc, { root: true }).then(user => {
+  //         //   resolve(user)
+  //         // })
+  //         // resolve(userDoc)
+  //         // return dispatch('user/fetchUser', { id: uid }, { root: true })
+  //         //   .then(user => {
+  //         //     commit('saveUID', uid)
+  //         //     resolve(user)
+  //         //   })
+  //       } else {
+  //         console.log('[AUTH ACTION] - fetchAuthUser - user does not exist')
+  //         resolve(null)
+  //       }
+  //     })
+  //   })
+  // },
 
   saveUID ({ commit }, uid) {
     console.log('[AUTH ACTIONS] - saveUID')
@@ -75,24 +92,36 @@ export const actions = {
 
   async login ({ dispatch, state }, uid) {
     console.log('[AUTH ACTIONS] - login', uid)
-    const token = await firebaseApp.auth().currentUser.getIdToken(true)
+    try {
+      const token = await AUTH.currentUser.getIdToken(true)
 
-    const { status } = await this.$axios.$post('/login', { user: state.user, token: token })
+      const { status } = await this.$axios.$post('/login', { user: state.user, token: token })
 
-    console.log('[AUTH ACTIONS] - in login, response:', status)
+      console.log('[AUTH ACTIONS] - in login, response:', status)
 
-    // await dispatch('saveUserByUid', uid)
-    await dispatch('user/saveUserByUid', uid, { root: true })
+      await dispatch('saveUID', uid)
+      // await dispatch('user/saveUserByUid', uid, { root: true })
+
+      dispatch('initUserOnAuthStateChange')
+    } catch (error) {
+      console.log('[AUTH ACTIONS] - caught error', error)
+      return Promise.reject(new Error('Error logging in user'))
+    }
   },
 
   async logout ({ dispatch }) {
     console.log('[AUTH ACTIONS] - logout')
-    await firebaseApp.auth().signOut()
+    try {
+      await AUTH.signOut()
 
-    await dispatch('resetState')
+      await dispatch('resetState')
 
-    const { status } = await this.$axios.post('/logout')
-    console.log('[AUTH ACTIONS] - in logout, response:', status)
+      const { status } = await this.$axios.post('/logout')
+      console.log('[AUTH ACTIONS] - in logout, response:', status)
+    } catch (error) {
+      console.log('[AUTH ACTIONS] - caught error', error)
+      return Promise.reject(new Error('Error logging out'))
+    }
   }
 
 }

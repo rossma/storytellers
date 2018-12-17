@@ -106,6 +106,10 @@ module.exports = {
           }
         })
       }
+      if (ctx.isClient) {
+        console.log('is client ')
+      }
+      config.resolve.alias['fire/app'] = `~/firebase/${ctx.isClient ? 'app' : 'admin'}.js`
     }
   },
   env: {
