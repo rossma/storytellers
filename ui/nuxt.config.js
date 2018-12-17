@@ -4,6 +4,8 @@ const pkg = require('./package')
 
 require('dotenv').config()
 
+let serviceAccount = require('./firebase/service-account-credentials.json')
+
 module.exports = {
   mode: 'universal',
 
@@ -115,6 +117,7 @@ module.exports = {
   env: {
     FIREBASE_CLIENT_API_KEY: process.env.FIREBASE_CLIENT_API_KEY,
     FIREBASE_CLIENT_MESSAGING_SENDER_ID: process.env.FIREBASE_CLIENT_MESSAGING_SENDER_ID,
-    FIREBASE_CLIENT_PROJECT_ID: process.env.FIREBASE_CLIENT_PROJECT_ID
+    FIREBASE_CLIENT_PROJECT_ID: process.env.FIREBASE_CLIENT_PROJECT_ID,
+    FIREBASE_SERVICE_ACCOUNT_CONFIG: serviceAccount
   }
 }

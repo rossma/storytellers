@@ -11,21 +11,18 @@ console.log('IN ADMIN')
 const admin = require('firebase-admin') // only require on server side
 // const config = require('~/firebase/config')
 
-const serviceAccount = require('~/firebase/service-account-credentials.json')
-
 // const firebaseApp = !admin.apps.length ? admin.initializeApp({
 //   credential: admin.credential.cert(serviceAccount),
 //   databaseURL: config.databaseURL,
 //   // storageBucket: config.storageBucket
 // }) : admin.app()
 
-
 let firebaseApp = null
 let db = null
 
 if (!admin.apps.length) {
   firebaseApp = admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert(process.env.FIREBASE_SERVICE_ACCOUNT_CONFIG),
     databaseURL: config.databaseURL,
     // storageBucket: config.storageBucket
   })
