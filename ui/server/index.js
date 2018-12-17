@@ -2,9 +2,10 @@ const express = require('express')
 var bodyParser = require('body-parser')
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
-const auth = require('./auth')
 
 const app = express()
+const auth = require('./auth')(app)
+
 const host = process.env.HOST || '0.0.0.0'
 const port = process.env.PORT || 3000
 

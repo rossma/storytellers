@@ -191,7 +191,7 @@ export default {
           this.story.activePage = clonedepp(this.page)
 
           console.log('saving story with updated active page')
-          this.saveStory(this.story)
+          this.saveStory(clonedepp(this.story))
         } else {
           this.$toast.error('Story does not exist')
         }

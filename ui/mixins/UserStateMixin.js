@@ -1,38 +1,52 @@
-/*
- * we use authenticated middleware to set the user from uid when route changes but when user refreshes the page
- * the middleware is never called on the client side (using default universal config in nuxt) so we do it here
+/**
+ * MIXIN to ensure that once logged in the user object from the database is correctly set in the store
  */
-
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   computed: {
     ...mapGetters('auth', [
-      'uid'
+      'isAuthenticated', 'uid'
     ]),
     ...mapGetters('user', [
       'user'
     ])
   },
   created: function () {
+    console.log('[USER STATE MIXIN] - CREATED')
+    /* this will run on both client not server */
+  },
+  beforeMount: function () {
+    console.log('[USER STATE MIXIN] - BEFORE MOUNT')
+    /* this will only run on client not server */
     this.loadUser()
   },
+  mounted: function () {
+    this.$nextTick(() => {
+      console.log('[USER STATE MIXIN] - MOUNTED')
+      /* this will only run on client not server */
+    })
+  },
   methods: {
-    ...mapActions('user', [
-      'saveUserByUid'
+    ...mapActions('auth', [
+      'initUserOnAuthStateChange'
     ]),
-    async loadUser () {
+    loadUser () {
+      console.log('[USER STATE MIXIN] - loadUser')
+
       if (!this.user.uid) {
+        console.log('[USER STATE MIXIN] - auth uid', this.uid)
+
         if (this.uid) {
           console.log('[USER STATE MIXIN] - UID is set but User is not, going to initialise')
-          this.saveUserByUid(this.uid).then(() => {
-            console.log('[USER STATE MIXIN] - finished saving user to store', this.user)
+          // TODO change this so that we call this.initAuthentication() / initUser
+
+          this.initUserOnAuthStateChange().then((user) => {
+            console.log('[USER STATE MIXIN] - finished saving user to store', user)
+            console.log('[USER STATE MIXIN] - user in store', this.user)
           }).catch((error) => {
-            this.$toast.error(error.message)
+            console.log('Error saving the user by uid', error)
           })
-        } else {
-          console.log('[USER STATE MIXIN] - uid is not initialised, redirecting to login')
-          this.$router.push('/auth/signin')
         }
       }
     }

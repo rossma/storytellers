@@ -71,7 +71,6 @@ export default {
   },
   watch: {
     user: function (val) {
-      console.log('user watch triggered', val)
       if (this.filterBy.userProfile && this.user.uid) {
         this.fetchUserProfileStories()
       }
@@ -89,7 +88,6 @@ export default {
   },
   methods: {
     init () {
-      console.log('this.filterBy.userProfile', this.filterBy.userProfile)
       if (this.filterBy.userProfile && this.user.uid) {
         this.fetchUserProfileStories()
       } else if (!this.filterBy.userProfile) {

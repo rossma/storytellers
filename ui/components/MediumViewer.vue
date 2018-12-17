@@ -180,9 +180,6 @@ export default {
       }
     }
   },
-  beforeMount: () => {
-
-  },
   mounted: function () {
     this.$nextTick(() => {
       console.log('MediumViewer:Mounted', this.storyCover)

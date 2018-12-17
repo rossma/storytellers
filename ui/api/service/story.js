@@ -1,6 +1,6 @@
-// import firebaseApp, { DB } from '~/firebase/app'
-import firebase from 'firebase/app'
-import { DB } from '~/firebase/app'
+// import firebaseApp, { DB } from 'fire/app'
+// import firebase from 'fire/app'
+import { DB } from 'fire/app'
 
 // const DB = firebaseApp.firestore()
 

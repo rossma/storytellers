@@ -172,8 +172,8 @@ export default {
       }
       updateStory(mutableStory.id, story).then(() => {
         this.saveStory(mutableStory, this.currentChapterOid, this.currentPageOid)
+        this.updatePreviews(mutableStory)
         this.$toast.success('Story updated')
-        this.updatePreviews(story)
       }).catch((error) => {
         console.log('Error updating story:', error)
         this.$toast.error(`Error updating story:${error.message}`)

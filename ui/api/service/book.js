@@ -1,10 +1,12 @@
-import 'firebase/storage' // this is needed if page is refreshed otherwise error is thrown: ...storage() is not a function
-import firebaseApp from '~/firebase/app'
+// import 'firebase/storage' // this is needed if page is refreshed otherwise error is thrown: ...storage() is not a function
+// import firebaseApp from 'fire/app'
+import { DB, STORAGE_REF, TMP } from 'fire/app'
 
+console.log('tmp:', TMP)
 const uuidv4 = require('uuid/v4')
-const DB = firebaseApp.firestore()
-const STORAGE = firebaseApp.storage()
-const STORAGE_REF = STORAGE.ref()
+// const DB = firebaseApp.firestore()
+// const STORAGE = firebaseApp.storage()
+// const STORAGE_REF = STORAGE.ref()
 
 function uploadBookToStorage (file, path, metadata) {
   console.log(`[Book Service] - Uploading book:[${path}] to storage`)

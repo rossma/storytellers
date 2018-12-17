@@ -1,10 +1,11 @@
-import 'firebase/storage' // this is needed if page is refreshed otherwise error is thrown: ...storage() is not a function
-import firebaseApp from '~/firebase/app'
+// import 'firebase/storage' // this is needed if page is refreshed otherwise error is thrown: ...storage() is not a function
+// import firebaseApp from 'fire/app'
+import { DB, STORAGE_REF, TMP } from 'fire/app'
 
 const uuidv4 = require('uuid/v4')
-const DB = firebaseApp.firestore()
-const STORAGE = firebaseApp.storage()
-const STORAGE_REF = STORAGE.ref()
+// const DB = firebaseApp.firestore()
+// const STORAGE = firebaseApp.storage()
+// const STORAGE_REF = STORAGE.ref()
 
 function uploadImageToStorage (file, path, metadata) {
   console.log(`[Image Service] - Uploading image:[${path}] to storage`)

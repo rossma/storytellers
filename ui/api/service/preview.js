@@ -1,6 +1,7 @@
-import firebaseApp from '~/firebase/app'
+// import firebaseApp from 'fire/app'
+import { DB } from 'fire/app'
 
-const DB = firebaseApp.firestore()
+// const DB = firebaseApp.firestore()
 
 function findPreviews (previewsRef) {
   return previewsRef.get().then((querySnapshot) => {

@@ -13,7 +13,11 @@
         dense>
         <v-list-tile>
           <v-list-tile-content>
-            <v-list-tile-title v-if="story">{{ story.title }}</v-list-tile-title>
+            <v-list-tile-title
+              v-if="story"
+              class="headline">
+              {{ story.title }}
+            </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
@@ -32,22 +36,24 @@
               :value="chapter.active"
               :key="chapter.id">
               <v-list-tile
-                slot="item"
+                slot="activator"
                 class="chapter-tile">
                 <v-list-tile-content @click="enableChapterInput($event)">
-                  <v-text-field
-                    :value="chapterDisplayName(chapter, chapterIdx)"
-                    name="chapterNameTxt"
-                    label="Chapter"
-                    class="chapter-name-in-txt"
-                    hide-details
-                    single-line
-                    @blur="saveChapterName($event, chapter)"
-                  />
+                  <v-list-tile-title>
+                    <v-text-field
+                      :value="chapterDisplayName(chapter, chapterIdx)"
+                      name="chapterNameTxt"
+                      label="Chapter"
+                      class="chapter-name-in-txt"
+                      hide-details
+                      single-line
+                      @blur="saveChapterName($event, chapter)"
+                    />
+                  </v-list-tile-title>
                 </v-list-tile-content>
-                <v-list-tile-action>
-                  <v-icon>keyboard_arrow_down</v-icon>
-                </v-list-tile-action>
+                <!--<v-list-tile-action>-->
+                  <!--<v-icon>keyboard_arrow_down</v-icon>-->
+                <!--</v-list-tile-action>-->
               </v-list-tile>
               <v-list-tile
                 v-for="(page, pageIdx) in chapterPages(chapter.id)"
@@ -177,6 +183,7 @@ export default {
       return this.pages.filter(p => p.chapterOid === chapterOid).sort((a, b) => a.page - b.page)
     },
     chapterDisplayName (chapter, index) {
+      console.log('chapter name:', chapter.name)
       return chapter.name ? chapter.name : `Chapter ${++index}`
     },
     saveChapterName (event, chapter) {
@@ -195,7 +202,7 @@ export default {
         return this.addNewPage(chapterDocRef.id)
       }).catch((error) => {
         console.log('Error adding chapter:', error)
-        this.$toast.error(`Error adding chapter:${error.message}`)
+        this.$toast.error(`Error adding chapter`)
       })
     },
     addNewPage (chapterOid) {
@@ -218,7 +225,7 @@ export default {
         this.$router.push(`/story/${pageDocRef.id}`)
       }).catch((error) => {
         console.log('Error adding page:', error)
-        this.$toast.error(`Error adding page:${error.message}`)
+        this.$toast.error(`Error adding page`)
       })
     },
     enableChapterInput (event) {
@@ -230,7 +237,7 @@ export default {
 
 <style>
 .chapter-name-in-txt {
-  padding-top: 5px;
+  padding-top: 0px;
 }
 
 .chapter-name-in-txt .input-group__input {
@@ -269,25 +276,25 @@ export default {
 .add-chapter-btn {
   /*text-align: center;*/
   padding: 10px;
-  border: 1px solid darkgreen;
-  background-color: green;
+  border: 1px solid #1565C0;
+  background-color: #1976D2;
 }
 
 .add-chapter-btn:hover {
   cursor: pointer;
-  background-color: forestgreen;
+  background-color: #1E88E5;
 }
 
 .add-page-btn {
   /*text-align: center;*/
   padding: 10px;
-  border: 1px solid darkblue;
-  background-color: darkslateblue;
+  border: 1px solid #00796B;
+  background-color: #00897B;
 }
 
 .add-page-btn:hover {
   cursor: pointer;
-  background-color: slateblue;
+  background-color: #26A69A;
 }
 
 li.chapter-tile a.list__tile.list__tile--link {

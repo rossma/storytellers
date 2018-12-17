@@ -48,7 +48,7 @@ export default {
         this.$router.push('/user/profile')
       }).catch((error) => {
         console.log('Error deleting story:', error)
-        this.$toast.error(`There was an error deleting story:${error.message}`)
+        this.$toast.error(`There was an error deleting story`)
       })
     }
   }
