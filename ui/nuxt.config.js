@@ -4,7 +4,7 @@ const pkg = require('./package')
 
 require('dotenv').config()
 
-let serviceAccount = require('./firebase/service-account-credentials.json')
+let serviceAccount = process.env.NODE_ENV === 'production' ? process.env.FIREBASE_SERVICE_ACCOUNT_CONFIG : require('./firebase/service-account-credentials.json')
 
 module.exports = {
   mode: 'universal',
