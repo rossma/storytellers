@@ -1,5 +1,5 @@
 // import firebaseApp, { DB } from 'fire/app'
-// import firebase from 'fire/app'
+// import firebase from 'firebase'
 import { DB } from 'fire/app'
 
 // const DB = firebaseApp.firestore()
@@ -37,6 +37,7 @@ export function updateStory (storyOid, story) {
 
 export function deleteCover (storyOid) {
   console.log(`[Story Service] - Deleting cover to story:[${storyOid}]`)
+  const firebase = require('firebase/app')
   return DB.collection('stories').doc(storyOid).update({
     cover: firebase.firestore.FieldValue.delete()
   })
