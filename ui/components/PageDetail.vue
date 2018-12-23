@@ -1,20 +1,47 @@
 <template>
   <div>
     <v-card flat>
-      <v-card-text class="text-xs-center">
-        <img
+      <!--<v-card-text class="text-xs-center">-->
+        <v-img
           v-show="pageImageSrc()"
           :src="pageImageSrc()"
-          class="card-img-top img-fluid thumb"
           title="Upload"
-          @click.stop="openMediumDialog()">
-        <img
+          @click.stop="openMediumDialog()" />
+        <v-img
           v-show="!pageImageSrc()"
-          class="card-img-top img-fluid thumb"
           src="/img/missing-image.png"
           title="Upload"
-          @click.stop="openMediumDialog()">
-      </v-card-text>
+          @click.stop="openMediumDialog()" />
+        <!--<img-->
+          <!--v-show="pageImageSrc()"-->
+          <!--:src="pageImageSrc()"-->
+          <!--class="card-img-top img-fluid thumb"-->
+          <!--title="Upload"-->
+          <!--@click.stop="openMediumDialog()">-->
+        <!--<img-->
+          <!--v-show="!pageImageSrc()"-->
+          <!--class="card-img-top img-fluid thumb"-->
+          <!--src="/img/missing-image.png"-->
+          <!--title="Upload"-->
+          <!--@click.stop="openMediumDialog()">-->
+        <v-card-actions
+          v-if="page.public"
+          class="black">
+          <v-spacer />
+          {{ likes }} likes
+          <v-btn
+            icon
+            @click="like()">
+            <v-icon :color="liked ? 'red' : 'white' ">favorite</v-icon>
+          </v-btn>
+          {{ comments }} comments
+          <v-btn
+            icon
+            @click="commentsDialog = true">
+            <v-icon>comments</v-icon>
+          </v-btn>
+        </v-card-actions>
+      <!--</v-card-text>-->
     </v-card>
     <medium-viewer
       :story-oid="page.storyOid"
@@ -29,16 +56,27 @@
       :image-src="pageImageSrc()"
       :book-src="pageBookSrc()"
       @close="imageDialog = false" />
+    <page-comments
+      :comments="page.comments"
+      :dialog="commentsDialog"
+      :pageId="page.id"
+      :uid="user.uid"
+      :userDisplayName="user.data.displayName ? user.data.displayName : user.data.email"
+      @increment="newComment"
+      @close="commentsDialog = false"
+    />
   </div>
 </template>
 
 <script>
 import MediumViewer from '~/components/MediumViewer'
+import PageComments from '~/components/PageComments'
+import { updatePage } from '~/api/service/page'
 
 export default {
   name: 'PageDetail',
   components: {
-    MediumViewer
+    MediumViewer, PageComments
   },
   props: {
     page: {
@@ -54,10 +92,15 @@ export default {
       default: () => {
         return {}
       }
+    },
+    user: {
+      type: Object,
+      required: true
     }
   },
   data () {
     return {
+      commentsDialog: false,
       imageDialog: false
     }
   },
@@ -67,9 +110,56 @@ export default {
     },
     currentBookOid: function () {
       return (this.page.book && this.page.book.filename)
+    },
+    liked: {
+      get () {
+        console.log('in liked get', this.page.likes)
+        if (this.page.likes) {
+          return this.page.likes.includes(this.user.uid)
+        } else {
+          return false
+        }
+      },
+      set (val) {
+        console.log('in liked set')
+        if (val) {
+          if (!this.page.likes.includes(this.user.uid)) {
+            this.page.likes.push(this.user.uid)
+          }
+        } else {
+          this.page.likes = this.page.likes.filter(el => el !== this.user.uid);
+        }
+      }
+    },
+    comments: function () {
+      if (this.page.comments) {
+        return this.page.comments.length
+      } else {
+        return 0
+      }
+    },
+    likes: function () {
+      if (this.page.likes) {
+        return this.page.likes.length
+      } else {
+        return 0
+      }
     }
   },
   methods: {
+    like () {
+      console.log('in like', this.liked)
+      this.liked = !this.liked
+      console.log('updating page', this.page.id, this.page.likes)
+      updatePage( this.page.id, { likes: this.page.likes } )
+    },
+    newComment (comment) {
+      if (this.page.comments) {
+        this.page.comments.push(comment)
+      } else {
+        this.page.comments = [comment]
+      }
+    },
     pageImageFilename () {
       if (this.page.image && this.page.image.filename) {
         return this.page.image.filename
@@ -99,15 +189,20 @@ export default {
 </script>
 
 <style>
-  img {
-    max-width: 100%;
-    height: auto;
-  }
+  /*img {*/
+    /*max-width: 100%;*/
+    /*height: auto;*/
+  /*}*/
 
-  img.thumb {
-    max-height: 300px;
-    cursor: pointer;
-  }
+ .v-image {
+   cursor: pointer;
+   max-height: 500px;
+ }
+
+  /*img.thumb {*/
+    /*max-height: 300px;*/
+    /*cursor: pointer;*/
+  /*}*/
 
   body {
     overflow: auto;

@@ -11,35 +11,34 @@
         xs12
         sm6
         md3>
-        <v-card class="preview-card">
-          <div
-            class="preview-detail-link"
-            @click="showDetail(preview.storyOid, preview.pageOid)">
-            <v-img
-              :src="preview.previewImageUrl"
-              height="300px"/>
-            <v-card-title primary-title>
-              <div>
-                <div class="headline truncate">{{ preview.title }}</div>
-                <span class="grey--text truncate">{{ preview.summary }}</span>
-              </div>
-            </v-card-title>
-          </div>
-          <v-card-actions
-            v-show="showAction"
-            class="black">
-            <v-spacer />
-            <v-btn icon>
-              <v-icon>favorite</v-icon>
-            </v-btn>
-            <v-btn icon>
-              <v-icon>bookmark</v-icon>
-            </v-btn>
-            <v-btn icon>
-              <v-icon>share</v-icon>
-            </v-btn>
-          </v-card-actions>
-        </v-card>
+        <v-hover>
+          <v-card
+            slot-scope="{ hover }"
+            :class="`elevation-${hover ? 12 : 2}`"
+            class="mx-auto preview-card">
+            <div
+              class="preview-detail-link"
+              @click="showDetail(preview.storyOid, preview.pageOid)">
+              <v-img
+                :src="preview.previewImageUrl"
+                height="300px"/>
+              <v-card-title primary-title>
+                <div>
+                  <div class="headline truncate">{{ preview.title }}</div>
+                  <span class="grey--text truncate">{{ preview.summary }}</span>
+                </div>
+              </v-card-title>
+            </div>
+            <!--<v-card-actions-->
+              <!--v-show="showAction"-->
+              <!--class="black">-->
+              <!--<v-spacer />-->
+              <!--<v-btn icon>-->
+                <!--<v-icon>favorite</v-icon>-->
+              <!--</v-btn>-->
+            <!--</v-card-actions>-->
+          </v-card>
+        </v-hover>
       </v-flex>
     </v-layout>
   </v-container>
@@ -55,10 +54,6 @@ export default {
   name: 'StoriesPreviewList',
   mixins: [ UserStateMixin ],
   props: {
-    showAction: {
-      type: Boolean,
-      default: true
-    },
     filterBy: {
       type: Object,
       default: function () {

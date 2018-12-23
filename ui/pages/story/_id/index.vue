@@ -15,7 +15,8 @@
         <page-detail
           :page="page"
           :editable="isEditable"
-          :story-cover="story.cover" />
+          :story-cover="story.cover"
+          :user="user" />
         <story-action-controls
           :page="page"
           :editable="isEditable"
@@ -35,7 +36,7 @@ import { findPageByOid } from '~/api/service/page'
 import { findUserByOid } from '~/api/service/user'
 import { deleteCover, findStoryByOid } from '~/api/service/story'
 import { findChapterByOid } from '~/api/service/chapter'
-import clonedepp from 'lodash.clonedeep'
+import clonedeep from 'lodash.clonedeep'
 import PageDetail from '~/components/PageDetail'
 import StoryActionControls from '~/components/StoryActionControls.vue'
 import StoryDetail from '~/components/StoryDetail.vue'
@@ -58,14 +59,16 @@ export default {
       },
       page: {
         id: null,
-        image: {
-          filename: null,
-          ref: null
-        },
         book: {
           filename: null,
           ref: null
         },
+        comments: [],
+        image: {
+          filename: null,
+          ref: null
+        },
+        likes: [],
         number: null
       },
       mutablePages: [],
@@ -149,13 +152,15 @@ export default {
           if (pageDoc.exists) {
             this.page = {
               id: pageOid,
+              book: {...pageDoc.data().book},
               chapterOid: pageDoc.data().chapterOid,
+              comments: pageDoc.data().comments ? clonedeep(pageDoc.data().comments) : [],
+              image: {...pageDoc.data().image},
+              likes: pageDoc.data().likes,
               page: pageDoc.data().page,
               public: pageDoc.data().public,
               storyOid: pageDoc.data().storyOid,
               uid: pageDoc.data().uid,
-              image: {...pageDoc.data().image},
-              book: {...pageDoc.data().book}
             }
 
             if (this.isAuthorised()) {
@@ -188,10 +193,10 @@ export default {
           this.story.title = storyDoc.data().title
           this.story.uid = storyDoc.data().uid
           this.story.cover = { ...storyDoc.data().cover }
-          this.story.activePage = clonedepp(this.page)
+          this.story.activePage = clonedeep(this.page)
 
           console.log('saving story with updated active page')
-          this.saveStory(clonedepp(this.story))
+          this.saveStory(clonedeep(this.story))
         } else {
           this.$toast.error('Story does not exist')
         }

@@ -77,9 +77,7 @@
       <v-flex xs12>
         <v-card dark>
           <v-card-title primary><h2>My Stories</h2></v-card-title>
-          <stories-preview-list
-            :show-action="false"
-            :filter-by="previewAuthorFilter" />
+          <stories-preview-list :filter-by="previewAuthorFilter" />
         </v-card>
       </v-flex>
     </v-layout>
