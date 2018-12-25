@@ -61,7 +61,7 @@
       :dialog="commentsDialog"
       :pageId="page.id"
       :uid="user.uid"
-      :userDisplayName="user.data.displayName ? user.data.displayName : user.data.email"
+      :userDisplayName="user.data.displayName ? user.data.displayName : 'Anon'"
       @increment="newComment"
       @close="commentsDialog = false"
     />
@@ -122,6 +122,10 @@ export default {
       },
       set (val) {
         console.log('in liked set')
+        if (!this.page.likes) {
+          this.page.likes = []
+        }
+
         if (val) {
           if (!this.page.likes.includes(this.user.uid)) {
             this.page.likes.push(this.user.uid)

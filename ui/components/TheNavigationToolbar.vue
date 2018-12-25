@@ -152,9 +152,6 @@ export default {
     ...mapActions('common', [
       'updateSidebar'
     ]),
-    userProfile () {
-      this.$router.push('/user/profile')
-    },
     signout () {
       this.logout().then(() => {
         console.log('after logout')

@@ -36,7 +36,7 @@
                 dark
                 :color="!isImageViewer ? 'green' : ''"
                 @click.native="initEbook();isImageViewer = false">
-                <v-icon>book</v-icon>
+                <v-icon>text_format</v-icon>
               </v-btn>
               <span>Words</span>
             </v-tooltip>

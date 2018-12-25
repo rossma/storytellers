@@ -56,6 +56,9 @@
                       :rules="nameRules"
                       label="Display Name"
                       required />
+                    <v-text-field
+                      v-model="formUser.bio"
+                      label="Bio" />
                   </v-form>
                 </v-card>
               </v-flex>
@@ -77,7 +80,9 @@
       <v-flex xs12>
         <v-card dark>
           <v-card-title primary><h2>My Stories</h2></v-card-title>
-          <stories-preview-list :filter-by="previewAuthorFilter" />
+          <stories-preview-list
+            :filter-by="previewAuthorFilter"
+            :is-private-user-profile="true" />
         </v-card>
       </v-flex>
     </v-layout>
@@ -106,7 +111,8 @@ export default {
       ],
       formUser: {
         photoUrl: '',
-        displayName: ''
+        displayName: '',
+        bio: ''
       },
       newProfileImageFile: null
     }
@@ -122,8 +128,7 @@ export default {
     },
     previewAuthorFilter () {
       return {
-        byAuthorUid: this.user.uid,
-        userProfile: true
+        byAuthorUid: this.user.uid
       }
     }
   },
@@ -145,7 +150,8 @@ export default {
     initFormUser(formValue) {
       if (formValue) {
         this.formUser.photoUrl = formValue.photoUrl,
-        this.formUser.displayName = formValue.displayName
+        this.formUser.displayName = formValue.displayName,
+        this.formUser.bio = formValue.bio
       }
     },
     profileImageSelected (e) {
@@ -154,7 +160,8 @@ export default {
         this.newProfileImageFile = e.target.files[0]
         this.computedUser = {
           photoUrl: URL.createObjectURL(this.newProfileImageFile),
-          displayName: this.formUser.displayName
+          displayName: this.formUser.displayName,
+          bio: this.formUser.bio
         }
       } else {
         this.$toast.error('No profile image selected')
@@ -170,7 +177,7 @@ export default {
           return downloadUrl
         })
       } else {
-        return Promise.resolve(null)
+        return Promise.resolve(this.formUser.photoUrl || '')
       }
     },
     submit () {
@@ -179,8 +186,9 @@ export default {
           console.log('downloadUrl:', downloadUrl)
 
           const userPart = {
-            photoUrl: downloadUrl ? downloadUrl : this.formUser.photoUrl,
-            displayName: this.formUser.displayName
+            photoUrl: downloadUrl,
+            displayName: this.formUser.displayName,
+            bio: this.formUser.bio || ''
           }
 
           const payload = { user: this.user, userPart: userPart }

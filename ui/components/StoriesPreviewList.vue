@@ -21,7 +21,7 @@
               @click="showDetail(preview.storyOid, preview.pageOid)">
               <v-img
                 :src="preview.previewImageUrl"
-                height="300px"/>
+                height="300px" />
               <v-card-title primary-title>
                 <div>
                   <div class="headline truncate">{{ preview.title }}</div>
@@ -29,14 +29,11 @@
                 </div>
               </v-card-title>
             </div>
-            <!--<v-card-actions-->
-              <!--v-show="showAction"-->
-              <!--class="black">-->
-              <!--<v-spacer />-->
-              <!--<v-btn icon>-->
-                <!--<v-icon>favorite</v-icon>-->
-              <!--</v-btn>-->
-            <!--</v-card-actions>-->
+            <v-card-actions
+              class="black"
+              v-show="showActions">
+              <h3><nuxt-link :to="'/user/' + preview.uid">{{ preview.userDisplayName || 'Anon' }}</nuxt-link></h3>
+            </v-card-actions>
           </v-card>
         </v-hover>
       </v-flex>
@@ -58,15 +55,26 @@ export default {
       type: Object,
       default: function () {
         return {
-          userProfile: null,
           byAuthorUid: null
         }
       }
+    },
+    isPrivateUserProfile: {
+      type: Boolean,
+      default: false
+    },
+    isPublicUserProfile: {
+      type: Boolean,
+      default: false
+    },
+    showActions: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
     user: function (val) {
-      if (this.filterBy.userProfile && this.user.uid) {
+      if (this.isPrivateUserProfile && this.user.uid) {
         this.fetchUserProfileStories()
       }
     }
@@ -83,10 +91,10 @@ export default {
   },
   methods: {
     init () {
-      if (this.filterBy.userProfile && this.user.uid) {
+      if (this.isPrivateUserProfile && this.user.uid) {
         this.fetchUserProfileStories()
-      } else if (!this.filterBy.userProfile) {
-        this.fetchPublicStories()
+      } else {
+        this.fetchPreviews()
       }
     },
     fetchUserProfileStories () {
@@ -130,12 +138,11 @@ export default {
         this.$toast.error(error.message)
       })
     },
-    fetchPublicStories () {
-      console.log('fetchUserProfileStories :1', JSON.stringify(this.user))
-
+    fetchPreviews () {
       findPreviewsByFilter(this.filterBy).then((previewsSnapshot) => {
         this.previews = previewsSnapshot
       }).catch((error) => {
+        console.log(error)
         this.$toast.error(error.message)
       })
     },
