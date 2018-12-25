@@ -125,7 +125,6 @@ export default {
     publish () {
       this.findImageFilenameKey().then((imageDoc) => {
         if (imageDoc.exists) {
-          let displayName = this.user.data.displayName ? this.user.data.displayName : this.user.data.email
           let preview = {
             storyOid: this.story.id,
             chapterOid: this.page.chapterOid,
@@ -133,7 +132,7 @@ export default {
             title: this.story.title,
             summary: stringUtils.truncateWithEllipse(this.story.summary, 100),
             uid: this.user.uid,
-            userDisplayName: displayName,
+            userDisplayName: this.user.data.displayName,
             previewImageUrl: imageDoc.data().previewUrl,
             imageFilenameOid: imageDoc.id,
             created: Date.now()

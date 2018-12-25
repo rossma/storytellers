@@ -36,7 +36,7 @@
                 dark
                 :color="!isImageViewer ? 'green' : ''"
                 @click.native="initEbook();isImageViewer = false">
-                <v-icon>book</v-icon>
+                <v-icon>text_format</v-icon>
               </v-btn>
               <span>Words</span>
             </v-tooltip>
@@ -89,7 +89,6 @@ import { EventBus } from '~/utils/event-bus.js'
 import MediumViewerBook from '~/components/MediumViewerBook'
 import MediumViewerImage from '~/components/MediumViewerImage'
 import UploadButton from '~/components/UploadButton'
-import { updatePage } from '~/api/service/page'
 import { uploadPageBook } from '~/api/service/book'
 import { uploadPageImage } from '~/api/service/image'
 import { deleteCover, updateStory } from '~/api/service/story'

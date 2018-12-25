@@ -31,7 +31,7 @@
         <template>
           <v-list>
             <v-list-group
-              v-for="(chapter, chapterIdx) in chapters"
+              v-for="(chapter, chapterIdx) in filteredChapters"
               v-if="chapter"
               :value="chapter.active"
               :key="chapter.id">
@@ -51,9 +51,6 @@
                     />
                   </v-list-tile-title>
                 </v-list-tile-content>
-                <!--<v-list-tile-action>-->
-                  <!--<v-icon>keyboard_arrow_down</v-icon>-->
-                <!--</v-list-tile-action>-->
               </v-list-tile>
               <v-list-tile
                 v-for="(page, pageIdx) in chapterPages(chapter.id)"
@@ -136,6 +133,9 @@ export default {
     ...mapGetters('auth', [
       'uid'
     ]),
+    filteredChapters () {
+      return this.chapters.filter(c => this.chapterPages(c.id).length > 0)
+    },
     isEditable () {
       return this.story.uid === this.uid
     }
@@ -171,7 +171,7 @@ export default {
       }).then((pages) => {
         this.pages = pages.map(page => {
           if (story.activePage) {
-            page.active = (page.id === story.activePage.id) // todo get active page
+            page.active = (page.id === story.activePage.id)
           }
           return page
         })
@@ -180,7 +180,9 @@ export default {
       })
     },
     chapterPages (chapterOid) {
-      return this.pages.filter(p => p.chapterOid === chapterOid).sort((a, b) => a.page - b.page)
+      return this.pages.filter(p => {
+        return p.chapterOid === chapterOid && (this.uid === p.uid || p.public)
+      }).sort((a, b) => a.page - b.page)
     },
     chapterDisplayName (chapter, index) {
       console.log('chapter name:', chapter.name)

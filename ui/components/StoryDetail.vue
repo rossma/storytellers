@@ -3,7 +3,11 @@
     <v-expansion-panel-content>
       <div slot="header">
         <div><h2>{{ story.title }}</h2></div>
-        <div v-show="author.displayName"><h5>{{ author.displayName }}</h5></div>
+        <div
+          v-show="author.displayName"
+          @click="showUserProfile()">
+          <h4>{{ author.displayName }}</h4>
+        </div>
       </div>
       <story-summary
         :story="story"
@@ -42,13 +46,24 @@ export default {
           id: null,
           title: '',
           summary: '',
-          created: Date.now()
+          created: Date.now(),
+          uid: null
         }
       }
     },
     storyExists: {
       type: Boolean,
       default: false
+    }
+  },
+  methods: {
+    showUserProfile () {
+      console.log(`show user profile for uid:${this.story.uid}`)
+      if (this.story.uid) {
+        this.$router.push(`/user/${this.story.uid}`)
+      } else {
+        this.$toast.error('user does not exist')
+      }
     }
   }
 }
