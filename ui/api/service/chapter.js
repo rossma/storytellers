@@ -1,4 +1,6 @@
 import firebaseApp from 'fire/app'
+import debug from 'debug'
+const log = debug('app:api/service/chapter')
 
 const DB = firebaseApp.firestore()
 
@@ -17,23 +19,23 @@ function findChapters (chaptersRef) {
 }
 
 export function findChaptersByUser (userOid) {
-  console.log(`[Chapter Service] - Finding chapters by user:[${userOid}]`)
+  log(`Finding chapters by user:[${userOid}]`)
   return findChapters(DB.collection('chapters').where('uid', '==', userOid))
 }
 
 export function findChaptersByStory (storyOid) {
-  console.log(`[Chapter Service] - Finding chapters by story:[${storyOid}]`)
+  log(`Finding chapters by story:[${storyOid}]`)
   return findChapters(DB.collection('chapters').where('storyOid', '==', storyOid))
 }
 
 export function findChapterByOid (chapterOid) {
-  console.log(`[Chapter Service] - Finding chapter by oid:[${chapterOid}]`)
+  log(`Finding chapter by oid:[${chapterOid}]`)
   let chaptersRef = DB.collection('chapters').doc(chapterOid)
   return chaptersRef.get()
 }
 
 export function updateChapterName (chapterOid, chapterName) {
-  console.log(`[Chapter Service] - Updating chapter:[${chapterOid}] with name:[${chapterName}]`)
+  log(`Updating chapter:[${chapterOid}] with name:[${chapterName}]`)
   let chapterRef = DB.collection('chapters').doc(chapterOid)
   chapterRef.update({
     name: chapterName
@@ -41,12 +43,12 @@ export function updateChapterName (chapterOid, chapterName) {
 }
 
 export function addChapter (chapter) {
-  console.log(`[Chapter Service] - Adding chapter:`, chapter)
+  log(`Adding chapter:`, chapter)
   return DB.collection('chapters').add(chapter)
 }
 
 export function deleteChapter (chapterOid) {
-  console.log(`[Chapter Service] - Deleting chapter:[${chapterOid}`)
+  log(`Deleting chapter:[${chapterOid}`)
   let chapterRef = DB.collection('chapters').doc(chapterOid)
   return chapterRef.delete()
 }

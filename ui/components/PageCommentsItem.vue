@@ -21,11 +21,9 @@
       </v-list-tile-action>
     </v-list-tile>
     <v-divider />
-    <!--<v-divider v-if="index + 1 < mutableComments.length" :key="`divider-${index}`"></v-divider>-->
   </div>
 </template>
 <script>
-  // import { EventBus } from '~/utils/event-bus.js'
 
   export default {
     name: 'PageCommentsItem',

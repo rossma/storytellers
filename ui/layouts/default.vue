@@ -11,14 +11,11 @@
 <script>
 import ThePageFooter from '~/components/ThePageFooter'
 import TheNavigationToolbar from '~/components/TheNavigationToolbar'
-// import UserStateMixin from '~/mixins/UserStateMixin'
 
 export default {
   components: {
     TheNavigationToolbar,
     ThePageFooter
-  },
-  // middleware: 'authenticated',
-  // mixins: [ UserStateMixin ]
+  }
 }
 </script>

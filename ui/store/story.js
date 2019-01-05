@@ -1,4 +1,6 @@
 import { EventBus } from '~/utils/event-bus.js'
+import debug from 'debug'
+const log = debug('app:store/story')
 
 const defaultState = () => ({
   story: {}
@@ -30,12 +32,12 @@ export const actions = {
 export const mutations = {
 
   resetState (state) {
-    console.log('[STORY MUTATIONS] - resetState')
+    log('resetState')
     Object.assign(state, defaultState())
   },
 
   saveStory (state, story) {
-    console.log('[STORY MUTATIONS] - saveStory:', story)
+    log('saveStory:', story)
     state.story = story
   }
 

@@ -68,10 +68,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { EventBus } from '~/utils/event-bus.js'
 import stringUtils from '~/utils/string'
 import { publishPage } from '~/api/service/page'
 import { findImageByOid } from '~/api/service/image'
+import debug from 'debug'
+const log = debug('app:components/StoryActionControls')
 
 export default {
   name: 'StoryActionControls',
@@ -140,20 +141,20 @@ export default {
           return publishPage(preview)
         } else {
           // possible if the server function hasn't run yet
-          console.log('Image Document not found in DB at this time')
+          log('Image Document not found in DB at this time')
           return Promise.reject(new Error('There was an error finding image reference'))
         }
       }).then(() => {
         this.isPublicPage = true
         this.$toast.success('Story published')
       }).catch((error) => {
-        console.log('There was an error publishing page', error)
+        log('There was an error publishing page', error)
         this.$toast.error(error.message)
       })
     },
     deleteCurrentPage () {
       this.deletePageDialog = false
-      EventBus.$emit('deletePage', this.page)
+      this.$emit('delete-page', false)
     },
     canDeletePage () {
       return this.editable && this.totalStoryPages > 1

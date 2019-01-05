@@ -2,7 +2,9 @@
   <v-container grid-list-xl>
     <v-layout v-if="user.uid">
       <v-flex xs12>
-        <v-expansion-panel>
+        <v-expansion-panel
+          v-model="panel"
+          expand>
           <v-expansion-panel-content>
             <div slot="header">
               <h2>User Profile</h2>
@@ -17,7 +19,7 @@
                   flat>
                   <v-tooltip top>
                     <v-avatar
-                      v-show="!computedUser.photoUrl"
+                      v-show="!formUser.photoUrl"
                       slot="activator"
                       class="indigo jbtn-file">
                       <v-icon dark>account_circle</v-icon>
@@ -26,7 +28,7 @@
                         @change="profileImageSelected">
                     </v-avatar>
                     <v-avatar
-                      v-show="computedUser.photoUrl"
+                      v-show="formUser.photoUrl"
                       slot="activator"
                       class="jbtn-file">
                       <img
@@ -96,6 +98,8 @@ import { uploadProfileImage } from '~/api/service/image'
 import firebaseApp from 'fire/app'
 import StoriesPreviewList from '~/components/StoriesPreviewList'
 import UserStateMixin from '~/mixins/UserStateMixin'
+import debug from 'debug'
+const log = debug('app:pages/user/profile')
 
 export default {
   mixins: [ UserStateMixin ],
@@ -105,6 +109,7 @@ export default {
   layout: 'default-protected',
   data () {
     return {
+      panel: [true],
       valid: true,
       nameRules: [
         (v) => !!v || 'Name is required'
@@ -123,6 +128,7 @@ export default {
         return this.user.data
       },
       set: function (newValue) {
+        console.log('abc', newValue)
         this.initFormUser(newValue)
       }
     },
@@ -140,7 +146,7 @@ export default {
   },
 
   created: function () {
-    console.log('in created, user:', JSON.stringify(this.user))
+    log('in created, user:', JSON.stringify(this.user))
     this.computedUser = this.user.data
   },
   methods: {
@@ -156,7 +162,7 @@ export default {
     },
     profileImageSelected (e) {
       if (e.target.files[0]) {
-        console.log('profile image selected')
+        log('profile image selected')
         this.newProfileImageFile = e.target.files[0]
         this.computedUser = {
           photoUrl: URL.createObjectURL(this.newProfileImageFile),
@@ -183,7 +189,7 @@ export default {
     submit () {
       if (this.$refs.form.validate()) {
         this.uploadProfileImage().then((downloadUrl) => {
-          console.log('downloadUrl:', downloadUrl)
+          log('downloadUrl:', downloadUrl)
 
           const userPart = {
             photoUrl: downloadUrl,

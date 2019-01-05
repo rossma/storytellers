@@ -112,6 +112,9 @@ module.exports = {
         console.log('is client ')
       }
       config.resolve.alias['fire/app'] = `~/firebase/${ctx.isClient ? 'app' : 'admin'}.js`
+
+      /* because in utils/constant referencing windows I need to set this, more here: https://github.com/webpack/webpack/issues/6642 */
+      config.output.globalObject = 'this'
     }
   },
   env: {

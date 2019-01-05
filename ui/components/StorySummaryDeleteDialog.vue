@@ -22,6 +22,8 @@
 <script>
 import { mapActions } from 'vuex'
 import { deleteStory } from '~/api/service/story'
+import debug from 'debug'
+const log = debug('app:components/StorySummaryDeleteDialog')
 
 export default {
   name: 'StorySummaryDeleteDialog',
@@ -47,7 +49,7 @@ export default {
         this.resetState()
         this.$router.push('/user/profile')
       }).catch((error) => {
-        console.log('Error deleting story:', error)
+        log('Error deleting story:', error)
         this.$toast.error(`There was an error deleting story`)
       })
     }

@@ -1,3 +1,5 @@
+import debug from 'debug'
+const log = debug('app:store/common')
 
 const defaultState = () => ({
   sidebar: {
@@ -35,7 +37,7 @@ export const getters = {
 export const actions = {
 
   resetState ({ dispatch, commit }) {
-    console.log('[COMMON ACTIONS] - reset state')
+    log('reset state')
     commit('resetState')
   },
 
@@ -67,7 +69,7 @@ export const actions = {
 export const mutations = {
 
   resetState (state) {
-    console.log('[COMMON MUTATIONS] - resetState')
+    log('[COMMON MUTATIONS] - resetState')
     Object.assign(state, defaultState())
   },
 

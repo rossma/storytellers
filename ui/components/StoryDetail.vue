@@ -20,6 +20,8 @@
 
 <script>
 import StorySummary from '~/components/StorySummary.vue'
+import debug from 'debug'
+const log = debug('app:components/StoryDetail')
 
 export default {
   name: 'StoryDetail',
@@ -58,7 +60,7 @@ export default {
   },
   methods: {
     showUserProfile () {
-      console.log(`show user profile for uid:${this.story.uid}`)
+      log(`show user profile for uid:${this.story.uid}`)
       if (this.story.uid) {
         this.$router.push(`/user/${this.story.uid}`)
       } else {
