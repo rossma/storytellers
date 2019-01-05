@@ -1,3 +1,5 @@
+const consola = require('consola')
+
 const express = require('express')
 const router = express.Router()
 
@@ -14,7 +16,7 @@ module.exports = function (app) {
 
   // Add POST - /api/login
   router.post('/login', (req, res) => {
-    console.log('[API] - LOGIN POST', req.headers, req.body.user)
+    consola.info('[API] - LOGIN POST', req.headers, req.body.user)
     req.session.user = req.body.user
     res.cookie('access_token',req.body.token, { maxAge: 900000, httpOnly: true })
     return res.json( { status: 'success' })
@@ -22,7 +24,7 @@ module.exports = function (app) {
 
   // Add POST - /api/logout
   router.post('/logout', (req, res) => {
-    console.log('[API] - LOGOUT POST')
+    consola.info('[API] - LOGOUT POST')
     delete req.session.user
     res.clearCookie('access_token');
     return res.json({ status: 'success' })

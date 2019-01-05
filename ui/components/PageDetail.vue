@@ -55,6 +55,7 @@
       :image-filename="pageImageFilename()"
       :image-src="pageImageSrc()"
       :book-src="pageBookSrc()"
+      :book-type="pageBookType()"
       @close="imageDialog = false" />
     <page-comments
       :comments="page.comments"
@@ -72,6 +73,8 @@
 import MediumViewer from '~/components/MediumViewer'
 import PageComments from '~/components/PageComments'
 import { updatePage } from '~/api/service/page'
+import debug from 'debug'
+const log = debug('app:components/PageDetail')
 
 export default {
   name: 'PageDetail',
@@ -113,7 +116,7 @@ export default {
     },
     liked: {
       get () {
-        console.log('in liked get', this.page.likes)
+        log('in liked get', this.page.likes)
         if (this.page.likes) {
           return this.page.likes.includes(this.user.uid)
         } else {
@@ -121,7 +124,7 @@ export default {
         }
       },
       set (val) {
-        console.log('in liked set')
+        log('in liked set')
         if (!this.page.likes) {
           this.page.likes = []
         }
@@ -152,9 +155,9 @@ export default {
   },
   methods: {
     like () {
-      console.log('in like', this.liked)
+      log('in like', this.liked)
       this.liked = !this.liked
-      console.log('updating page', this.page.id, this.page.likes)
+      log('updating page', this.page.id, this.page.likes)
       updatePage( this.page.id, { likes: this.page.likes } )
     },
     newComment (comment) {
@@ -185,6 +188,13 @@ export default {
         return ''
       }
     },
+    pageBookType () {
+      if (this.page.book && this.page.book.contentType) {
+        return this.page.book.contentType
+      } else {
+        return ''
+      }
+    },
     openMediumDialog () {
       this.imageDialog = true
     }
@@ -193,20 +203,11 @@ export default {
 </script>
 
 <style>
-  /*img {*/
-    /*max-width: 100%;*/
-    /*height: auto;*/
-  /*}*/
 
  .v-image {
    cursor: pointer;
    max-height: 500px;
  }
-
-  /*img.thumb {*/
-    /*max-height: 300px;*/
-    /*cursor: pointer;*/
-  /*}*/
 
   body {
     overflow: auto;

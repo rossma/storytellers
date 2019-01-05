@@ -35,7 +35,8 @@
                 icon
                 dark
                 :color="!isImageViewer ? 'green' : ''"
-                @click.native="initEbook();isImageViewer = false">
+                @click.native="initBook()">
+                <!--@click.native="init-ebook(); isImageViewer = false">-->
                 <v-icon>text_format</v-icon>
               </v-btn>
               <span>Words</span>
@@ -76,7 +77,8 @@
             :image-src="previewImageSrc" />
           <medium-viewer-book
             v-show="!isImageViewer"
-            :book-src="previewBookSrc" />
+            :book-src="bookSrc"
+            :book-type="previewBookType" />
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -92,6 +94,8 @@ import UploadButton from '~/components/UploadButton'
 import { uploadPageBook } from '~/api/service/book'
 import { uploadPageImage } from '~/api/service/image'
 import { deleteCover, updateStory } from '~/api/service/story'
+import debug from 'debug'
+const log = debug('app:components/MediumViewer')
 
 export default {
   name: 'MediumViewer',
@@ -146,12 +150,15 @@ export default {
     bookSrc: {
       type: String,
       default: null
+    },
+    bookType: {
+      type: String,
+      default: null
     }
   },
   data () {
     return {
-      // bookPreviewSrc: 'https://firebasestorage.googleapis.com/v0/b/storytellers2-13997.appspot.com/o/pg19033.epub?alt=media&token=06a11974-4ef1-41bf-a11c-b4a573af8f30',
-      bookPreviewSrc: null,
+      fileType: null,
       mediaFile: null,
       imagePreviewSrc: '',
       isCover: false,
@@ -171,18 +178,22 @@ export default {
         return this.imageSrc
       }
     },
-    previewBookSrc: function () {
-      if (this.bookPreviewSrc) {
-        return this.bookPreviewSrc
+    previewBookType: function () {
+      if (this.fileType) {
+        return this.fileType
       } else {
-        return this.bookSrc
+        return this.bookType
       }
     }
   },
   mounted: function () {
     this.$nextTick(() => {
-      console.log('MediumViewer:Mounted', this.storyCover)
+      log('MediumViewer:Mounted', this.storyCover)
       this.isCover = this.storyCover && this.storyCover.filename === this.imageFilename ? true : false
+
+      if (this.bookType) {
+        this.fileType = this.bookType
+      }
     })
   },
   methods: {
@@ -190,7 +201,7 @@ export default {
       this.$emit('close', false)
     },
     previewMediaFile (file) {
-      console.log('in previewMediaFile')
+      log('in previewMediaFile')
       this.mediaFile = file
       let reader = new FileReader()
 
@@ -198,37 +209,62 @@ export default {
         if (this.isImageViewer) {
           this.imagePreviewSrc = reader.result
         } else {
-          EventBus.$emit('epubBookSrc', reader.result)
+          if (this.previewBookType === 'application/pdf') {
+            EventBus.$emit('pdf-book-src', reader.result)
+          } else {
+            // default is epub
+            EventBus.$emit('epub-book-src', reader.result)
+          }
         }
       }
 
       if (file) {
-        console.log('file size:', file.size)
+        log('file size:', file.size)
 
         const limit = 2000000
         if (file.size > limit) {
-          console.log(`file size if over the limit:${limit}`)
+          log(`file size if over the limit:${limit}`)
           this.$toast.error(`The file is over the ${limit / 1000 / 1000}MB limit`)
         } else {
-          console.log('mime type:', file.type)
+          log('mime type:', file.type)
+          this.fileType = file.type
           if (file.type && file.type.startsWith( 'image/')) {
             this.isImageViewer = true
             this.hasImageChanged = true
             reader.readAsDataURL(file)
-          } else if (file.type && file.type.startsWith( 'application/epub')) {
+          } else if (this.isPdf(file.type)) {
+            this.isImageViewer = false
+            this.hasBookChanged = true
+            reader.readAsArrayBuffer(file)
+          } else if (this.isEpub(file.type)) {
             this.isImageViewer = false
             this.hasBookChanged = true
             reader.readAsArrayBuffer(file)
           } else {
-            console.log('unknown file type')
+            log('unknown file type')
             this.$toast.error(`The file is an supported file type`)
           }
         }
 
       }
     },
-    initEbook () {
-      EventBus.$emit('initEbook')
+    isEpub(type) {
+      return type && type.startsWith( 'application/epub')
+    },
+    isPdf(type) {
+      return type && type.startsWith( 'application/pdf')
+    },
+    initBook () {
+      if (this.isEpub(this.fileType)) {
+        log('emitting event to init ebook');
+        EventBus.$emit('init-ebook')
+      } else if (this.isPdf(this.fileType)) {
+        log('emitting event to init pdf');
+        EventBus.$emit('initPdf')
+      } else {
+        log('Unsupported file type:', this.fileType);
+      }
+      this.isImageViewer = false
     },
     saveMediaFile () {
       if (this.isImageViewer) {
@@ -242,20 +278,20 @@ export default {
       }
     },
     saveImageFile () {
-      console.log('saving image, cover:', this.isCover)
       if (this.mediaFile && this.hasImageChanged) {
         return uploadPageImage(this.pageOid, this.currentImageOid, this.mediaFile).then((result) => {
-          EventBus.$emit('storyImageFileKey', {
+          // this.$emit('story-image-file-key', false)
+          EventBus.$emit('story-image-file-key', {
             filenameKey: result.filenameKey,
             imageSrc: result.downloadUrl
           })
           this.hasImageChanged = false
           this.closeDialog()
         }).then(() => {
-          console.log('imageSrc + filename:', this.imageSrc, this.imageFilename)
+          log('imageSrc + filename:', this.imageSrc, this.imageFilename)
           return this.saveCover(this.imageSrc, this.imageFilename)
         }).catch((error) => {
-          console.log('There was an error uploading page image', error)
+          log('There was an error uploading page image', error)
           //
           // There was an error uploading page image Error: Function DocumentReference.set() called with invalid data. Data must be an object, but it was: a function
           // at new FirestoreError (vendors.app.js:35053)
@@ -270,25 +306,25 @@ export default {
         })
       } else {
         return this.saveCover(this.imageSrc, this.imageFilename).then(() => {
-          console.log('Cover saved')
+          log('Cover saved')
         }).catch((error) => {
-          console.log('There was an error saving book cover', error)
+          log('There was an error saving book cover', error)
           this.$toast.error(error.message)
         })
       }
     },
     saveBookFile () {
-      console.log('saving book')
+      log('saving book')
       if (this.mediaFile && this.hasBookChanged) {
         return uploadPageBook(this.pageOid, this.currentBookOid, this.mediaFile).then((result) => {
-          EventBus.$emit('storyBookFileKey', {
+          EventBus.$emit('story-book-file-key', {
             filenameKey: result.filenameKey,
             bookSrc: result.downloadUrl
           })
           this.hasBookChanged = false
           this.closeDialog()
         }).catch((error) => {
-          console.log('There was an error uploading page book', error)
+          log('There was an error uploading page book', error)
           this.$toast.error(error.message)
         })
       }

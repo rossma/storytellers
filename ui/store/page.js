@@ -1,3 +1,6 @@
+import debug from 'debug'
+const log = debug('app:store/page')
+
 const defaultState = () => ({
   pages: [] // total pages in story
 })
@@ -27,12 +30,12 @@ export const actions = {
 export const mutations = {
 
   resetState (state) {
-    console.log('[PAGE MUTATIONS] - resetState')
+    log('resetState')
     Object.assign(state, defaultState())
   },
 
   savePages (state, pages) {
-    console.log('[PAGE MUTATIONS] - savePages:', pages)
+    log('savePages:', pages)
     state.pages = pages
   }
 

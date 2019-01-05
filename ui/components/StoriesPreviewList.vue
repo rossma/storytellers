@@ -46,6 +46,8 @@ import { findStoriesByUser } from '~/api/service/story'
 import { findPagesByStory } from '~/api/service/page'
 import { findPreviewsByFilter } from '~/api/service/preview'
 import UserStateMixin from '~/mixins/UserStateMixin'
+import debug from 'debug'
+const log = debug('app:components/StoriesPreviewList')
 
 export default {
   name: 'StoriesPreviewList',
@@ -129,12 +131,12 @@ export default {
               userDisplayName: this.user.data.displayName
             }
           })
-          console.log('previews:', this.previews)
+          log('previews:', this.previews)
         } else {
-          console.log('There are no stories for this user')
+          log('There are no stories for this user')
         }
       }).catch((error) => {
-        console.log(error)
+        log(error)
         this.$toast.error(error.message)
       })
     },
@@ -142,12 +144,12 @@ export default {
       findPreviewsByFilter(this.filterBy).then((previewsSnapshot) => {
         this.previews = previewsSnapshot
       }).catch((error) => {
-        console.log(error)
+        log(error)
         this.$toast.error(error.message)
       })
     },
     showDetail (storyOid, pageOid) {
-      console.log(`storyOid:${storyOid} pageOid:${pageOid}`)
+      log(`storyOid:${storyOid} pageOid:${pageOid}`)
       if (pageOid) {
         this.$router.push(`/story/${pageOid}`)
       } else {

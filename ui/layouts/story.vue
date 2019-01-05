@@ -15,7 +15,7 @@
           <v-list-tile-content>
             <v-list-tile-title
               v-if="story"
-              class="headline">
+              class="title">
               {{ story.title }}
             </v-list-tile-title>
           </v-list-tile-content>
@@ -42,6 +42,7 @@
                   <v-list-tile-title>
                     <v-text-field
                       :value="chapterDisplayName(chapter, chapterIdx)"
+                      :readonly="!isEditable"
                       name="chapterNameTxt"
                       label="Chapter"
                       class="chapter-name-in-txt"
@@ -108,6 +109,8 @@ import ThePageFooter from '~/components/ThePageFooter'
 import TheNavigationToolbar from '~/components/TheNavigationToolbar'
 import { addChapter, updateChapterName, findChaptersByStory } from '~/api/service/chapter'
 import { addPage, findPagesByStory } from '~/api/service/page'
+import debug from 'debug'
+const log = debug('app:layouts/story')
 
 export default {
   middleware: 'authenticated',
@@ -143,11 +146,11 @@ export default {
   mounted: function () {
     this.$nextTick(() => {
       EventBus.$on('storyEvent', story => {
-        console.log(`[Story Layout] storyEvent received payload:[${story.id}]`)
+        log(`[Story Layout] storyEvent received payload:[${story.id}]`)
         // this.story = { ...this.story, ...story }
-        console.log('[Story Layout] story in store', story)
+        log('[Story Layout] story in store', story)
         this.story = Object.assign(story)
-        console.log('[Story Layout] story values copied from store', this.story)
+        log('[Story Layout] story values copied from store', this.story)
         this.loadChapters(this.story)
       })
     })
@@ -176,7 +179,7 @@ export default {
           return page
         })
         this.savePages(pages)
-        EventBus.$emit('savePages', pages)
+        EventBus.$emit('save-pages', pages)
       })
     },
     chapterPages (chapterOid) {
@@ -185,7 +188,7 @@ export default {
       }).sort((a, b) => a.page - b.page)
     },
     chapterDisplayName (chapter, index) {
-      console.log('chapter name:', chapter.name)
+      log('chapter name:', chapter.name)
       return chapter.name ? chapter.name : `Chapter ${++index}`
     },
     saveChapterName (event, chapter) {
@@ -195,7 +198,7 @@ export default {
       }
     },
     addNewChapter () {
-      console.log('Adding chapter')
+      log('Adding chapter')
       return addChapter({
         storyOid: this.story.id,
         chapter: ++this.chapters.pop().chapter,
@@ -203,7 +206,7 @@ export default {
       }).then((chapterDocRef) => {
         return this.addNewPage(chapterDocRef.id)
       }).catch((error) => {
-        console.log('Error adding chapter:', error)
+        log('Error adding chapter:', error)
         this.$toast.error(`Error adding chapter`)
       })
     },
@@ -223,10 +226,10 @@ export default {
         uid: this.uid,
         public: false
       }).then((pageDocRef) => {
-        console.log(`Page Document written with ID:${pageDocRef.id}`)
+        log(`Page Document written with ID:${pageDocRef.id}`)
         this.$router.push(`/story/${pageDocRef.id}`)
       }).catch((error) => {
-        console.log('Error adding page:', error)
+        log('Error adding page:', error)
         this.$toast.error(`Error adding page`)
       })
     },

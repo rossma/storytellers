@@ -21,7 +21,8 @@
           :page="page"
           :editable="isEditable"
           :total-story-pages="totalStoryPages"
-          :user="user" />
+          :user="user"
+          @delete-page="deletePage" />
       </v-flex>
     </v-layout>
   </v-container>
@@ -41,6 +42,8 @@ import PageDetail from '~/components/PageDetail'
 import StoryActionControls from '~/components/StoryActionControls.vue'
 import StoryDetail from '~/components/StoryDetail.vue'
 import UserStateMixin from '~/mixins/UserStateMixin'
+import debug from 'debug'
+const log = debug('app:pages/story/_id/index')
 
 export default {
   mixins: [ UserStateMixin ],
@@ -99,7 +102,7 @@ export default {
   },
   watch: {
     user: function (val) {
-      console.log('user watch triggered', val)
+      log('user watch triggered', val)
       this.loadPage(this.$route.params.id)
     }
   },
@@ -108,41 +111,36 @@ export default {
   },
   mounted: function () {
     this.$nextTick(() => {
-      console.log('[Story Detail] - in mounted, page id:', this.$route.params.id)
+      log('in mounted, page id:', this.$route.params.id)
       this.loadPage(this.$route.params.id)
 
-      EventBus.$on('storyImageFileKey', imageDetails => {
-        console.log(`[Story Detail] - storyImageFileKey event received:`, imageDetails)
+      EventBus.$on('story-image-file-key', imageDetails => {
+        log(`storyImageFileKey event received:`, imageDetails)
         this.page.image = {
           filename: imageDetails.filenameKey,
           ref: imageDetails.imageSrc
         }
       })
 
-      EventBus.$on('storyBookFileKey', bookDetails => {
-        console.log(`[Story Detail] - storyBookFileKey event received:`, bookDetails)
+      EventBus.$on('story-book-file-key', bookDetails => {
+        log(`story-book-file-key event received:`, bookDetails)
         this.page.book = {
           filename: bookDetails.filenameKey,
           ref: bookDetails.bookSrc
         }
       })
 
-      EventBus.$on('deletePage', page => {
-        console.log(`[Story Detail] - deletePage event received:`, page)
-        this.deletePage(page)
-      })
-
-      EventBus.$on('savePages', pages => {
-        console.log(`[Story Detail] - savePages event received:`, pages)
+      EventBus.$on('save-pages', pages => {
+        log(`savePages event received:`, pages)
         this.mutablePages = this.pages.slice()
       })
     })
   },
   beforeDestroy () {
-    EventBus.$off('storyImageFileKey')
-    EventBus.$off('storyBookFileKey')
-    EventBus.$off('deletePage')
-    EventBus.$off('savePages')
+    EventBus.$off('story-image-file-key2')
+    EventBus.$off('story-image-file-key')
+    EventBus.$off('story-book-file-key')
+    EventBus.$off('save-pages')
   },
   methods: {
     ...mapActions('story', ['saveStory']),
@@ -173,7 +171,7 @@ export default {
           } else {
             this.$toast.error('Page does not exist')
           }
-        })
+        }).catch((error) => log('err', error))
       }
     },
     initAuthorUser (userOid) {
@@ -195,7 +193,7 @@ export default {
           this.story.cover = { ...storyDoc.data().cover }
           this.story.activePage = clonedeep(this.page)
 
-          console.log('saving story with updated active page')
+          log('saving story with updated active page')
           this.saveStory(clonedeep(this.story))
         } else {
           this.$toast.error('Story does not exist')
@@ -221,39 +219,39 @@ export default {
     deletePage (page) {
       const deleteStoryCover = () => {
         if (this.story.cover && this.story.cover.pageOid === page.id) {
-          console.log('in deleteCover for story:', this.story.id)
+          log('in deleteCover for story:', this.story.id)
           return deleteCover(this.storyOid)
         } else {
-          console.log('page being deleted is not story cover')
+          log('page being deleted is not story cover')
           return Promise.resolve()
         }
       }
 
       const runDelete = () => {
-        console.log('in deletePage mutablePages:', this.mutablePages)
+        log('in deletePage mutablePages:', this.mutablePages)
 
         const chapterPageCount = this.chapterPageCount(this.mutablePages, page.chapterOid)
 
-        console.log('chapterPageCount:', chapterPageCount)
+        log('chapterPageCount:', chapterPageCount)
 
         if (chapterPageCount === 1) {
-          console.log('deleting whole chapter')
+          log('deleting whole chapter')
           return deleteChapter(page.chapterOid)
         } else {
-          console.log('deleting page')
+          log('deleting page')
           return deletePage(page.id)
         }
       }
 
       if (this.totalStoryPages > 1) {
         deleteStoryCover().then(() => {
-          console.log('cover removed from page')
+          log('cover removed from page')
           return runDelete()
         }).then(() => {
           this.mutablePages = this.mutablePages.filter(p => p.id !== page.id)
           this.$router.push(`/story/${this.mutablePages[0].id}`)
         }).catch((error) => {
-          console.log('There was an error deleting the current page', error)
+          log('There was an error deleting the current page', error)
           this.$toast.error(error.message)
         })
       } else {

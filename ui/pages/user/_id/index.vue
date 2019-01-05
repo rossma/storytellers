@@ -10,11 +10,11 @@
           flat>
           <v-card-title primary-title>
             <v-layout row wrap>
-              <v-flex xs1>
+              <v-flex xs2>
                 <v-avatar
                   v-show="!profileUser.photoUrl"
                   class="indigo jbtn-file"
-                  size="70">
+                  size="48">
                   <v-icon dark>account_circle</v-icon>
                 </v-avatar>
                 <v-avatar
@@ -25,7 +25,7 @@
                     alt="no photo">
                 </v-avatar>
               </v-flex>
-              <v-flex xs11>
+              <v-flex xs10>
                 <h3 class="headline mb-0">{{ profileUser.displayName }}</h3>
                 <div>{{ profileUser.bio }}</div>
               </v-flex>
@@ -52,6 +52,8 @@
 <script>
   import { findUserByOid } from '~/api/service/user'
   import StoriesPreviewList from '~/components/StoriesPreviewList'
+  import debug from 'debug'
+  const log = debug('app:pages/user/_id/index')
 
   export default {
     name: 'UserProfile',
@@ -75,11 +77,9 @@
         }
       }
     },
-    created: function () {
-    },
     mounted: function () {
       this.$nextTick(() => {
-        console.log('[User Profile] - in mounted, uid:', this.$route.params.id)
+        log('in mounted, uid:', this.$route.params.id)
         this.loadPage(this.$route.params.id)
       })
     },

@@ -62,6 +62,8 @@ import { findPreviewsByStory, updatePreview } from '~/api/service/preview'
 import { addStory, updateStory } from '~/api/service/story'
 import stringUtils from '~/utils/string'
 import StorySummaryDeleteDialog from './StorySummaryDeleteDialog'
+import debug from 'debug'
+const log = debug('app:components/StorySummary')
 
 export default {
   name: 'StorySummary',
@@ -121,7 +123,7 @@ export default {
     ]),
     submit () {
       if (this.$refs.form.validate()) {
-        console.log('Saving story:', this.mutableStory)
+        log('Saving story:', this.mutableStory)
         if (this.mutableStory.id) {
           this.updateStory(this.mutableStory)
         } else {
@@ -153,7 +155,7 @@ export default {
       }
 
       addStory(story, chapter, page).then((result) => {
-        console.log('[StorySummary] Finished saving story, result', result)
+        log('[StorySummary] Finished saving story, result', result)
         this.mutableStory.id = result.storyOid
         this.currentPageOid = result.pageOid
         this.currentChapterOid = result.chapterOid
@@ -161,7 +163,7 @@ export default {
         this.saveStory(this.mutableStory)
         this.$router.push(`/story/${result.pageOid}`)
       }).catch((error) => {
-        console.log('Error adding story', error)
+        log('Error adding story', error)
         this.$toast.error(`Error adding story:${error.message}`)
       })
     },
@@ -175,12 +177,12 @@ export default {
         this.updatePreviews(mutableStory)
         this.$toast.success('Story updated')
       }).catch((error) => {
-        console.log('Error updating story:', error)
+        log('Error updating story:', error)
         this.$toast.error(`Error updating story:${error.message}`)
       })
     },
     updatePreviews (story) {
-      console.log('Updating preview from story:', story)
+      log('Updating preview from story:', story)
       let previews = []
       findPreviewsByStory(story.id).then((previewsSnapshot) => {
         previews = previewsSnapshot

@@ -2,6 +2,8 @@
  * MIXIN to ensure that once logged in the user object from the database is correctly set in the store
  */
 import { mapActions, mapGetters } from 'vuex'
+import debug from 'debug'
+const log = debug('app:mixins/UserStateMixin')
 
 export default {
   computed: {
@@ -13,17 +15,17 @@ export default {
     ])
   },
   created: function () {
-    console.log('[USER STATE MIXIN] - CREATED')
+    log('CREATED')
     /* this will run on both client not server */
   },
   beforeMount: function () {
-    console.log('[USER STATE MIXIN] - BEFORE MOUNT')
+    log('BEFORE MOUNT')
     /* this will only run on client not server */
     this.loadUser()
   },
   mounted: function () {
     this.$nextTick(() => {
-      console.log('[USER STATE MIXIN] - MOUNTED')
+      log('MOUNTED')
       /* this will only run on client not server */
     })
   },
@@ -32,20 +34,20 @@ export default {
       'initUserOnAuthStateChange'
     ]),
     loadUser () {
-      console.log('[USER STATE MIXIN] - loadUser')
+      log('loadUser')
 
       if (!this.user.uid) {
-        console.log('[USER STATE MIXIN] - auth uid', this.uid)
+        log('auth uid', this.uid)
 
         if (this.uid) {
-          console.log('[USER STATE MIXIN] - UID is set but User is not, going to initialise')
+          log('UID is set but User is not, going to initialise')
           // TODO change this so that we call this.initAuthentication() / initUser
 
           this.initUserOnAuthStateChange().then((user) => {
-            console.log('[USER STATE MIXIN] - finished saving user to store', user)
-            console.log('[USER STATE MIXIN] - user in store', this.user)
+            log('finished saving user to store', user)
+            log('user in store', this.user)
           }).catch((error) => {
-            console.log('Error saving the user by uid', error)
+            log('Error saving the user by uid', error)
           })
         }
       }

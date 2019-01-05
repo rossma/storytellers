@@ -30,11 +30,13 @@
           no-action>
           <v-list-tile slot="activator">
             <v-list-tile-content>
-              <v-list-tile-title>{{  username }}</v-list-tile-title>
+              <v-list-tile-title>{{ username }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
 
-          <v-list-tile to="/user/profile">
+          <v-list-tile
+            @click="updateSidebar({ visible: false })"
+            to="/user/profile">
             <v-list-tile-content>
               <v-list-tile-title>Account</v-list-tile-title>
             </v-list-tile-content>
@@ -86,6 +88,8 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import UserStateMixin from '~/mixins/UserStateMixin'
+import debug from 'debug'
+const log = debug('app:components/TheNavigationToolbar')
 
 export default {
   name: 'TheNavigationToolbar',
@@ -93,26 +97,26 @@ export default {
   data () {
     return {
       // drawer: false,
-      profile: {
-        direction: 'bottom',
-        fab: false,
-        fling: false,
-        hover: false,
-        tabs: null,
-        top: false,
-        right: true,
-        bottom: false,
-        left: false,
-        transition: 'slide-y-reverse-transition'
-      },
-      items: [
-        { to: '/', title: 'Welcome', icon: 'apps' },
-        { to: '/inspire', title: 'Inspire', icon: 'bubble_chart' }
-      ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Vuetify.js'
+      // profile: {
+      //   direction: 'bottom',
+      //   fab: false,
+      //   fling: false,
+      //   hover: false,
+      //   tabs: null,
+      //   top: false,
+      //   right: true,
+      //   bottom: false,
+      //   left: false,
+      //   transition: 'slide-y-reverse-transition'
+      // },
+      // items: [
+      //   { to: '/', title: 'Welcome', icon: 'apps' },
+      //   { to: '/inspire', title: 'Inspire', icon: 'bubble_chart' }
+      // ],
+      // miniVariant: false,
+      // right: true,
+      // rightDrawer: false,
+      // title: 'Vuetify.js'
     }
   },
   computed: {
@@ -154,10 +158,10 @@ export default {
     ]),
     signout () {
       this.logout().then(() => {
-        console.log('after logout')
+        log('after logout')
         this.$router.push('/auth/signin')
       }).catch((error) => {
-        console.log('Error sign out:', error)
+        log('Error sign out:', error)
         this.$toast.error(error.message)
       })
     }

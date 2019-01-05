@@ -47,6 +47,8 @@
   import clonedeep from 'lodash.clonedeep'
   import PageCommentsItem from './PageCommentsItem'
   import { updatePage } from '~/api/service/page'
+  import debug from 'debug'
+  const log = debug('app:components/PageComments')
 
   export default {
     name: 'PageComments',
@@ -93,7 +95,7 @@
     methods: {
       addComment () {
         if (this.comment) {
-          console.log('adding comment:', this.comment)
+          log('adding comment:', this.comment)
           this.mutableComments.push({
             comment: this.comment,
             uid: this.uid,
@@ -103,7 +105,7 @@
             this.comment = undefined
             this.$emit('increment', this.mutableComments)
           }).catch((err) => {
-            console.log('Error adding comment', err)
+            log('Error adding comment', err)
             this.$toast.error(`Error adding comment`)
           })
         }
@@ -112,7 +114,7 @@
         this.$emit('close', false)
       },
       likeComment ({index, liked}) {
-        console.log('in likeComment', index, liked)
+        log('in likeComment', index, liked)
         if (index < this.mutableComments.length ) {
 
           let likes = this.mutableComments[index].likes || []

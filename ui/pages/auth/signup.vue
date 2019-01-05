@@ -43,6 +43,8 @@
 import { mapActions } from 'vuex'
 import { addUser } from '~/api/service/user'
 import firebaseApp from 'fire/app'
+import debug from 'debug'
+const log = debug('app:pages/auth/signup')
 
 export default {
   layout: 'auth',
@@ -64,11 +66,11 @@ export default {
       'saveUser'
     ]),
     async signUp () {
-      console.log('[SIGNUP] signing up')
+      log('signing up')
 
       try {
         const firebaseUser = await firebaseApp.auth().createUserWithEmailAndPassword(this.email.trim(), this.password)
-        console.log('[SIGNUP.vue] successful user creation in firebase', firebaseUser.user.uid)
+        log('successful user creation in firebase', firebaseUser.user.uid)
         let user = {
           uid: firebaseUser.user.uid,
           email: this.email.trim(),

@@ -24,8 +24,9 @@
 <script>
   // https://github.com/futurepress/epub.js/tree/v0.3/libs
   import Epub from 'epubjs/lib/index'
-  import Book from 'epubjs/lib/index'
   import { EventBus } from '~/utils/event-bus.js'
+  import debug from 'debug'
+  const log = debug('app:components/EpubContainer')
 
   export default {
     name: 'EpubContainer',
@@ -58,7 +59,7 @@
     },
     computed: {
       hasBookUrl: function () {
-        console.log('this.bookSrc', this.mutableBookSrc)
+        log('this.bookSrc', this.mutableBookSrc)
         if (this.mutableBookSrc) {
           return true
         } else {
@@ -67,20 +68,20 @@
       }
     },
     mounted: function () {
-      console.log('mounted')
+      log('mounted')
       this.$nextTick(() => {
-        EventBus.$on('initEbook', () => {
+        EventBus.$on('init-ebook', () => {
           this.init()
         })
 
-        EventBus.$on('epubBookSrc', src => {
+        EventBus.$on('epub-book-src', src => {
           this.createBook(src)
         })
       })
     },
     beforeDestroy () {
-      EventBus.$off('initEbook')
-      EventBus.$off('epubBookSrc')
+      EventBus.$off('init-ebook')
+      EventBus.$off('epub-book-src')
     },
     methods: {
       init () {
@@ -89,14 +90,12 @@
         }
       },
       createBook (src) {
-        console.log('In epub create book')
+        log('In epub create book')
 
         if (src) {
           this.mutableBookSrc = src
 
-          console.log('a')
           if (this.book) {
-            console.log('b')
             this.book.destroy()
           }
 
@@ -111,7 +110,7 @@
           })
 
           const display = this.rendition.display()
-          console.log('display:', display)
+          log('display:', display)
 
           this.book.ready.then(() => {
             var keyListener = (e) => {
@@ -135,17 +134,17 @@
           // })
 
           this.rendition.on("relocated", (location) => {
-            console.log('relocated: ', location)
+            log('relocated: ', location)
             this.hasNext = !location.atEnd
             this.hasPrev = !location.atStart
           })
 
           // this.rendition.on("layout", (layout) => {
-          //   console.log('rendition on layout', layout)
+          //   log('rendition on layout', layout)
           // })
 
           window.addEventListener("unload", () => {
-            console.log("unloading")
+            log("unloading")
             this.book.destroy()
           })
         }
