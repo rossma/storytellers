@@ -14,6 +14,11 @@ export default {
       'user'
     ])
   },
+  watch: {
+    user (newValue, oldValue) {
+      log('User has changed.........................', newValue, oldValue)
+    }
+  },
   created: function () {
     log('CREATED')
     /* this will run on both client not server */

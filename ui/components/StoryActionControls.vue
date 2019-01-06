@@ -154,7 +154,7 @@ export default {
     },
     deleteCurrentPage () {
       this.deletePageDialog = false
-      this.$emit('delete-page', false)
+      this.$emit('delete-page', this.page)
     },
     canDeletePage () {
       return this.editable && this.totalStoryPages > 1

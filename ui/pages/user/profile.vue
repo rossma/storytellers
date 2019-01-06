@@ -95,10 +95,12 @@
 import { mapActions } from 'vuex'
 import { uploadProfileImage } from '~/api/service/image'
 
+import clonedeep from 'lodash.clonedeep'
 import firebaseApp from 'fire/app'
 import StoriesPreviewList from '~/components/StoriesPreviewList'
 import UserStateMixin from '~/mixins/UserStateMixin'
 import debug from 'debug'
+
 const log = debug('app:pages/user/profile')
 
 export default {
@@ -138,13 +140,11 @@ export default {
       }
     }
   },
-
   watch: {
     computedUser: function (newValue) {
       this.initFormUser(newValue)
     }
   },
-
   created: function () {
     log('in created, user:', JSON.stringify(this.user))
     this.computedUser = this.user.data
@@ -197,7 +197,7 @@ export default {
             bio: this.formUser.bio || ''
           }
 
-          const payload = { user: this.user, userPart: userPart }
+          const payload = { user: clonedeep(this.user), userPart: userPart }
           this.updateUser(payload).then(() => {
             return firebaseApp.auth().currentUser.updateProfile(userPart)
           }).then(() => {

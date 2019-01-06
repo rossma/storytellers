@@ -32,6 +32,11 @@ export const actions = {
     log('[USER ACTIONS] - updateUser')
     try {
       await updateUserDoc(user.uid, userPart)
+      // todo - must be a better way to merge these if it exists
+      if (userPart.bio) user.data.bio = userPart.bio
+      if (userPart.displayName) user.data.displayName = userPart.displayName
+      if (userPart.photoUrl) user.data.photoUrl = userPart.photoUrl
+      log('boooo1', user)
       await dispatch('saveUser', user)
     } catch (error) {
       log('[USER ACTIONS] - caught error', error)

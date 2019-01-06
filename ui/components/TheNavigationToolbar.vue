@@ -10,7 +10,6 @@
       <v-divider
         slot="activator"
         light />
-
       <v-avatar
         v-if="photoUrl"
         class="avatar">
@@ -94,31 +93,6 @@ const log = debug('app:components/TheNavigationToolbar')
 export default {
   name: 'TheNavigationToolbar',
   mixins: [ UserStateMixin ],
-  data () {
-    return {
-      // drawer: false,
-      // profile: {
-      //   direction: 'bottom',
-      //   fab: false,
-      //   fling: false,
-      //   hover: false,
-      //   tabs: null,
-      //   top: false,
-      //   right: true,
-      //   bottom: false,
-      //   left: false,
-      //   transition: 'slide-y-reverse-transition'
-      // },
-      // items: [
-      //   { to: '/', title: 'Welcome', icon: 'apps' },
-      //   { to: '/inspire', title: 'Inspire', icon: 'bubble_chart' }
-      // ],
-      // miniVariant: false,
-      // right: true,
-      // rightDrawer: false,
-      // title: 'Vuetify.js'
-    }
-  },
   computed: {
     ...mapGetters('common', [
       'sidebar'

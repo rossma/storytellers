@@ -1,12 +1,10 @@
 <template>
   <div>
-    mutableBookSrc: {{ mutableBookSrc }}
-    bookSrc: {{ bookSrc }}
     <div v-if="hasBookUrl">
       <v-card>
         <v-responsive :aspect-ratio="16/9">
           <v-card-text>
-            pages: {{ pages.length }}
+            <!--pages: {{ pages.length }}-->
             <div class="pdf-document">
               <pdf-page
                 v-for="page in pages"
