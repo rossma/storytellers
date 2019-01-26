@@ -45,7 +45,7 @@ import firebaseApp from 'fire/app'
 
 export default {
   layout: 'auth',
-  data () {
+  data() {
     return {
       showPassword: false,
       alert: {
@@ -56,18 +56,21 @@ export default {
     }
   },
   methods: {
-    ...mapActions('auth', [
-      'login'
-    ]),
-    submit () {
-      firebaseApp.auth().signInWithEmailAndPassword(this.email.trim(), this.password).then((firebaseUser) => {
-        return this.login(firebaseUser.user.uid)
-      }).then(() => {
-        this.$toast.clear();
-        this.$router.push('/')
-      }).catch((error) => {
-        this.$toast.error(error.message)
-      })
+    ...mapActions('auth', ['login']),
+    submit() {
+      firebaseApp
+        .auth()
+        .signInWithEmailAndPassword(this.email.trim(), this.password)
+        .then(firebaseUser => {
+          return this.login(firebaseUser.user.uid)
+        })
+        .then(() => {
+          this.$toast.clear()
+          this.$router.push('/')
+        })
+        .catch(error => {
+          this.$toast.error(error.message)
+        })
     }
   }
 }

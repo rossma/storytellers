@@ -2,45 +2,45 @@
   <div>
     <v-card flat>
       <!--<v-card-text class="text-xs-center">-->
-        <v-img
-          v-show="pageImageSrc()"
-          :src="pageImageSrc()"
-          title="Upload"
-          @click.stop="openMediumDialog()" />
-        <v-img
-          v-show="!pageImageSrc()"
-          src="/img/missing-image.png"
-          title="Upload"
-          @click.stop="openMediumDialog()" />
-        <!--<img-->
-          <!--v-show="pageImageSrc()"-->
-          <!--:src="pageImageSrc()"-->
-          <!--class="card-img-top img-fluid thumb"-->
-          <!--title="Upload"-->
-          <!--@click.stop="openMediumDialog()">-->
-        <!--<img-->
-          <!--v-show="!pageImageSrc()"-->
-          <!--class="card-img-top img-fluid thumb"-->
-          <!--src="/img/missing-image.png"-->
-          <!--title="Upload"-->
-          <!--@click.stop="openMediumDialog()">-->
-        <v-card-actions
-          v-if="page.public"
-          class="black">
-          <v-spacer />
-          {{ likes }} likes
-          <v-btn
-            icon
-            @click="like()">
-            <v-icon :color="liked ? 'red' : 'white' ">favorite</v-icon>
-          </v-btn>
-          {{ comments }} comments
-          <v-btn
-            icon
-            @click="commentsDialog = true">
-            <v-icon>comments</v-icon>
-          </v-btn>
-        </v-card-actions>
+      <v-img
+        v-show="pageImageSrc()"
+        :src="pageImageSrc()"
+        title="Upload"
+        @click.stop="openMediumDialog()" />
+      <v-img
+        v-show="!pageImageSrc()"
+        src="/img/missing-image.png"
+        title="Upload"
+        @click.stop="openMediumDialog()" />
+      <!--<img-->
+      <!--v-show="pageImageSrc()"-->
+      <!--:src="pageImageSrc()"-->
+      <!--class="card-img-top img-fluid thumb"-->
+      <!--title="Upload"-->
+      <!--@click.stop="openMediumDialog()">-->
+      <!--<img-->
+      <!--v-show="!pageImageSrc()"-->
+      <!--class="card-img-top img-fluid thumb"-->
+      <!--src="/img/missing-image.png"-->
+      <!--title="Upload"-->
+      <!--@click.stop="openMediumDialog()">-->
+      <v-card-actions
+        v-if="page.public"
+        class="black">
+        <v-spacer />
+        {{ likes }} likes
+        <v-btn
+          icon
+          @click="like()">
+          <v-icon :color="liked ? 'red' : 'white' ">favorite</v-icon>
+        </v-btn>
+        {{ comments }} comments
+        <v-btn
+          icon
+          @click="commentsDialog = true">
+          <v-icon>comments</v-icon>
+        </v-btn>
+      </v-card-actions>
       <!--</v-card-text>-->
     </v-card>
     <medium-viewer
@@ -60,9 +60,9 @@
     <page-comments
       :comments="page.comments"
       :dialog="commentsDialog"
-      :pageId="page.id"
+      :page-id="page.id"
       :uid="user.uid"
-      :userDisplayName="user.data.displayName ? user.data.displayName : 'Anon'"
+      :user-display-name="user.data.displayName ? user.data.displayName : 'Anon'"
       @increment="newComment"
       @close="commentsDialog = false"
     />
@@ -79,7 +79,8 @@ const log = debug('app:components/PageDetail')
 export default {
   name: 'PageDetail',
   components: {
-    MediumViewer, PageComments
+    MediumViewer,
+    PageComments
   },
   props: {
     page: {
@@ -101,21 +102,21 @@ export default {
       required: true
     }
   },
-  data () {
+  data() {
     return {
       commentsDialog: false,
       imageDialog: false
     }
   },
   computed: {
-    currentImageOid: function () {
-      return (this.page.image && this.page.image.filename)
+    currentImageOid: function() {
+      return this.page.image && this.page.image.filename
     },
-    currentBookOid: function () {
-      return (this.page.book && this.page.book.filename)
+    currentBookOid: function() {
+      return this.page.book && this.page.book.filename
     },
     liked: {
-      get () {
+      get() {
         log('in liked get', this.page.likes)
         if (this.page.likes) {
           return this.page.likes.includes(this.user.uid)
@@ -123,7 +124,7 @@ export default {
           return false
         }
       },
-      set (val) {
+      set(val) {
         log('in liked set')
         if (!this.page.likes) {
           this.page.likes = []
@@ -134,18 +135,18 @@ export default {
             this.page.likes.push(this.user.uid)
           }
         } else {
-          this.page.likes = this.page.likes.filter(el => el !== this.user.uid);
+          this.page.likes = this.page.likes.filter(el => el !== this.user.uid)
         }
       }
     },
-    comments: function () {
+    comments: function() {
       if (this.page.comments) {
         return this.page.comments.length
       } else {
         return 0
       }
     },
-    likes: function () {
+    likes: function() {
       if (this.page.likes) {
         return this.page.likes.length
       } else {
@@ -154,48 +155,48 @@ export default {
     }
   },
   methods: {
-    like () {
+    like() {
       log('in like', this.liked)
       this.liked = !this.liked
       log('updating page', this.page.id, this.page.likes)
-      updatePage( this.page.id, { likes: this.page.likes } )
+      updatePage(this.page.id, { likes: this.page.likes })
     },
-    newComment (comment) {
+    newComment(comment) {
       if (this.page.comments) {
         this.page.comments.push(comment)
       } else {
         this.page.comments = [comment]
       }
     },
-    pageImageFilename () {
+    pageImageFilename() {
       if (this.page.image && this.page.image.filename) {
         return this.page.image.filename
       } else {
         return ''
       }
     },
-    pageImageSrc () {
+    pageImageSrc() {
       if (this.page.image && this.page.image.ref) {
         return this.page.image.ref
       } else {
         return ''
       }
     },
-    pageBookSrc () {
+    pageBookSrc() {
       if (this.page.book && this.page.book.ref) {
         return this.page.book.ref
       } else {
         return ''
       }
     },
-    pageBookType () {
+    pageBookType() {
       if (this.page.book && this.page.book.contentType) {
         return this.page.book.contentType
       } else {
         return ''
       }
     },
-    openMediumDialog () {
+    openMediumDialog() {
       this.imageDialog = true
     }
   }
@@ -203,14 +204,13 @@ export default {
 </script>
 
 <style>
+.v-image {
+  cursor: pointer;
+  max-height: 500px;
+}
 
- .v-image {
-   cursor: pointer;
-   max-height: 500px;
- }
-
-  body {
-    overflow: auto;
-    background: #eee;
-  }
+body {
+  overflow: auto;
+  background: #eee;
+}
 </style>

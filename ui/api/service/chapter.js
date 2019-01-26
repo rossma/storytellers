@@ -4,9 +4,9 @@ const log = debug('app:api/service/chapter')
 
 const DB = firebaseApp.firestore()
 
-function findChapters (chaptersRef) {
-  return chaptersRef.get().then((querySnapshot) => {
-    return querySnapshot.docs.map((m) => {
+function findChapters(chaptersRef) {
+  return chaptersRef.get().then(querySnapshot => {
+    return querySnapshot.docs.map(m => {
       return {
         id: m.id,
         chapter: m.data().chapter,
@@ -18,23 +18,25 @@ function findChapters (chaptersRef) {
   })
 }
 
-export function findChaptersByUser (userOid) {
+export function findChaptersByUser(userOid) {
   log(`Finding chapters by user:[${userOid}]`)
   return findChapters(DB.collection('chapters').where('uid', '==', userOid))
 }
 
-export function findChaptersByStory (storyOid) {
+export function findChaptersByStory(storyOid) {
   log(`Finding chapters by story:[${storyOid}]`)
-  return findChapters(DB.collection('chapters').where('storyOid', '==', storyOid))
+  return findChapters(
+    DB.collection('chapters').where('storyOid', '==', storyOid)
+  )
 }
 
-export function findChapterByOid (chapterOid) {
+export function findChapterByOid(chapterOid) {
   log(`Finding chapter by oid:[${chapterOid}]`)
   let chaptersRef = DB.collection('chapters').doc(chapterOid)
   return chaptersRef.get()
 }
 
-export function updateChapterName (chapterOid, chapterName) {
+export function updateChapterName(chapterOid, chapterName) {
   log(`Updating chapter:[${chapterOid}] with name:[${chapterName}]`)
   let chapterRef = DB.collection('chapters').doc(chapterOid)
   chapterRef.update({
@@ -42,12 +44,12 @@ export function updateChapterName (chapterOid, chapterName) {
   })
 }
 
-export function addChapter (chapter) {
+export function addChapter(chapter) {
   log(`Adding chapter:`, chapter)
   return DB.collection('chapters').add(chapter)
 }
 
-export function deleteChapter (chapterOid) {
+export function deleteChapter(chapterOid) {
   log(`Deleting chapter:[${chapterOid}`)
   let chapterRef = DB.collection('chapters').doc(chapterOid)
   return chapterRef.delete()

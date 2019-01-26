@@ -28,7 +28,7 @@ export default {
     }
   },
   methods: {
-    fileSelected (event) {
+    fileSelected(event) {
       if (this.selectedCallback) {
         if (event.target.files[0]) {
           this.selectedCallback(event.target.files[0])
@@ -44,7 +44,7 @@ export default {
 </script>
 
 <style scoped>
-input[type="file"] {
+input[type='file'] {
   display: none;
 }
 

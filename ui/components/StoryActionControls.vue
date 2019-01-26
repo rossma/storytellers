@@ -94,7 +94,7 @@ export default {
       required: true
     }
   },
-  data () {
+  data() {
     return {
       deletePageDialog: false,
       dial: {
@@ -107,15 +107,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('story', [
-      'story'
-    ])
+    ...mapGetters('story', ['story'])
   },
   methods: {
-    canPublish () {
+    canPublish() {
       return !this.isPublicPage && this.page.uid === this.user.uid
     },
-    findImageFilenameKey () {
+    findImageFilenameKey() {
       if (this.page.image && this.page.image.filename) {
         const filenameKey = this.page.image.filename.split('.').shift()
         return findImageByOid(filenameKey)
@@ -123,40 +121,45 @@ export default {
         return Promise.reject(new Error('Image reference can not be found'))
       }
     },
-    publish () {
-      this.findImageFilenameKey().then((imageDoc) => {
-        if (imageDoc.exists) {
-          let preview = {
-            storyOid: this.story.id,
-            chapterOid: this.page.chapterOid,
-            pageOid: this.page.id,
-            title: this.story.title,
-            summary: stringUtils.truncateWithEllipse(this.story.summary, 100),
-            uid: this.user.uid,
-            userDisplayName: this.user.data.displayName,
-            previewImageUrl: imageDoc.data().previewUrl,
-            imageFilenameOid: imageDoc.id,
-            created: Date.now()
+    publish() {
+      this.findImageFilenameKey()
+        .then(imageDoc => {
+          if (imageDoc.exists) {
+            let preview = {
+              storyOid: this.story.id,
+              chapterOid: this.page.chapterOid,
+              pageOid: this.page.id,
+              title: this.story.title,
+              summary: stringUtils.truncateWithEllipse(this.story.summary, 100),
+              uid: this.user.uid,
+              userDisplayName: this.user.data.displayName,
+              previewImageUrl: imageDoc.data().previewUrl,
+              imageFilenameOid: imageDoc.id,
+              created: Date.now()
+            }
+            return publishPage(preview)
+          } else {
+            // possible if the server function hasn't run yet
+            log('Image Document not found in DB at this time')
+            return Promise.reject(
+              new Error('There was an error finding image reference')
+            )
           }
-          return publishPage(preview)
-        } else {
-          // possible if the server function hasn't run yet
-          log('Image Document not found in DB at this time')
-          return Promise.reject(new Error('There was an error finding image reference'))
-        }
-      }).then(() => {
-        this.isPublicPage = true
-        this.$toast.success('Story published')
-      }).catch((error) => {
-        log('There was an error publishing page', error)
-        this.$toast.error(error.message)
-      })
+        })
+        .then(() => {
+          this.isPublicPage = true
+          this.$toast.success('Story published')
+        })
+        .catch(error => {
+          log('There was an error publishing page', error)
+          this.$toast.error(error.message)
+        })
     },
-    deleteCurrentPage () {
+    deleteCurrentPage() {
       this.deletePageDialog = false
       this.$emit('delete-page', this.page)
     },
-    canDeletePage () {
+    canDeletePage() {
       return this.editable && this.totalStoryPages > 1
     }
   }
@@ -164,5 +167,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

@@ -1,111 +1,116 @@
 <script>
-  import debug from 'debug'
-  const log = debug('app:components/PdfPage')
+import debug from 'debug'
+const log = debug('app:components/PdfPage')
 
-  export default {
-    props: {
-      page: {
-        type: Object, // instance of PDFPageProxy returned from pdf.getPage
-        required: true,
-      },
-      scale: {
-        type: Number,
-        required: true,
+export default {
+  props: {
+    page: {
+      type: Object, // instance of PDFPageProxy returned from pdf.getPage
+      required: true
+    },
+    scale: {
+      type: Number,
+      required: true
+    }
+  },
+
+  computed: {
+    actualSizeViewport() {
+      return this.viewport.clone({ scale: this.scale })
+    },
+
+    canvasStyle() {
+      const {
+        width: actualSizeWidth,
+        height: actualSizeHeight
+      } = this.actualSizeViewport
+      const pixelRatio = window.devicePixelRatio || 1
+      const [pixelWidth, pixelHeight] = [actualSizeWidth, actualSizeHeight].map(
+        dim => Math.ceil(dim / pixelRatio)
+      )
+      log(`width: ${pixelWidth}px; height: ${pixelHeight}px;`)
+      return `width: ${pixelWidth}px; height: ${pixelHeight}px;`
+    },
+
+    canvasAttrs() {
+      let { width, height } = this.viewport
+      ;[width, height] = [width, height].map(dim => Math.ceil(dim))
+
+      const style = this.canvasStyle
+
+      return {
+        width,
+        height,
+        style,
+        class: 'pdf-page'
       }
     },
 
-    computed: {
-      actualSizeViewport() {
-        return this.viewport.clone({scale: this.scale})
-      },
+    pageNumber() {
+      return this.page.pageNumber
+    }
+  },
 
-      canvasStyle () {
-        const {width: actualSizeWidth, height: actualSizeHeight} = this.actualSizeViewport
-        const pixelRatio = window.devicePixelRatio || 1
-        const [pixelWidth, pixelHeight] = [actualSizeWidth, actualSizeHeight].map(dim => Math.ceil(dim / pixelRatio))
-        log(`width: ${pixelWidth}px; height: ${pixelHeight}px;`)
-        return `width: ${pixelWidth}px; height: ${pixelHeight}px;`
-      },
+  watch: {
+    page(page, oldPage) {
+      this.destroyPage(oldPage)
+    }
+  },
 
-      canvasAttrs () {
-        let {width, height} = this.viewport;
-        [width, height] = [width, height].map(dim => Math.ceil(dim))
+  created() {
+    // PDFPageProxy#getViewport
+    // https://mozilla.github.io/pdf.js/api/draft/PDFPageProxy.html
+    this.viewport = this.page.getViewport(this.scale)
+  },
 
-        const style = this.canvasStyle
+  mounted() {
+    log(`Page ${this.pageNumber} mounted`)
+    this.renderPage()
+  },
 
-        return {
-          width,
-          height,
-          style,
-          class: 'pdf-page',
-        }
-      },
+  beforeDestroy() {
+    this.destroyPage(this.page)
+  },
 
-      pageNumber() {
-        return this.page.pageNumber
-      },
-    },
-
-    methods: {
-      renderPage() {
-        // PDFPageProxy#render
-        // https://mozilla.github.io/pdf.js/api/draft/PDFPageProxy.html
-        this.renderTask = this.page.render(this.getRenderContext())
-        this.renderTask.
-        then(() => this.$emit('rendered', this.page)).
-        then(() => log(`Page ${this.pageNumber} rendered`))
-      },
-
-      destroyPage(page) {
-        if (!page) return
-
-        // PDFPageProxy#_destroy
-        // https://mozilla.github.io/pdf.js/api/draft/PDFPageProxy.html
-        page._destroy()
-
-        // RenderTask#cancel
-        // https://mozilla.github.io/pdf.js/api/draft/RenderTask.html
-        if (this.renderTask) this.renderTask.cancel()
-      },
-
-      getRenderContext() {
-        const {viewport} = this
-        const canvasContext = this.$el.getContext('2d')
-
-        return {canvasContext, viewport}
-      },
-    },
-
-    watch: {
-      page(page, oldPage) {
-        this.destroyPage(oldPage)
-      },
-    },
-
-    created() {
-      // PDFPageProxy#getViewport
+  methods: {
+    renderPage() {
+      // PDFPageProxy#render
       // https://mozilla.github.io/pdf.js/api/draft/PDFPageProxy.html
-      this.viewport = this.page.getViewport(this.scale)
+      this.renderTask = this.page.render(this.getRenderContext())
+      this.renderTask
+        .then(() => this.$emit('rendered', this.page))
+        .then(() => log(`Page ${this.pageNumber} rendered`))
     },
 
-    mounted() {
-      log(`Page ${this.pageNumber} mounted`)
-      this.renderPage()
+    destroyPage(page) {
+      if (!page) return
+
+      // PDFPageProxy#_destroy
+      // https://mozilla.github.io/pdf.js/api/draft/PDFPageProxy.html
+      page._destroy()
+
+      // RenderTask#cancel
+      // https://mozilla.github.io/pdf.js/api/draft/RenderTask.html
+      if (this.renderTask) this.renderTask.cancel()
     },
 
-    beforeDestroy() {
-      this.destroyPage(this.page)
-    },
+    getRenderContext() {
+      const { viewport } = this
+      const canvasContext = this.$el.getContext('2d')
 
-    render (h) {
-      const { canvasAttrs: attrs } = this
-      return h('canvas', { attrs })
-    },
+      return { canvasContext, viewport }
+    }
+  },
+
+  render(h) {
+    const { canvasAttrs: attrs } = this
+    return h('canvas', { attrs })
   }
+}
 </script>
 <style>
-  .pdf-page {
-    display: block;
-    margin: 0 auto 0.5em;
-  }
+.pdf-page {
+  display: block;
+  margin: 0 auto 0.5em;
+}
 </style>

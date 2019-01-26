@@ -9,8 +9,10 @@ let db = null
 
 if (!admin.apps.length) {
   firebaseApp = admin.initializeApp({
-    credential: admin.credential.cert(process.env.FIREBASE_SERVICE_ACCOUNT_CONFIG),
-    databaseURL: config.databaseURL,
+    credential: admin.credential.cert(
+      process.env.FIREBASE_SERVICE_ACCOUNT_CONFIG
+    ),
+    databaseURL: config.databaseURL
     // storageBucket: config.storageBucket
   })
 
@@ -33,7 +35,7 @@ export const STORAGE_REF = admin.storage().bucket(config.storageBucket)
 
 export const AUTH = admin.auth()
 
-export async function onAuthStateChanged (nextOrObserver) {
+export async function onAuthStateChanged(nextOrObserver) {
   log('[FIREBASE ADMIN] - onAuthStateChanged not available on server')
   Promise.resolve(null)
 }

@@ -34,8 +34,8 @@
           </v-list-tile>
 
           <v-list-tile
-            @click="updateSidebar({ visible: false })"
-            to="/user/profile">
+            to="/user/profile"
+            @click="updateSidebar({ visible: false })">
             <v-list-tile-content>
               <v-list-tile-title>Account</v-list-tile-title>
             </v-list-tile-content>
@@ -92,30 +92,30 @@ const log = debug('app:components/TheNavigationToolbar')
 
 export default {
   name: 'TheNavigationToolbar',
-  mixins: [ UserStateMixin ],
+  mixins: [UserStateMixin],
   computed: {
-    ...mapGetters('common', [
-      'sidebar'
-    ]),
+    ...mapGetters('common', ['sidebar']),
     // hasNavDrawerSlot () {
     //   return this.$slots['nav-drawer']
     // },
     drawer: {
-      get () {
+      get() {
         return this.sidebar.visible
       },
-      set (val) {
+      set(val) {
         this.updateSidebar({ visible: val })
       }
     },
-    username () {
+    username() {
       if (this.user.data) {
-        return this.user.data.displayName ? this.user.data.displayName : this.user.data.email
+        return this.user.data.displayName
+          ? this.user.data.displayName
+          : this.user.data.email
       } else {
         return ''
       }
     },
-    photoUrl () {
+    photoUrl() {
       if (this.user.data) {
         return this.user.data.photoUrl
       } else {
@@ -124,27 +124,25 @@ export default {
     }
   },
   methods: {
-    ...mapActions('auth', [
-      'logout'
-    ]),
-    ...mapActions('common', [
-      'updateSidebar'
-    ]),
-    signout () {
-      this.logout().then(() => {
-        log('after logout')
-        this.$router.push('/auth/signin')
-      }).catch((error) => {
-        log('Error sign out:', error)
-        this.$toast.error(error.message)
-      })
+    ...mapActions('auth', ['logout']),
+    ...mapActions('common', ['updateSidebar']),
+    signout() {
+      this.logout()
+        .then(() => {
+          log('after logout')
+          this.$router.push('/auth/signin')
+        })
+        .catch(error => {
+          log('Error sign out:', error)
+          this.$toast.error(error.message)
+        })
     }
   }
 }
 </script>
 <style>
 .home-title a {
-  text-decoration: none
+  text-decoration: none;
 }
 
 .v-speed-dial {
@@ -152,19 +150,19 @@ export default {
 }
 
 a {
-   color: white!important;
-   /*font-weight: bold!important;*/
-   text-decoration: none!important;
-   text-transform: none!important;
- }
+  color: white !important;
+  /*font-weight: bold!important;*/
+  text-decoration: none !important;
+  text-transform: none !important;
+}
 
 a:hover {
-  text-decoration: none!important;
+  text-decoration: none !important;
 }
 
 .avatar {
   margin-top: 15px;
   margin-left: 15px;
 }
-
 </style>
+s -

@@ -22,19 +22,18 @@
           <v-toolbar-items class="medium-viewer-toolbar">
             <v-tooltip bottom>
               <v-checkbox
-                slot="activator"
                 v-if="editable && isImageViewer"
+                slot="activator"
                 :label="`Cover`"
-                v-model="isCover">
-              </v-checkbox>
+                v-model="isCover"/>
               <span>Cover</span>
             </v-tooltip>
             <v-tooltip bottom>
               <v-btn
                 slot="activator"
+                :color="!isImageViewer ? 'green' : ''"
                 icon
                 dark
-                :color="!isImageViewer ? 'green' : ''"
                 @click.native="initBook()">
                 <!--@click.native="init-ebook(); isImageViewer = false">-->
                 <v-icon>text_format</v-icon>
@@ -44,9 +43,9 @@
             <v-tooltip bottom>
               <v-btn
                 slot="activator"
+                :color="isImageViewer ? 'green' : ''"
                 icon
                 dark
-                :color="isImageViewer ? 'green' : ''"
                 @click.native="isImageViewer = true">
                 <v-icon>brush</v-icon>
               </v-btn>
@@ -54,15 +53,15 @@
             </v-tooltip>
             <v-tooltip bottom>
               <upload-button
-                slot="activator"
                 v-if="editable"
+                slot="activator"
                 :selected-callback="previewMediaFile"
                 icon="folder_open"/>
               <span>Upload</span>
             </v-tooltip>
             <v-btn
-              slot="activator"
               v-if="editable"
+              slot="activator"
               dark
               flat
               @click="saveMediaFile">
@@ -156,7 +155,7 @@ export default {
       default: null
     }
   },
-  data () {
+  data() {
     return {
       fileType: null,
       mediaFile: null,
@@ -168,17 +167,15 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('story', [
-      'story'
-    ]),
-    previewImageSrc: function () {
+    ...mapGetters('story', ['story']),
+    previewImageSrc: function() {
       if (this.imagePreviewSrc) {
         return this.imagePreviewSrc
       } else {
         return this.imageSrc
       }
     },
-    previewBookType: function () {
+    previewBookType: function() {
       if (this.fileType) {
         return this.fileType
       } else {
@@ -186,10 +183,13 @@ export default {
       }
     }
   },
-  mounted: function () {
+  mounted: function() {
     this.$nextTick(() => {
       log('MediumViewer:Mounted', this.storyCover)
-      this.isCover = this.storyCover && this.storyCover.filename === this.imageFilename ? true : false
+      this.isCover =
+        this.storyCover && this.storyCover.filename === this.imageFilename
+          ? true
+          : false
 
       if (this.bookType) {
         this.fileType = this.bookType
@@ -197,10 +197,10 @@ export default {
     })
   },
   methods: {
-    closeDialog () {
+    closeDialog() {
       this.$emit('close', false)
     },
-    previewMediaFile (file) {
+    previewMediaFile(file) {
       log('in previewMediaFile')
       this.mediaFile = file
       let reader = new FileReader()
@@ -224,11 +224,13 @@ export default {
         const limit = 2000000
         if (file.size > limit) {
           log(`file size if over the limit:${limit}`)
-          this.$toast.error(`The file is over the ${limit / 1000 / 1000}MB limit`)
+          this.$toast.error(
+            `The file is over the ${limit / 1000 / 1000}MB limit`
+          )
         } else {
           log('mime type:', file.type)
           this.fileType = file.type
-          if (file.type && file.type.startsWith( 'image/')) {
+          if (file.type && file.type.startsWith('image/')) {
             this.isImageViewer = true
             this.hasImageChanged = true
             reader.readAsDataURL(file)
@@ -245,28 +247,27 @@ export default {
             this.$toast.error(`The file is an supported file type`)
           }
         }
-
       }
     },
     isEpub(type) {
-      return type && type.startsWith( 'application/epub')
+      return type && type.startsWith('application/epub')
     },
     isPdf(type) {
-      return type && type.startsWith( 'application/pdf')
+      return type && type.startsWith('application/pdf')
     },
-    initBook () {
+    initBook() {
       if (this.isEpub(this.fileType)) {
-        log('emitting event to init ebook');
+        log('emitting event to init ebook')
         EventBus.$emit('init-ebook')
       } else if (this.isPdf(this.fileType)) {
-        log('emitting event to init pdf');
+        log('emitting event to init pdf')
         EventBus.$emit('initPdf')
       } else {
-        log('Unsupported file type:', this.fileType);
+        log('Unsupported file type:', this.fileType)
       }
       this.isImageViewer = false
     },
-    saveMediaFile () {
+    saveMediaFile() {
       if (this.isImageViewer) {
         this.saveImageFile().then(() => {
           this.$toast.success('Image updated')
@@ -277,59 +278,70 @@ export default {
         })
       }
     },
-    saveImageFile () {
+    saveImageFile() {
       if (this.mediaFile && this.hasImageChanged) {
-        return uploadPageImage(this.pageOid, this.currentImageOid, this.mediaFile).then((result) => {
-          // this.$emit('story-image-file-key', false)
-          EventBus.$emit('story-image-file-key', {
-            filenameKey: result.filenameKey,
-            imageSrc: result.downloadUrl
+        return uploadPageImage(
+          this.pageOid,
+          this.currentImageOid,
+          this.mediaFile
+        )
+          .then(result => {
+            // this.$emit('story-image-file-key', false)
+            EventBus.$emit('story-image-file-key', {
+              filenameKey: result.filenameKey,
+              imageSrc: result.downloadUrl
+            })
+            this.hasImageChanged = false
+            this.closeDialog()
           })
-          this.hasImageChanged = false
-          this.closeDialog()
-        }).then(() => {
-          log('imageSrc + filename:', this.imageSrc, this.imageFilename)
-          return this.saveCover(this.imageSrc, this.imageFilename)
-        }).catch((error) => {
-          log('There was an error uploading page image', error)
-          //
-          // There was an error uploading page image Error: Function DocumentReference.set() called with invalid data. Data must be an object, but it was: a function
-          // at new FirestoreError (vendors.app.js:35053)
-          // at ParseContext.push../node_modules/@firebase/firestore/dist/esm/src/api/user_data_converter.js.ParseContext.createError (vendors.app.js:20131)
-          // at validatePlainObject (vendors.app.js:20440)
-          // at UserDataConverter.push../node_modules/@firebase/firestore/dist/esm/src/api/user_data_converter.js.UserDataConverter.parseMergeData (vendors.app.js:20184)
-          // at DocumentReference.push../node_modules/@firebase/firestore/dist/esm/src/api/database.js.DocumentReference.set (vendors.app.js:18777)
-          // at updateStory (profile.b741b9b79028750abcb1.hot-update.js:47)
-          // at VueComponent.saveCover (index.js:1471)
-          // at index.js:1414
-          this.$toast.error(error.message)
-        })
+          .then(() => {
+            log('imageSrc + filename:', this.imageSrc, this.imageFilename)
+            return this.saveCover(this.imageSrc, this.imageFilename)
+          })
+          .catch(error => {
+            log('There was an error uploading page image', error)
+            //
+            // There was an error uploading page image Error: Function DocumentReference.set() called with invalid data. Data must be an object, but it was: a function
+            // at new FirestoreError (vendors.app.js:35053)
+            // at ParseContext.push../node_modules/@firebase/firestore/dist/esm/src/api/user_data_converter.js.ParseContext.createError (vendors.app.js:20131)
+            // at validatePlainObject (vendors.app.js:20440)
+            // at UserDataConverter.push../node_modules/@firebase/firestore/dist/esm/src/api/user_data_converter.js.UserDataConverter.parseMergeData (vendors.app.js:20184)
+            // at DocumentReference.push../node_modules/@firebase/firestore/dist/esm/src/api/database.js.DocumentReference.set (vendors.app.js:18777)
+            // at updateStory (profile.b741b9b79028750abcb1.hot-update.js:47)
+            // at VueComponent.saveCover (index.js:1471)
+            // at index.js:1414
+            this.$toast.error(error.message)
+          })
       } else {
-        return this.saveCover(this.imageSrc, this.imageFilename).then(() => {
-          log('Cover saved')
-        }).catch((error) => {
-          log('There was an error saving book cover', error)
-          this.$toast.error(error.message)
-        })
+        return this.saveCover(this.imageSrc, this.imageFilename)
+          .then(() => {
+            log('Cover saved')
+          })
+          .catch(error => {
+            log('There was an error saving book cover', error)
+            this.$toast.error(error.message)
+          })
       }
     },
-    saveBookFile () {
+    saveBookFile() {
       log('saving book')
       if (this.mediaFile && this.hasBookChanged) {
-        return uploadPageBook(this.pageOid, this.currentBookOid, this.mediaFile).then((result) => {
-          EventBus.$emit('story-book-file-key', {
-            filenameKey: result.filenameKey,
-            bookSrc: result.downloadUrl
+        return uploadPageBook(this.pageOid, this.currentBookOid, this.mediaFile)
+          .then(result => {
+            EventBus.$emit('story-book-file-key', {
+              filenameKey: result.filenameKey,
+              bookSrc: result.downloadUrl
+            })
+            this.hasBookChanged = false
+            this.closeDialog()
           })
-          this.hasBookChanged = false
-          this.closeDialog()
-        }).catch((error) => {
-          log('There was an error uploading page book', error)
-          this.$toast.error(error.message)
-        })
+          .catch(error => {
+            log('There was an error uploading page book', error)
+            this.$toast.error(error.message)
+          })
       }
     },
-    saveCover (imageUrl, filename) {
+    saveCover(imageUrl, filename) {
       if (this.isCover && this.imageSrc && this.imageFilename) {
         return updateStory(this.storyOid, {
           cover: {

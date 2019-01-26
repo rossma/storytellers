@@ -4,7 +4,10 @@ const pkg = require('./package')
 
 require('dotenv').config()
 
-let serviceAccount = process.env.NODE_ENV === 'production' ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_CONFIG) : require('./firebase/service-account-credentials.json')
+let serviceAccount =
+  process.env.NODE_ENV === 'production'
+    ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_CONFIG)
+    : require('./firebase/service-account-credentials.json')
 
 module.exports = {
   mode: 'universal',
@@ -21,7 +24,11 @@ module.exports = {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' }
+      {
+        rel: 'stylesheet',
+        href:
+          'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
+      }
     ]
   },
 
@@ -33,27 +40,26 @@ module.exports = {
   /*
   ** Global CSS
   */
-  css: [
-    '~/assets/style/app.styl'
-  ],
+  css: ['~/assets/style/app.styl'],
 
   /*
   ** Plugins to load before mounting the App
   */
-  plugins: [
-    '@/plugins/vuetify'
-  ],
+  plugins: ['@/plugins/vuetify'],
 
   /*
   ** Nuxt.js modules
   */
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
-    ['@nuxtjs/axios', {
-      // https: process.env.NODE_ENV === 'production',
-      prefix: '/api',
-      debug: true
-    }],
+    [
+      '@nuxtjs/axios',
+      {
+        // https: process.env.NODE_ENV === 'production',
+        prefix: '/api',
+        debug: true
+      }
+    ],
     ['@nuxtjs/dotenv'],
     // https://github.com/nuxt-community/modules/tree/master/packages/toast
     '@nuxtjs/toast'
@@ -111,7 +117,9 @@ module.exports = {
       if (ctx.isClient) {
         console.log('is client ')
       }
-      config.resolve.alias['fire/app'] = `~/firebase/${ctx.isClient ? 'app' : 'admin'}.js`
+      config.resolve.alias['fire/app'] = `~/firebase/${
+        ctx.isClient ? 'app' : 'admin'
+      }.js`
 
       /* because in utils/constant referencing windows I need to set this, more here: https://github.com/webpack/webpack/issues/6642 */
       config.output.globalObject = 'this'
@@ -119,7 +127,8 @@ module.exports = {
   },
   env: {
     FIREBASE_CLIENT_API_KEY: process.env.FIREBASE_CLIENT_API_KEY,
-    FIREBASE_CLIENT_MESSAGING_SENDER_ID: process.env.FIREBASE_CLIENT_MESSAGING_SENDER_ID,
+    FIREBASE_CLIENT_MESSAGING_SENDER_ID:
+      process.env.FIREBASE_CLIENT_MESSAGING_SENDER_ID,
     FIREBASE_CLIENT_PROJECT_ID: process.env.FIREBASE_CLIENT_PROJECT_ID,
     FIREBASE_SERVICE_ACCOUNT_CONFIG: serviceAccount
   }

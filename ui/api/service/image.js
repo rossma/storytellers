@@ -6,11 +6,11 @@ const log = debug('app:api/service/image')
 
 const uuidv4 = require('uuid/v4')
 
-function uploadImageToStorage (file, path, metadata) {
+function uploadImageToStorage(file, path, metadata) {
   log(`Uploading image:[${path}] to storage`)
   let uploadTask = STORAGE_REF.child(path).put(file, metadata)
 
-  return uploadTask.then((snapshot) => {
+  return uploadTask.then(snapshot => {
     log('Uploaded', snapshot.totalBytes, 'bytes.')
     log('Metadata:', snapshot.metadata)
     log('DownloadURL:', snapshot.downloadURL)
@@ -18,17 +18,21 @@ function uploadImageToStorage (file, path, metadata) {
   })
 }
 
-export function uploadPageImage (pageOid, currentImageOid, imageFile) {
+export function uploadPageImage(pageOid, currentImageOid, imageFile) {
   log(`Upload page image for page oid:[${pageOid}]`)
 
   const imageOid = uuidv4()
   const imageExt = imageFile.name.split('.').pop()
 
   let metadata = {
-    'contentType': imageFile.type
+    contentType: imageFile.type
   }
 
-  return uploadImageToStorage(imageFile, `images/original/${imageOid}.${imageExt}`, metadata).then((downloadUrl) => {
+  return uploadImageToStorage(
+    imageFile,
+    `images/original/${imageOid}.${imageExt}`,
+    metadata
+  ).then(downloadUrl => {
     log('in here download URL:', downloadUrl)
 
     const pageImageData = {
@@ -57,19 +61,23 @@ export function uploadPageImage (pageOid, currentImageOid, imageFile) {
   })
 }
 
-export function uploadProfileImage (imageFile, metadata, userOid) {
+export function uploadProfileImage(imageFile, metadata, userOid) {
   log(`Uploading profile image for user oid:[${userOid}]`)
 
-  return uploadImageToStorage(imageFile, `images/profiles/${userOid}/${imageFile.name}`, metadata)
+  return uploadImageToStorage(
+    imageFile,
+    `images/profiles/${userOid}/${imageFile.name}`,
+    metadata
+  )
 }
 
-export function findImageByOid (imageOid) {
+export function findImageByOid(imageOid) {
   log(`Finding image by oid:[${imageOid}]`)
   let imageRef = DB.collection('images').doc(imageOid)
   return imageRef.get()
 }
 
-export function deleteImage (imageOid) {
+export function deleteImage(imageOid) {
   log(`Deleting image by image id/filename:[${imageOid}]`)
   let imageRef = DB.collection('images').doc(imageOid)
   return imageRef.delete()

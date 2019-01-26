@@ -3,9 +3,9 @@ import { DB } from 'fire/app'
 import debug from 'debug'
 const log = debug('app:api/service/page')
 
-function findPages (pagesRef) {
-  return pagesRef.get().then((querySnapshot) => {
-    return querySnapshot.docs.map((m) => {
+function findPages(pagesRef) {
+  return pagesRef.get().then(querySnapshot => {
+    return querySnapshot.docs.map(m => {
       const page = {
         id: m.id,
         chapterOid: m.data().chapterOid,
@@ -22,33 +22,35 @@ function findPages (pagesRef) {
   })
 }
 
-export function findPagesByUser (userOid) {
+export function findPagesByUser(userOid) {
   log(`Finding pages by user:[${userOid}]`)
   return findPages(DB.collection('pages').where('uid', '==', userOid))
 }
 
-export function findPagesByStory (storyOid) {
+export function findPagesByStory(storyOid) {
   log(`Finding pages by story:[${storyOid}]`)
   return findPages(DB.collection('pages').where('storyOid', '==', storyOid))
 }
 
-export function findPageByOid (pageOid) {
+export function findPageByOid(pageOid) {
   log(`Finding page by oid:[${pageOid}]`)
   let pagesRef = DB.collection('pages').doc(pageOid)
   return pagesRef.get()
 }
 
-export function addPage (page) {
+export function addPage(page) {
   log(`Adding page:[${JSON.stringify(page)}]`)
   return DB.collection('pages').add(page)
 }
 
-export function updatePage (pageOid, page) {
+export function updatePage(pageOid, page) {
   log(`Updating page:[${pageOid} with:[${JSON.stringify(page)}]`)
-  return DB.collection('pages').doc(pageOid).set(page, { merge: true })
+  return DB.collection('pages')
+    .doc(pageOid)
+    .set(page, { merge: true })
 }
 
-export function publishPage (preview) {
+export function publishPage(preview) {
   log(`Publishing page:[${preview.pageOid} for story:[${preview.storyOid}]}]`)
 
   let batch = DB.batch()
@@ -61,7 +63,7 @@ export function publishPage (preview) {
   return batch.commit()
 }
 
-export function deletePage (pageOid) {
+export function deletePage(pageOid) {
   log(`Deleting page:[${pageOid}]`)
   let pageRef = DB.collection('pages').doc(pageOid)
   return pageRef.delete()

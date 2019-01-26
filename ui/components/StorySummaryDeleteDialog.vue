@@ -38,20 +38,20 @@ export default {
     }
   },
   methods: {
-    ...mapActions('story', [
-      'resetState'
-    ]),
-    closeDialog () {
+    ...mapActions('story', ['resetState']),
+    closeDialog() {
       this.$emit('close', false)
     },
-    deleteStory () {
-      deleteStory(this.story.id).then(() => {
-        this.resetState()
-        this.$router.push('/user/profile')
-      }).catch((error) => {
-        log('Error deleting story:', error)
-        this.$toast.error(`There was an error deleting story`)
-      })
+    deleteStory() {
+      deleteStory(this.story.id)
+        .then(() => {
+          this.resetState()
+          this.$router.push('/user/profile')
+        })
+        .catch(error => {
+          log('Error deleting story:', error)
+          this.$toast.error(`There was an error deleting story`)
+        })
     }
   }
 }

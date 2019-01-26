@@ -46,14 +46,14 @@ import debug from 'debug'
 const log = debug('app:pages/story/_id/index')
 
 export default {
-  mixins: [ UserStateMixin ],
   components: {
     PageDetail,
     StoryActionControls,
-    StoryDetail,
+    StoryDetail
   },
+  mixins: [UserStateMixin],
   layout: 'story',
-  data () {
+  data() {
     return {
       authorUser: '',
       chapter: {
@@ -86,13 +86,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('page', [
-      'pages'
-    ]),
-    isEditable: function () {
+    ...mapGetters('page', ['pages']),
+    isEditable: function() {
       return this.page.uid === this.user.uid
     },
-    totalStoryPages: function () {
+    totalStoryPages: function() {
       if (this.pages) {
         return this.pages.length
       } else {
@@ -101,15 +99,15 @@ export default {
     }
   },
   watch: {
-    user: function (val) {
+    user: function(val) {
       log('user watch triggered', val)
       this.loadPage(this.$route.params.id)
     }
   },
-  created: function () {
+  created: function() {
     this.mutablePages = this.pages.slice() // clone pages
   },
-  mounted: function () {
+  mounted: function() {
     this.$nextTick(() => {
       log('in mounted, page id:', this.$route.params.id)
       this.loadPage(this.$route.params.id)
@@ -136,7 +134,7 @@ export default {
       })
     })
   },
-  beforeDestroy () {
+  beforeDestroy() {
     EventBus.$off('story-image-file-key2')
     EventBus.$off('story-image-file-key')
     EventBus.$off('story-book-file-key')
@@ -144,38 +142,42 @@ export default {
   },
   methods: {
     ...mapActions('story', ['saveStory']),
-    loadPage (pageOid) {
+    loadPage(pageOid) {
       if (this.user.uid) {
-        findPageByOid(pageOid).then((pageDoc) => {
-          if (pageDoc.exists) {
-            this.page = {
-              id: pageOid,
-              book: {...pageDoc.data().book},
-              chapterOid: pageDoc.data().chapterOid,
-              comments: pageDoc.data().comments ? clonedeep(pageDoc.data().comments) : [],
-              image: {...pageDoc.data().image},
-              likes: pageDoc.data().likes,
-              page: pageDoc.data().page,
-              public: pageDoc.data().public,
-              storyOid: pageDoc.data().storyOid,
-              uid: pageDoc.data().uid,
-            }
+        findPageByOid(pageOid)
+          .then(pageDoc => {
+            if (pageDoc.exists) {
+              this.page = {
+                id: pageOid,
+                book: { ...pageDoc.data().book },
+                chapterOid: pageDoc.data().chapterOid,
+                comments: pageDoc.data().comments
+                  ? clonedeep(pageDoc.data().comments)
+                  : [],
+                image: { ...pageDoc.data().image },
+                likes: pageDoc.data().likes,
+                page: pageDoc.data().page,
+                public: pageDoc.data().public,
+                storyOid: pageDoc.data().storyOid,
+                uid: pageDoc.data().uid
+              }
 
-            if (this.isAuthorised()) {
-              this.initAuthorUser(this.page.uid)
-              this.initStory(this.page.storyOid)
-              this.initChapter(this.page.chapterOid)
+              if (this.isAuthorised()) {
+                this.initAuthorUser(this.page.uid)
+                this.initStory(this.page.storyOid)
+                this.initChapter(this.page.chapterOid)
+              } else {
+                this.$toast.error('User not authorised to view this page')
+              }
             } else {
-              this.$toast.error('User not authorised to view this page')
+              this.$toast.error('Page does not exist')
             }
-          } else {
-            this.$toast.error('Page does not exist')
-          }
-        }).catch((error) => log('err', error))
+          })
+          .catch(error => log('err', error))
       }
     },
-    initAuthorUser (userOid) {
-      findUserByOid(userOid).then((userDoc) => {
+    initAuthorUser(userOid) {
+      findUserByOid(userOid).then(userDoc => {
         if (userDoc.exists) {
           this.authorUser = userDoc.data()
         } else {
@@ -183,8 +185,8 @@ export default {
         }
       })
     },
-    initStory (storyOid) {
-      findStoryByOid(storyOid).then((storyDoc) => {
+    initStory(storyOid) {
+      findStoryByOid(storyOid).then(storyDoc => {
         if (storyDoc.exists) {
           this.story.id = storyDoc.id
           this.story.summary = storyDoc.data().summary
@@ -200,8 +202,8 @@ export default {
         }
       })
     },
-    initChapter (chapterOid) {
-      findChapterByOid(chapterOid).then((chapterDoc) => {
+    initChapter(chapterOid) {
+      findChapterByOid(chapterOid).then(chapterDoc => {
         if (chapterDoc.exists) {
           this.chapter.id = chapterDoc.id
           this.chapter.chapter = chapterDoc.data().chapter
@@ -213,10 +215,10 @@ export default {
         }
       })
     },
-    isAuthorised () {
+    isAuthorised() {
       return this.page.public || this.page.uid === this.user.uid
     },
-    deletePage (page) {
+    deletePage(page) {
       const deleteStoryCover = () => {
         if (this.story.cover && this.story.cover.pageOid === page.id) {
           log('in deleteCover for story:', this.story.id)
@@ -230,7 +232,10 @@ export default {
       const runDelete = () => {
         log('in deletePage mutablePages:', this.mutablePages)
 
-        const chapterPageCount = this.chapterPageCount(this.mutablePages, page.chapterOid)
+        const chapterPageCount = this.chapterPageCount(
+          this.mutablePages,
+          page.chapterOid
+        )
 
         log('chapterPageCount:', chapterPageCount)
 
@@ -244,24 +249,26 @@ export default {
       }
 
       if (this.totalStoryPages > 1) {
-        deleteStoryCover().then(() => {
-          log('cover removed from page')
-          return runDelete()
-        }).then(() => {
-          this.mutablePages = this.mutablePages.filter(p => p.id !== page.id)
-          this.$router.push(`/story/${this.mutablePages[0].id}`)
-        }).catch((error) => {
-          log('There was an error deleting the current page', error)
-          this.$toast.error(error.message)
-        })
+        deleteStoryCover()
+          .then(() => {
+            log('cover removed from page')
+            return runDelete()
+          })
+          .then(() => {
+            this.mutablePages = this.mutablePages.filter(p => p.id !== page.id)
+            this.$router.push(`/story/${this.mutablePages[0].id}`)
+          })
+          .catch(error => {
+            log('There was an error deleting the current page', error)
+            this.$toast.error(error.message)
+          })
       } else {
         this.$toast.error(`Can't delete page if it is the only one that exists`)
       }
     },
-    chapterPageCount (pages, chapterOid) {
-      return pages.filter((page) => page.chapterOid === chapterOid).length
+    chapterPageCount(pages, chapterOid) {
+      return pages.filter(page => page.chapterOid === chapterOid).length
     }
   }
-
 }
 </script>

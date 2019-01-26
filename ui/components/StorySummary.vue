@@ -90,7 +90,7 @@ export default {
       default: false
     }
   },
-  data () {
+  data() {
     return {
       currentPageOid: null,
       currentChapterOid: null,
@@ -105,11 +105,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('auth', [
-      'uid'
-    ])
+    ...mapGetters('auth', ['uid'])
   },
-  created: function () {
+  created: function() {
     this.mutableStory = {
       id: this.story.id,
       summary: this.story.summary,
@@ -118,10 +116,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions('story', [
-      'saveStory'
-    ]),
-    submit () {
+    ...mapActions('story', ['saveStory']),
+    submit() {
       if (this.$refs.form.validate()) {
         log('Saving story:', this.mutableStory)
         if (this.mutableStory.id) {
@@ -135,7 +131,7 @@ export default {
         this.$toast.error('Form validation failed')
       }
     },
-    createStory (mutableStory) {
+    createStory(mutableStory) {
       let story = {
         title: mutableStory.title,
         summary: mutableStory.summary,
@@ -154,42 +150,52 @@ export default {
         public: false
       }
 
-      addStory(story, chapter, page).then((result) => {
-        log('[StorySummary] Finished saving story, result', result)
-        this.mutableStory.id = result.storyOid
-        this.currentPageOid = result.pageOid
-        this.currentChapterOid = result.chapterOid
-        //this.mutableStory.activePage = result.pageOid
-        this.saveStory(this.mutableStory)
-        this.$router.push(`/story/${result.pageOid}`)
-      }).catch((error) => {
-        log('Error adding story', error)
-        this.$toast.error(`Error adding story:${error.message}`)
-      })
+      addStory(story, chapter, page)
+        .then(result => {
+          log('[StorySummary] Finished saving story, result', result)
+          this.mutableStory.id = result.storyOid
+          this.currentPageOid = result.pageOid
+          this.currentChapterOid = result.chapterOid
+          //this.mutableStory.activePage = result.pageOid
+          this.saveStory(this.mutableStory)
+          this.$router.push(`/story/${result.pageOid}`)
+        })
+        .catch(error => {
+          log('Error adding story', error)
+          this.$toast.error(`Error adding story:${error.message}`)
+        })
     },
-    updateStory (mutableStory) {
+    updateStory(mutableStory) {
       let story = {
         title: mutableStory.title,
         summary: mutableStory.summary
       }
-      updateStory(mutableStory.id, story).then(() => {
-        this.saveStory(mutableStory, this.currentChapterOid, this.currentPageOid)
-        this.updatePreviews(mutableStory)
-        this.$toast.success('Story updated')
-      }).catch((error) => {
-        log('Error updating story:', error)
-        this.$toast.error(`Error updating story:${error.message}`)
-      })
+      updateStory(mutableStory.id, story)
+        .then(() => {
+          this.saveStory(
+            mutableStory,
+            this.currentChapterOid,
+            this.currentPageOid
+          )
+          this.updatePreviews(mutableStory)
+          this.$toast.success('Story updated')
+        })
+        .catch(error => {
+          log('Error updating story:', error)
+          this.$toast.error(`Error updating story:${error.message}`)
+        })
     },
-    updatePreviews (story) {
+    updatePreviews(story) {
       log('Updating preview from story:', story)
       let previews = []
-      findPreviewsByStory(story.id).then((previewsSnapshot) => {
-        previews = previewsSnapshot
-      }).catch((error) => {
-        console(`Error looking up previews for story:${story.id}`, error)
-      })
-      previews.forEach((preview) => {
+      findPreviewsByStory(story.id)
+        .then(previewsSnapshot => {
+          previews = previewsSnapshot
+        })
+        .catch(error => {
+          console(`Error looking up previews for story:${story.id}`, error)
+        })
+      previews.forEach(preview => {
         updatePreview(preview.id, {
           title: story.title,
           summary: stringUtils.truncateWithEllipse(story.summary, 100)

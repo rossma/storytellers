@@ -59,7 +59,7 @@ export default {
     }
   },
   methods: {
-    showUserProfile () {
+    showUserProfile() {
       log(`show user profile for uid:${this.story.uid}`)
       if (this.story.uid) {
         this.$router.push(`/user/${this.story.uid}`)

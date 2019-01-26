@@ -1,10 +1,16 @@
 <template>
-  <v-layout row justify-center>
-    <v-dialog v-model="dialog" width="600px">
+  <v-layout 
+    row 
+    justify-center>
+    <v-dialog 
+      v-model="dialog" 
+      width="600px">
       <v-card>
-        <v-toolbar color="pink" dark>
+        <v-toolbar 
+          color="pink" 
+          dark>
           <v-toolbar-title>Comments</v-toolbar-title>
-          <v-spacer></v-spacer>
+          <v-spacer/>
           <v-btn
             icon
             @click="closeDialog()">
@@ -34,7 +40,7 @@
           </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
+          <v-spacer/>
           <v-btn
             flat
             @click="addComment">Submit</v-btn>
@@ -44,93 +50,94 @@
   </v-layout>
 </template>
 <script>
-  import clonedeep from 'lodash.clonedeep'
-  import PageCommentsItem from './PageCommentsItem'
-  import { updatePage } from '~/api/service/page'
-  import debug from 'debug'
-  const log = debug('app:components/PageComments')
+import clonedeep from 'lodash.clonedeep'
+import PageCommentsItem from './PageCommentsItem'
+import { updatePage } from '~/api/service/page'
+import debug from 'debug'
+const log = debug('app:components/PageComments')
 
-  export default {
-    name: 'PageComments',
-    components: {
-      PageCommentsItem
-    },
-    props: {
-      comments: {
-        type: Array,
-        default: () => {
-          return []
-        }
-      },
-      dialog: {
-        type: Boolean,
-        default: false
-      },
-      pageId: {
-        type: String,
-        required: true
-      },
-      uid: {
-        type: String,
-        required: true
-      },
-      userDisplayName: {
-        type: String,
-        required: true
+export default {
+  name: 'PageComments',
+  components: {
+    PageCommentsItem
+  },
+  props: {
+    comments: {
+      type: Array,
+      default: () => {
+        return []
       }
     },
-    data () {
-      return {
-        comment: undefined,
-        commentDialog: false,
-        mutableComments: [],
-        form: false
-      }
+    dialog: {
+      type: Boolean,
+      default: false
     },
-    computed: {
+    pageId: {
+      type: String,
+      required: true
     },
-    created: function () {
-      this.mutableComments = clonedeep(this.comments)
+    uid: {
+      type: String,
+      required: true
     },
-    methods: {
-      addComment () {
-        if (this.comment) {
-          log('adding comment:', this.comment)
-          this.mutableComments.push({
-            comment: this.comment,
-            uid: this.uid,
-            userDisplayName: this.userDisplayName
-          })
-          updatePage( this.pageId, { comments: clonedeep(this.mutableComments) } ).then(() => {
+    userDisplayName: {
+      type: String,
+      required: true
+    }
+  },
+  data() {
+    return {
+      comment: undefined,
+      commentDialog: false,
+      mutableComments: [],
+      form: false
+    }
+  },
+  computed: {},
+  created: function() {
+    this.mutableComments = clonedeep(this.comments)
+  },
+  methods: {
+    addComment() {
+      if (this.comment) {
+        log('adding comment:', this.comment)
+        this.mutableComments.push({
+          comment: this.comment,
+          uid: this.uid,
+          userDisplayName: this.userDisplayName
+        })
+        updatePage(this.pageId, { comments: clonedeep(this.mutableComments) })
+          .then(() => {
             this.comment = undefined
             this.$emit('increment', this.mutableComments)
-          }).catch((err) => {
+          })
+          .catch(err => {
             log('Error adding comment', err)
             this.$toast.error(`Error adding comment`)
           })
+      }
+    },
+    closeDialog() {
+      this.$emit('close', false)
+    },
+    likeComment({ index, liked }) {
+      log('in likeComment', index, liked)
+      if (index < this.mutableComments.length) {
+        let likes = this.mutableComments[index].likes || []
+        if (liked && !likes.includes(this.uid)) {
+          this.mutableComments[index].likes = likes.concat([this.uid])
+        } else {
+          this.mutableComments[index].likes = likes.filter(
+            item => item !== this.uid
+          )
         }
-      },
-      closeDialog () {
-        this.$emit('close', false)
-      },
-      likeComment ({index, liked}) {
-        log('in likeComment', index, liked)
-        if (index < this.mutableComments.length ) {
 
-          let likes = this.mutableComments[index].likes || []
-          if (liked && !likes.includes(this.uid)) {
-            this.mutableComments[index].likes = likes.concat([this.uid])
-          } else {
-            this.mutableComments[index].likes = likes.filter(item => item !== this.uid)
-          }
-
-          updatePage( this.pageId, { comments: clonedeep(this.mutableComments) } )
-        }
+        updatePage(this.pageId, { comments: clonedeep(this.mutableComments) })
       }
     }
   }
+}
 </script>
 
 <style>
-
 </style>

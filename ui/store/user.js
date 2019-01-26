@@ -9,26 +9,23 @@ const defaultState = () => ({
 export const state = defaultState
 
 export const getters = {
-
-  user (state) {
+  user(state) {
     return state.user
   }
-
 }
 
 export const actions = {
-
-  resetState ({ commit }) {
+  resetState({ commit }) {
     log('[USER ACTIONS] - user reset state')
     commit('resetState')
   },
 
-  saveUser ({ commit }, userPayload) {
+  saveUser({ commit }, userPayload) {
     log('[USER ACTIONS] - saveUser')
     commit('saveUser', userPayload)
   },
 
-  async updateUser ({ dispatch }, { user, userPart }) {
+  async updateUser({ dispatch }, { user, userPart }) {
     log('[USER ACTIONS] - updateUser')
     try {
       await updateUserDoc(user.uid, userPart)
@@ -44,7 +41,7 @@ export const actions = {
     }
   },
 
-  async saveUserByUid ({ dispatch }, uid) {
+  async saveUserByUid({ dispatch }, uid) {
     log('[USER ACTIONS] - saveUserByUid:', uid)
     try {
       const userDoc = await findUserByOid(uid)
@@ -63,19 +60,16 @@ export const actions = {
       return Promise.reject(new Error('Error saving user by UID'))
     }
   }
-
 }
 
 export const mutations = {
-
-  resetState (state) {
+  resetState(state) {
     log('[USER MUTATIONS] - resetState')
     Object.assign(state, defaultState())
   },
 
-  saveUser (state, user) {
+  saveUser(state, user) {
     log('[USER MUTATIONS] - saveUser:', user)
     state.user = user
   }
-
 }
