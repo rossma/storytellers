@@ -24,7 +24,7 @@
               name="password-in-txt"
               label="password"
               @click:append="showPassword = !showPassword"
-              />
+            />
           </v-card-text>
           <v-divider class="mt-5" />
           <v-card-actions>
@@ -48,7 +48,7 @@ const log = debug('app:pages/auth/signup')
 
 export default {
   layout: 'auth',
-  data () {
+  data() {
     return {
       email: '',
       password: '',
@@ -59,17 +59,15 @@ export default {
     }
   },
   methods: {
-    ...mapActions('auth', [
-      'login'
-    ]),
-    ...mapActions('user', [
-      'saveUser'
-    ]),
-    async signUp () {
+    ...mapActions('auth', ['login']),
+    ...mapActions('user', ['saveUser']),
+    async signUp() {
       log('signing up')
 
       try {
-        const firebaseUser = await firebaseApp.auth().createUserWithEmailAndPassword(this.email.trim(), this.password)
+        const firebaseUser = await firebaseApp
+          .auth()
+          .createUserWithEmailAndPassword(this.email.trim(), this.password)
         log('successful user creation in firebase', firebaseUser.user.uid)
         let user = {
           uid: firebaseUser.user.uid,
@@ -78,7 +76,7 @@ export default {
         }
         await addUser(user)
         await this.login(user.uid)
-        this.$toast.clear();
+        this.$toast.clear()
         this.$router.push('/')
       } catch (error) {
         this.$toast.error(error.message)
@@ -88,7 +86,7 @@ export default {
 }
 </script>
 <style scoped>
-  .signin-link:hover {
-    text-decoration: none;
-  }
+.signin-link:hover {
+  text-decoration: none;
+}
 </style>

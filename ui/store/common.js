@@ -27,16 +27,13 @@ const defaultState = () => ({
 export const state = defaultState
 
 export const getters = {
-
-  sidebar (state) {
+  sidebar(state) {
     return state.sidebar
   }
-
 }
 
 export const actions = {
-
-  resetState ({ dispatch, commit }) {
+  resetState({ dispatch, commit }) {
     log('reset state')
     commit('resetState')
   },
@@ -45,56 +42,54 @@ export const actions = {
   //   commit('saveStory', storyPayload)
   // }
 
-  updateSidebar ({ commit }, options) {
+  updateSidebar({ commit }, options) {
     commit('updateSidebar', options)
   },
 
-  updateTitle ({ commit }, title) {
+  updateTitle({ commit }, title) {
     commit('updateTitle', title)
   },
 
-  updateLayout ({ commit }, layout) {
+  updateLayout({ commit }, layout) {
     commit('updateLayout', layout)
   },
 
-  updateDialog ({ commit }, options) {
+  updateDialog({ commit }, options) {
     commit('updateDialog', options)
   },
 
-  updateSnackbar ({ commit }, options) {
+  updateSnackbar({ commit }, options) {
     commit('updateSnackbar', options)
   }
 }
 
 export const mutations = {
-
-  resetState (state) {
+  resetState(state) {
     log('[COMMON MUTATIONS] - resetState')
     Object.assign(state, defaultState())
   },
 
-  updateSidebar (state, options) {
+  updateSidebar(state, options) {
     state.sidebar = Object.assign({}, defaultState.sidebar, options)
   },
 
-  updateTitle (state, title) {
+  updateTitle(state, title) {
     state.title = title
   },
 
-  updateLayout (state, layout) {
+  updateLayout(state, layout) {
     state.layout = layout
   },
 
-  updateDialog (state, options) {
+  updateDialog(state, options) {
     state.dialog = Object.assign({}, defaultState.dialog, options)
   },
 
-  updateSnackbar (state, options) {
+  updateSnackbar(state, options) {
     state.snackbar = Object.assign({}, defaultState.snackbar, options)
   },
 
-  error (state, options) {
+  error(state, options) {
     state.error = Object.assign({}, defaultState.error, options)
   }
-
 }

@@ -107,7 +107,11 @@ import { mapGetters, mapActions } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
 import ThePageFooter from '~/components/ThePageFooter'
 import TheNavigationToolbar from '~/components/TheNavigationToolbar'
-import { addChapter, updateChapterName, findChaptersByStory } from '~/api/service/chapter'
+import {
+  addChapter,
+  updateChapterName,
+  findChaptersByStory
+} from '~/api/service/chapter'
 import { addPage, findPagesByStory } from '~/api/service/page'
 import debug from 'debug'
 const log = debug('app:layouts/story')
@@ -118,7 +122,7 @@ export default {
     TheNavigationToolbar,
     ThePageFooter
   },
-  data () {
+  data() {
     return {
       chapters: [],
       pages: [],
@@ -133,17 +137,15 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('auth', [
-      'uid'
-    ]),
-    filteredChapters () {
+    ...mapGetters('auth', ['uid']),
+    filteredChapters() {
       return this.chapters.filter(c => this.chapterPages(c.id).length > 0)
     },
-    isEditable () {
+    isEditable() {
       return this.story.uid === this.uid
     }
   },
-  mounted: function () {
+  mounted: function() {
     this.$nextTick(() => {
       EventBus.$on('storyEvent', story => {
         log(`[Story Layout] storyEvent received payload:[${story.id}]`)
@@ -155,69 +157,73 @@ export default {
       })
     })
   },
-  beforeDestroy () {
+  beforeDestroy() {
     EventBus.$off('storyEvent')
   },
   methods: {
-    ...mapActions('page', [
-      'savePages'
-    ]),
-    loadChapters (story) {
-      findChaptersByStory(story.id).then((chapters) => {
-        this.chapters = chapters.map(chapter => {
-          if (story.activePage && story.activePage.chapterOid) {
-            chapter.active = (chapter.id === story.activePage.chapterOid)
-          }
-          return chapter
-        }).sort((a, b) => a.chapter - b.chapter)
-        return findPagesByStory(story.id)
-      }).then((pages) => {
-        this.pages = pages.map(page => {
-          if (story.activePage) {
-            page.active = (page.id === story.activePage.id)
-          }
-          return page
+    ...mapActions('page', ['savePages']),
+    loadChapters(story) {
+      findChaptersByStory(story.id)
+        .then(chapters => {
+          this.chapters = chapters
+            .map(chapter => {
+              if (story.activePage && story.activePage.chapterOid) {
+                chapter.active = chapter.id === story.activePage.chapterOid
+              }
+              return chapter
+            })
+            .sort((a, b) => a.chapter - b.chapter)
+          return findPagesByStory(story.id)
         })
-        this.savePages(pages)
-        EventBus.$emit('save-pages', pages)
-      })
+        .then(pages => {
+          this.pages = pages.map(page => {
+            if (story.activePage) {
+              page.active = page.id === story.activePage.id
+            }
+            return page
+          })
+          this.savePages(pages)
+          EventBus.$emit('save-pages', pages)
+        })
     },
-    chapterPages (chapterOid) {
-      return this.pages.filter(p => {
-        return p.chapterOid === chapterOid && (this.uid === p.uid || p.public)
-      }).sort((a, b) => a.page - b.page)
+    chapterPages(chapterOid) {
+      return this.pages
+        .filter(p => {
+          return p.chapterOid === chapterOid && (this.uid === p.uid || p.public)
+        })
+        .sort((a, b) => a.page - b.page)
     },
-    chapterDisplayName (chapter, index) {
+    chapterDisplayName(chapter, index) {
       log('chapter name:', chapter.name)
       return chapter.name ? chapter.name : `Chapter ${++index}`
     },
-    saveChapterName (event, chapter) {
+    saveChapterName(event, chapter) {
       if (chapter.name !== event.target.value) {
         chapter.name = event.target.value
         updateChapterName(chapter.id, chapter.name)
       }
     },
-    addNewChapter () {
+    addNewChapter() {
       log('Adding chapter')
       return addChapter({
         storyOid: this.story.id,
         chapter: ++this.chapters.pop().chapter,
         uid: this.uid
-      }).then((chapterDocRef) => {
-        return this.addNewPage(chapterDocRef.id)
-      }).catch((error) => {
-        log('Error adding chapter:', error)
-        this.$toast.error(`Error adding chapter`)
       })
+        .then(chapterDocRef => {
+          return this.addNewPage(chapterDocRef.id)
+        })
+        .catch(error => {
+          log('Error adding chapter:', error)
+          this.$toast.error(`Error adding chapter`)
+        })
     },
-    addNewPage (chapterOid) {
+    addNewPage(chapterOid) {
       const pages = this.chapterPages(chapterOid)
       const chapterPage = (() => {
-        if (pages && pages.length > 0)
-          return pages[pages.length - 1].page + 1
-        else
-          return 1
-      })();
+        if (pages && pages.length > 0) return pages[pages.length - 1].page + 1
+        else return 1
+      })()
 
       return addPage({
         storyOid: this.story.id,
@@ -225,15 +231,17 @@ export default {
         page: chapterPage,
         uid: this.uid,
         public: false
-      }).then((pageDocRef) => {
-        log(`Page Document written with ID:${pageDocRef.id}`)
-        this.$router.push(`/story/${pageDocRef.id}`)
-      }).catch((error) => {
-        log('Error adding page:', error)
-        this.$toast.error(`Error adding page`)
       })
+        .then(pageDocRef => {
+          log(`Page Document written with ID:${pageDocRef.id}`)
+          this.$router.push(`/story/${pageDocRef.id}`)
+        })
+        .catch(error => {
+          log('Error adding page:', error)
+          this.$toast.error(`Error adding page`)
+        })
     },
-    enableChapterInput (event) {
+    enableChapterInput(event) {
       event.stopPropagation()
     }
   }
@@ -250,11 +258,11 @@ export default {
 }
 
 .chapter-name-in-txt input {
-  color: darkgrey!important;
+  color: darkgrey !important;
 }
 
 .chapter-name-in-txt input:hover {
-  color: white!important;
+  color: white !important;
 }
 
 .chapter-name-in-txt .input-group__details {
@@ -266,7 +274,7 @@ export default {
 }
 
 .active-page .list__tile__title {
-  color: white!important;
+  color: white !important;
 }
 
 .link-to-page:hover {
@@ -275,31 +283,31 @@ export default {
 }
 
 .link-to-page:hover .list__tile__title {
-  color: white!important;
+  color: white !important;
 }
 
 .add-chapter-btn {
   /*text-align: center;*/
   padding: 10px;
-  border: 1px solid #1565C0;
-  background-color: #1976D2;
+  border: 1px solid #1565c0;
+  background-color: #1976d2;
 }
 
 .add-chapter-btn:hover {
   cursor: pointer;
-  background-color: #1E88E5;
+  background-color: #1e88e5;
 }
 
 .add-page-btn {
   /*text-align: center;*/
   padding: 10px;
-  border: 1px solid #00796B;
-  background-color: #00897B;
+  border: 1px solid #00796b;
+  background-color: #00897b;
 }
 
 .add-page-btn:hover {
   cursor: pointer;
-  background-color: #26A69A;
+  background-color: #26a69a;
 }
 
 li.chapter-tile a.list__tile.list__tile--link {

@@ -5,10 +5,21 @@
         <v-responsive :aspect-ratio="16/9">
           <v-card-text>
             <div id="main">
-              <div id="viewer"
-                   :class="[spreadLayout ? '' : 'single', 'ebook-viewer-spreads']" />
-              <a id="prev" href="#prev" class="arrow prev" @click.prevent="prevPage()" v-show="hasPrev">‹</a>
-              <a id="next" href="#next" class="arrow next" @click.prevent="nextPage()" v-show="hasNext">›</a>
+              <div 
+                id="viewer"
+                :class="[spreadLayout ? '' : 'single', 'ebook-viewer-spreads']" />
+              <a 
+                v-show="hasPrev" 
+                id="prev" 
+                href="#prev" 
+                class="arrow prev" 
+                @click.prevent="prevPage()">‹</a>
+              <a 
+                v-show="hasNext" 
+                id="next" 
+                href="#next" 
+                class="arrow next" 
+                @click.prevent="nextPage()">›</a>
             </div>
           </v-card-text>
         </v-responsive>
@@ -22,148 +33,149 @@
 </template>
 
 <script>
-  // https://github.com/futurepress/epub.js/tree/v0.3/libs
-  import Epub from 'epubjs/lib/index'
-  import { EventBus } from '~/utils/event-bus.js'
-  import debug from 'debug'
-  const log = debug('app:components/EpubContainer')
+// https://github.com/futurepress/epub.js/tree/v0.3/libs
+import Epub from 'epubjs/lib/index'
+import { EventBus } from '~/utils/event-bus.js'
+import debug from 'debug'
+const log = debug('app:components/EpubContainer')
 
-  export default {
-    name: 'EpubContainer',
-    props: {
-      bookSrc: {
-        type: String,
-        required: true
-      }
-    },
-    data () {
-      return {
-        book: null,
-        mutableBookSrc: null,
-        displayed: null,
-        rendition: null,
-        nextNav: null,
-        nextLabel: null,
-        next: {
-          textContent: null
-        },
-        prevNav: null,
-        prevLabel: null,
-        prev: {
-          textContent: null
-        },
-        hasPrev: false,
-        hasNext: false,
-        spreadLayout: true
-      }
-    },
-    computed: {
-      hasBookUrl: function () {
-        log('this.bookSrc', this.mutableBookSrc)
-        if (this.mutableBookSrc) {
-          return true
-        } else {
-          return false
-        }
-      }
-    },
-    mounted: function () {
-      log('mounted')
-      this.$nextTick(() => {
-        EventBus.$on('init-ebook', () => {
-          this.init()
-        })
-
-        EventBus.$on('epub-book-src', src => {
-          this.createBook(src)
-        })
-      })
-    },
-    beforeDestroy () {
-      EventBus.$off('init-ebook')
-      EventBus.$off('epub-book-src')
-    },
-    methods: {
-      init () {
-        if (!this.book && this.bookSrc) {
-          this.createBook(this.bookSrc)
-        }
+export default {
+  name: 'EpubContainer',
+  props: {
+    bookSrc: {
+      type: String,
+      required: true
+    }
+  },
+  data() {
+    return {
+      book: null,
+      mutableBookSrc: null,
+      displayed: null,
+      rendition: null,
+      nextNav: null,
+      nextLabel: null,
+      next: {
+        textContent: null
       },
-      createBook (src) {
-        log('In epub create book')
-
-        if (src) {
-          this.mutableBookSrc = src
-
-          if (this.book) {
-            this.book.destroy()
-          }
-
-          window.ePub = Epub
-
-          this.book = window.ePub(src, {})
-
-          this.rendition = this.book.renderTo('viewer', {
-            width: "100%",
-            height: 600,
-            spread: "always"
-          })
-
-          const display = this.rendition.display()
-          log('display:', display)
-
-          this.book.ready.then(() => {
-            var keyListener = (e) => {
-
-              if ((e.keyCode || e.which) == 37) {
-                this.prevPage()
-              }
-
-              if ((e.keyCode || e.which) == 39) {
-                this.nextPage()
-              }
-
-            }
-
-            this.rendition.on("keyup", keyListener)
-            document.addEventListener("keyup", keyListener, false)
-
-          })
-
-          // this.rendition.on("rendered", (section) => {
-          // })
-
-          this.rendition.on("relocated", (location) => {
-            log('relocated: ', location)
-            this.hasNext = !location.atEnd
-            this.hasPrev = !location.atStart
-          })
-
-          // this.rendition.on("layout", (layout) => {
-          //   log('rendition on layout', layout)
-          // })
-
-          window.addEventListener("unload", () => {
-            log("unloading")
-            this.book.destroy()
-          })
-        }
+      prevNav: null,
+      prevLabel: null,
+      prev: {
+        textContent: null
       },
-      nextPage () {
-        this.book.package.metadata.direction === "rtl" ? this.rendition.prev() : this.rendition.next()
-      },
-      prevPage () {
-        this.book.package.metadata.direction === "rtl" ? this.rendition.next() : this.rendition.prev()
+      hasPrev: false,
+      hasNext: false,
+      spreadLayout: true
+    }
+  },
+  computed: {
+    hasBookUrl: function() {
+      log('this.bookSrc', this.mutableBookSrc)
+      if (this.mutableBookSrc) {
+        return true
+      } else {
+        return false
       }
     }
+  },
+  mounted: function() {
+    log('mounted')
+    this.$nextTick(() => {
+      EventBus.$on('init-ebook', () => {
+        this.init()
+      })
+
+      EventBus.$on('epub-book-src', src => {
+        this.createBook(src)
+      })
+    })
+  },
+  beforeDestroy() {
+    EventBus.$off('init-ebook')
+    EventBus.$off('epub-book-src')
+  },
+  methods: {
+    init() {
+      if (!this.book && this.bookSrc) {
+        this.createBook(this.bookSrc)
+      }
+    },
+    createBook(src) {
+      log('In epub create book')
+
+      if (src) {
+        this.mutableBookSrc = src
+
+        if (this.book) {
+          this.book.destroy()
+        }
+
+        window.ePub = Epub
+
+        this.book = window.ePub(src, {})
+
+        this.rendition = this.book.renderTo('viewer', {
+          width: '100%',
+          height: 600,
+          spread: 'always'
+        })
+
+        const display = this.rendition.display()
+        log('display:', display)
+
+        this.book.ready.then(() => {
+          var keyListener = e => {
+            if ((e.keyCode || e.which) == 37) {
+              this.prevPage()
+            }
+
+            if ((e.keyCode || e.which) == 39) {
+              this.nextPage()
+            }
+          }
+
+          this.rendition.on('keyup', keyListener)
+          document.addEventListener('keyup', keyListener, false)
+        })
+
+        // this.rendition.on("rendered", (section) => {
+        // })
+
+        this.rendition.on('relocated', location => {
+          log('relocated: ', location)
+          this.hasNext = !location.atEnd
+          this.hasPrev = !location.atStart
+        })
+
+        // this.rendition.on("layout", (layout) => {
+        //   log('rendition on layout', layout)
+        // })
+
+        window.addEventListener('unload', () => {
+          log('unloading')
+          this.book.destroy()
+        })
+      }
+    },
+    nextPage() {
+      this.book.package.metadata.direction === 'rtl'
+        ? this.rendition.prev()
+        : this.rendition.next()
+    },
+    prevPage() {
+      this.book.package.metadata.direction === 'rtl'
+        ? this.rendition.next()
+        : this.rendition.prev()
+    }
   }
+}
 </script>
 
 <style scoped>
 body {
   margin: 0;
   background: #fafafa;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color: #333;
 
   position: absolute;
@@ -195,7 +207,6 @@ body {
   margin: 0 auto;
   position: relative;
   background: url('/img/ajax-loader.gif') center center no-repeat;
-
 }
 
 .ebook-viewer.scrolled .epub-container {
@@ -227,9 +238,9 @@ body {
     left: 50%;
     margin-left: -1px;
     top: 5%;
-    opacity: .15;
+    opacity: 0.15;
     box-shadow: -2px 0 15px rgba(0, 0, 0, 1);
-    content:  "";
+    content: '';
   }
 
   .ebook-viewer-spreads.single:after {
@@ -250,7 +261,7 @@ body {
   top: 50%;
   margin-top: -32px;
   font-size: 64px;
-  color: #E2E2E2;
+  color: #e2e2e2;
   font-family: arial, sans-serif;
   font-weight: bold;
   cursor: pointer;
@@ -260,16 +271,17 @@ body {
   text-decoration: none;
 }
 
-.arrow:hover, .navlink:hover {
+.arrow:hover,
+.navlink:hover {
   color: #777;
 }
 
-.arrow:active, .navlink:hover {
+.arrow:active,
+.navlink:hover {
   color: #000;
 }
 
 svg {
   display: block;
 }
-
 </style>

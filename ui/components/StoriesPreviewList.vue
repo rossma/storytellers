@@ -30,8 +30,8 @@
               </v-card-title>
             </div>
             <v-card-actions
-              class="black"
-              v-show="showActions">
+              v-show="showActions"
+              class="black">
               <h3><nuxt-link :to="'/user/' + preview.uid">{{ preview.userDisplayName || 'Anon' }}</nuxt-link></h3>
             </v-card-actions>
           </v-card>
@@ -51,11 +51,11 @@ const log = debug('app:components/StoriesPreviewList')
 
 export default {
   name: 'StoriesPreviewList',
-  mixins: [ UserStateMixin ],
+  mixins: [UserStateMixin],
   props: {
     filterBy: {
       type: Object,
-      default: function () {
+      default: function() {
         return {
           byAuthorUid: null
         }
@@ -74,96 +74,102 @@ export default {
       default: false
     }
   },
+  data() {
+    return {
+      previews: []
+    }
+  },
   watch: {
-    user: function (val) {
+    user: function(val) {
       if (this.isPrivateUserProfile && this.user.uid) {
         this.fetchUserProfileStories()
       }
     }
   },
-  data () {
-    return {
-      previews: []
-    }
-  },
-  mounted: function () {
+  mounted: function() {
     this.$nextTick(() => {
       this.init()
     })
   },
   methods: {
-    init () {
+    init() {
       if (this.isPrivateUserProfile && this.user.uid) {
         this.fetchUserProfileStories()
       } else {
         this.fetchPreviews()
       }
     },
-    fetchUserProfileStories () {
+    fetchUserProfileStories() {
       let stories = null
-      findStoriesByUser(this.user.uid).then((storiesSnapshot) => {
-        stories = storiesSnapshot
+      findStoriesByUser(this.user.uid)
+        .then(storiesSnapshot => {
+          stories = storiesSnapshot
 
-        if (stories.length > 0) {
-          this.previews = stories.map((story) => {
-            const storyCover = () => {
-              if (story.cover && story.cover.ref) {
-                return story.cover
-              } else {
-                return {
-                  chapterOid: null,
-                  pageOid: null,
-                  ref: '/img/missing-image.png'
+          if (stories.length > 0) {
+            this.previews = stories.map(story => {
+              const storyCover = () => {
+                if (story.cover && story.cover.ref) {
+                  return story.cover
+                } else {
+                  return {
+                    chapterOid: null,
+                    pageOid: null,
+                    ref: '/img/missing-image.png'
+                  }
                 }
               }
-            }
 
-            let cover = storyCover()
+              let cover = storyCover()
 
-            return {
-              chapterOid: cover.chapterOid,
-              pageOid: cover.pageOid,
-              previewImageUrl: cover.ref,
-              storyOid: story.id,
-              summary: story.summary,
-              title: story.title,
-              uid: story.uid,
-              userDisplayName: this.user.data.displayName
-            }
-          })
-          log('previews:', this.previews)
-        } else {
-          log('There are no stories for this user')
-        }
-      }).catch((error) => {
-        log(error)
-        this.$toast.error(error.message)
-      })
+              return {
+                chapterOid: cover.chapterOid,
+                pageOid: cover.pageOid,
+                previewImageUrl: cover.ref,
+                storyOid: story.id,
+                summary: story.summary,
+                title: story.title,
+                uid: story.uid,
+                userDisplayName: this.user.data.displayName
+              }
+            })
+            log('previews:', this.previews)
+          } else {
+            log('There are no stories for this user')
+          }
+        })
+        .catch(error => {
+          log(error)
+          this.$toast.error(error.message)
+        })
     },
-    fetchPreviews () {
-      findPreviewsByFilter(this.filterBy).then((previewsSnapshot) => {
-        this.previews = previewsSnapshot
-      }).catch((error) => {
-        log(error)
-        this.$toast.error(error.message)
-      })
+    fetchPreviews() {
+      findPreviewsByFilter(this.filterBy)
+        .then(previewsSnapshot => {
+          this.previews = previewsSnapshot
+        })
+        .catch(error => {
+          log(error)
+          this.$toast.error(error.message)
+        })
     },
-    showDetail (storyOid, pageOid) {
+    showDetail(storyOid, pageOid) {
       log(`storyOid:${storyOid} pageOid:${pageOid}`)
       if (pageOid) {
         this.$router.push(`/story/${pageOid}`)
       } else {
         // in the event no page id is defined in cover take the first page
-        findPagesByStory(storyOid).then((pages) => {
-          let page = pages.sort((a, b) => a.page - b.page)[0]
-          if (page) {
-            this.$router.push(`/story/${page.id}`)
-          } else {
-            this.$toast.error('Page does not exist')
-          }
-        }).catch((error) => {
-          this.$toast.error(error.message)
-        })
+        findPagesByStory(storyOid)
+          .then(pages => {
+            let page = pages.sort((a, b) => a.page - b.page)[0]
+            if (page) {
+              this.$router.push(`/story/${page.id}`)
+            } else {
+              this.$toast.error('Page does not exist')
+            }
+          })
+          .catch(error => {
+            this.$toast.error(error.message)
+          })
       }
     }
   }

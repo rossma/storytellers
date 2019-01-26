@@ -7,7 +7,7 @@
 import debug from 'debug'
 const log = debug('app:middleware/authenticated')
 
-export default async function ({ store, redirect }) {
+export default async function({ store, redirect }) {
   try {
     if (!store.getters['auth/isAuthenticated']) {
       log('User is not authenticated redirecting to signin')

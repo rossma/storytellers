@@ -8,35 +8,29 @@ const defaultState = () => ({
 export const state = defaultState
 
 export const getters = {
-
   pages: state => {
     return state.pages
   }
-
 }
 
 export const actions = {
-
-  resetState ({ commit }) {
+  resetState({ commit }) {
     commit('resetState')
   },
 
-  async savePages ({ commit }, pagesPayload) {
+  async savePages({ commit }, pagesPayload) {
     commit('savePages', pagesPayload)
   }
-
 }
 
 export const mutations = {
-
-  resetState (state) {
+  resetState(state) {
     log('resetState')
     Object.assign(state, defaultState())
   },
 
-  savePages (state, pages) {
+  savePages(state, pages) {
     log('savePages:', pages)
     state.pages = pages
   }
-
 }

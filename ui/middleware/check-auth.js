@@ -2,7 +2,7 @@ import { AUTH } from 'fire/app'
 import debug from 'debug'
 const log = debug('app:middleware/check-auth')
 
-export default function ({ store, req }) {
+export default function({ store, req }) {
   if (process.server && !store.getters['auth/isAuthenticated']) {
     // log('Request Headers:', req.headers)
 
@@ -28,12 +28,14 @@ export default function ({ store, req }) {
         /* previously was doing this using jwt-decode module but now calling firebase direct from server to valid token */
         // const admin = require('fire/app')
 
-        AUTH.verifyIdToken(encodedToken).then(user => {
-          log('Token verified going to save user to store', user.uid)
-          store.dispatch('auth/saveUID', user.uid)
-        }).catch(error => {
-          log('Error verifying user in firebase', error)
-        })
+        AUTH.verifyIdToken(encodedToken)
+          .then(user => {
+            log('Token verified going to save user to store', user.uid)
+            store.dispatch('auth/saveUID', user.uid)
+          })
+          .catch(error => {
+            log('Error verifying user in firebase', error)
+          })
       } else {
         log('User token not found')
       }
@@ -41,7 +43,7 @@ export default function ({ store, req }) {
   }
 }
 
-function getUserFromSession (req) {
+function getUserFromSession(req) {
   log('[CHECK-AUTH] - checking if user is stored in session')
   return req.session ? req.session.user : null
 }
@@ -61,11 +63,13 @@ function getUserFromSession (req) {
 // }
 
 /* get the encoded token stored in cookie */
-function getEncodedIdToken (req) {
+function getEncodedIdToken(req) {
   log('[CHECK-AUTH] - getting decoded ID token')
   if (!req.headers.cookie) return
 
-  const accessTokenCookie = req.headers.cookie.split(';').find(c => c.trim().startsWith('access_token='))
+  const accessTokenCookie = req.headers.cookie
+    .split(';')
+    .find(c => c.trim().startsWith('access_token='))
   if (!accessTokenCookie) return
 
   const accessToken = accessTokenCookie.split('=')[1]

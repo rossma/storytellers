@@ -4,9 +4,9 @@ import { DB } from 'fire/app'
 import debug from 'debug'
 const log = debug('app:api/service/story')
 
-function findStories (storiesRef) {
-  return storiesRef.get().then((querySnapshot) => {
-    return querySnapshot.docs.map((m) => {
+function findStories(storiesRef) {
+  return storiesRef.get().then(querySnapshot => {
+    return querySnapshot.docs.map(m => {
       return {
         id: m.id,
         cover: m.data().cover,
@@ -19,31 +19,39 @@ function findStories (storiesRef) {
   })
 }
 
-export function findStoriesByUser (userOid) {
+export function findStoriesByUser(userOid) {
   log(`Finding stories by user:[${userOid}]`)
-  return findStories(DB.collection('stories').where('uid', '==', userOid).orderBy('created', 'desc'))
+  return findStories(
+    DB.collection('stories')
+      .where('uid', '==', userOid)
+      .orderBy('created', 'desc')
+  )
 }
 
-export function findStoryByOid (storyOid) {
+export function findStoryByOid(storyOid) {
   log(`Finding story by oid:[${storyOid}]`)
   let storiesRef = DB.collection('stories').doc(storyOid)
   return storiesRef.get()
 }
 
-export function updateStory (storyOid, story) {
+export function updateStory(storyOid, story) {
   log(`Updating story:[${storyOid} with:[${JSON.stringify(story)}]`)
-  return DB.collection('stories').doc(storyOid).set(story, { merge: true })
+  return DB.collection('stories')
+    .doc(storyOid)
+    .set(story, { merge: true })
 }
 
-export function deleteCover (storyOid) {
+export function deleteCover(storyOid) {
   log(`Deleting cover to story:[${storyOid}]`)
   const firebase = require('firebase/app')
-  return DB.collection('stories').doc(storyOid).update({
-    cover: firebase.firestore.FieldValue.delete()
-  })
+  return DB.collection('stories')
+    .doc(storyOid)
+    .update({
+      cover: firebase.firestore.FieldValue.delete()
+    })
 }
 
-export function addStory (story, chapter, page) {
+export function addStory(story, chapter, page) {
   log(`Adding story:`, story, chapter, page)
 
   let batch = DB.batch()
@@ -68,7 +76,7 @@ export function addStory (story, chapter, page) {
   })
 }
 
-export function deleteStory (storyOid) {
+export function deleteStory(storyOid) {
   log(`Deleting story:[${storyOid}`)
   let storyRef = DB.collection('stories').doc(storyOid)
   return storyRef.delete()

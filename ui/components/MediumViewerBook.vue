@@ -10,7 +10,6 @@
 </template>
 
 <script>
-
 import EpubContainer from './EpubContainer'
 import PdfContainer from './PdfContainer'
 

@@ -10,26 +10,23 @@ const defaultState = () => ({
 export const state = defaultState
 
 export const getters = {
-
-  isAuthenticated (state, getters, rootState) {
+  isAuthenticated(state, getters, rootState) {
     return !!state.uid || !!rootState.user.user.uid
   },
 
-  uid (state) {
+  uid(state) {
     return state.uid
   }
-
 }
 
 export const actions = {
-
-  resetState ({ dispatch, commit }) {
+  resetState({ dispatch, commit }) {
     log('auth reset state')
     dispatch('user/resetState', {}, { root: true })
     commit('resetState')
   },
 
-  async initUserOnAuthStateChange ({ dispatch, commit, state }) {
+  async initUserOnAuthStateChange({ dispatch, commit, state }) {
     log('initUserOnAuthStateChange')
 
     let user = null
@@ -42,18 +39,23 @@ export const actions = {
       const unsubscribe = await onAuthStateChanged(user => {
         log('[AUTH ACTION] firebase user has changed', user)
         if (user) {
-          dispatch('user/saveUserByUid', user.uid, { root: true }).then(() => {
-            log('[AUTH ACTION] - finished saving user to store')
-            this.user = user
-            // resolve(user)
-          }).catch((error) => {
-            log('Error saving the user by uid', error)
-            // resolve(null)
-          })
+          dispatch('user/saveUserByUid', user.uid, { root: true })
+            .then(() => {
+              log('[AUTH ACTION] - finished saving user to store')
+              this.user = user
+              // resolve(user)
+            })
+            .catch(error => {
+              log('Error saving the user by uid', error)
+              // resolve(null)
+            })
         }
       })
       if (unsubscribe) {
-        log('[AUTH ACTION] committing unsubscriber for auth observer', unsubscribe)
+        log(
+          '[AUTH ACTION] committing unsubscriber for auth observer',
+          unsubscribe
+        )
         commit('setUnsubscribeAuthObserver', unsubscribe)
       }
       resolve(user)
@@ -86,17 +88,20 @@ export const actions = {
   //   })
   // },
 
-  saveUID ({ commit }, uid) {
+  saveUID({ commit }, uid) {
     log('saveUID')
     commit('saveUID', uid)
   },
 
-  async login ({ dispatch, state }, uid) {
+  async login({ dispatch, state }, uid) {
     log('login', uid)
     try {
       const token = await AUTH.currentUser.getIdToken(true)
 
-      const { status } = await this.$axios.$post('/login', { user: state.user, token: token })
+      const { status } = await this.$axios.$post('/login', {
+        user: state.user,
+        token: token
+      })
 
       log('in login, response:', status)
 
@@ -110,7 +115,7 @@ export const actions = {
     }
   },
 
-  async logout ({ dispatch }) {
+  async logout({ dispatch }) {
     log('logout')
     try {
       await AUTH.signOut()
@@ -124,24 +129,21 @@ export const actions = {
       return Promise.reject(new Error('Error logging out'))
     }
   }
-
 }
 
 export const mutations = {
-
-  resetState (state) {
+  resetState(state) {
     log('[AUTH MUTATIONS] - resetState')
     Object.assign(state, defaultState())
   },
 
-  saveUID (state, uid) {
+  saveUID(state, uid) {
     log('[AUTH MUTATIONS] - saveUID:', uid)
     state.uid = uid
   },
 
-  setUnsubscribeAuthObserver (state, unsubscribe) {
+  setUnsubscribeAuthObserver(state, unsubscribe) {
     log('[AUTH MUTATIONS] - setUnsubscribeAuthObserver')
     state.unsubscribeAuthObserver = unsubscribe
-
   }
 }

@@ -3,9 +3,9 @@ import { DB } from 'fire/app'
 import debug from 'debug'
 const log = debug('app:api/service/preview')
 
-function findPreviews (previewsRef) {
-  return previewsRef.get().then((querySnapshot) => {
-    return querySnapshot.docs.map((m) => {
+function findPreviews(previewsRef) {
+  return previewsRef.get().then(querySnapshot => {
+    return querySnapshot.docs.map(m => {
       return {
         id: m.id,
         chapterOid: m.data().chapterOid,
@@ -22,7 +22,7 @@ function findPreviews (previewsRef) {
   })
 }
 
-export function findPreviewsByFilter (filterBy) {
+export function findPreviewsByFilter(filterBy) {
   log(`Finding previews by filter:[${JSON.stringify(filterBy)}]`)
   log(`Finding previews by filter:[${JSON.stringify(filterBy)}]`)
   let previewsRef = DB.collection('previews').orderBy('created', 'desc')
@@ -32,18 +32,20 @@ export function findPreviewsByFilter (filterBy) {
   return findPreviews(previewsRef)
 }
 
-export function findPreviewsByStory (storyOid) {
+export function findPreviewsByStory(storyOid) {
   log(`Finding previews by story:[${storyOid}]`)
   let previewsRef = DB.collection('previews').where('storyOid', '==', storyOid)
   return findPreviews(previewsRef)
 }
 
-export function updatePreview (previewOid, preview) {
+export function updatePreview(previewOid, preview) {
   log(`Updating preview:[${previewOid} with:[${preview}]`)
-  return DB.collection('previews').doc(previewOid).set(preview, { merge: true })
+  return DB.collection('previews')
+    .doc(previewOid)
+    .set(preview, { merge: true })
 }
 
-export function addPreview (preview) {
+export function addPreview(preview) {
   log(`Adding preview:[${preview}]`)
   return DB.collection('previews').add(preview)
 }

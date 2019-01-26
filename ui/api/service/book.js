@@ -9,29 +9,31 @@ const uuidv4 = require('uuid/v4')
 // const STORAGE = firebaseApp.storage()
 // const STORAGE_REF = STORAGE.ref()
 
-function uploadBookToStorage (file, path, metadata) {
+function uploadBookToStorage(file, path, metadata) {
   log(`Uploading book:[${path}] to storage`)
   let uploadTask = STORAGE_REF.child(path).put(file, metadata)
 
-  return uploadTask.then((snapshot) => {
+  return uploadTask.then(snapshot => {
     log('Uploaded', snapshot.totalBytes, 'bytes.')
-    log('Metadata:', snapshot.metadata)
-    log('DownloadURL:', snapshot.downloadURL)
     return snapshot.ref.getDownloadURL()
   })
 }
 
-export function uploadPageBook (pageOid, currentBookOid, bookFile) {
+export function uploadPageBook(pageOid, currentBookOid, bookFile) {
   log(`Upload page book for page oid:[${pageOid}]`)
 
   const bookOid = uuidv4()
   const bookExt = bookFile.name.split('.').pop()
 
   let metadata = {
-    'contentType': bookFile.type
+    contentType: bookFile.type
   }
 
-  return uploadBookToStorage(bookFile, `books/${bookOid}.${bookExt}`, metadata).then((downloadUrl) => {
+  return uploadBookToStorage(
+    bookFile,
+    `books/${bookOid}.${bookExt}`,
+    metadata
+  ).then(downloadUrl => {
     const pageBookData = {
       book: {
         filename: `${bookOid}.${bookExt}`,
@@ -59,13 +61,13 @@ export function uploadPageBook (pageOid, currentBookOid, bookFile) {
   })
 }
 
-export function findBookByOid (bookOid) {
+export function findBookByOid(bookOid) {
   log(`Finding book by oid:[${bookOid}]`)
   let bookRef = DB.collection('books').doc(bookOid)
   return bookRef.get()
 }
 
-export function deleteBook (bookOid) {
+export function deleteBook(bookOid) {
   log(`Deleting book by book id/filename:[${bookOid}]`)
   let bookRef = DB.collection('books').doc(bookOid)
   return bookRef.delete()

@@ -33,6 +33,6 @@ export default {
 
 <style>
 .home-title a {
-  text-decoration: none
+  text-decoration: none;
 }
 </style>

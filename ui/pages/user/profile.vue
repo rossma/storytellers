@@ -104,18 +104,16 @@ import debug from 'debug'
 const log = debug('app:pages/user/profile')
 
 export default {
-  mixins: [ UserStateMixin ],
   components: {
     StoriesPreviewList
   },
+  mixins: [UserStateMixin],
   layout: 'default-protected',
-  data () {
+  data() {
     return {
       panel: [true],
       valid: true,
-      nameRules: [
-        (v) => !!v || 'Name is required'
-      ],
+      nameRules: [v => !!v || 'Name is required'],
       formUser: {
         photoUrl: '',
         displayName: '',
@@ -126,41 +124,39 @@ export default {
   },
   computed: {
     computedUser: {
-      get: function () {
+      get: function() {
         return this.user.data
       },
-      set: function (newValue) {
+      set: function(newValue) {
         console.log('abc', newValue)
         this.initFormUser(newValue)
       }
     },
-    previewAuthorFilter () {
+    previewAuthorFilter() {
       return {
         byAuthorUid: this.user.uid
       }
     }
   },
   watch: {
-    computedUser: function (newValue) {
+    computedUser: function(newValue) {
       this.initFormUser(newValue)
     }
   },
-  created: function () {
+  created: function() {
     log('in created, user:', JSON.stringify(this.user))
     this.computedUser = this.user.data
   },
   methods: {
-    ...mapActions('user', [
-      'updateUser'
-    ]),
+    ...mapActions('user', ['updateUser']),
     initFormUser(formValue) {
       if (formValue) {
-        this.formUser.photoUrl = formValue.photoUrl,
-        this.formUser.displayName = formValue.displayName,
-        this.formUser.bio = formValue.bio
+        ;(this.formUser.photoUrl = formValue.photoUrl),
+          (this.formUser.displayName = formValue.displayName),
+          (this.formUser.bio = formValue.bio)
       }
     },
-    profileImageSelected (e) {
+    profileImageSelected(e) {
       if (e.target.files[0]) {
         log('profile image selected')
         this.newProfileImageFile = e.target.files[0]
@@ -176,9 +172,13 @@ export default {
     uploadProfileImage() {
       if (this.newProfileImageFile) {
         const metadata = {
-          'contentType': this.newProfileImageFile.type
+          contentType: this.newProfileImageFile.type
         }
-        return uploadProfileImage(this.newProfileImageFile, metadata, this.user.uid).then((downloadUrl) => {
+        return uploadProfileImage(
+          this.newProfileImageFile,
+          metadata,
+          this.user.uid
+        ).then(downloadUrl => {
           this.newProfileImageFile = null
           return downloadUrl
         })
@@ -186,9 +186,9 @@ export default {
         return Promise.resolve(this.formUser.photoUrl || '')
       }
     },
-    submit () {
+    submit() {
       if (this.$refs.form.validate()) {
-        this.uploadProfileImage().then((downloadUrl) => {
+        this.uploadProfileImage().then(downloadUrl => {
           log('downloadUrl:', downloadUrl)
 
           const userPart = {
@@ -198,14 +198,16 @@ export default {
           }
 
           const payload = { user: clonedeep(this.user), userPart: userPart }
-          this.updateUser(payload).then(() => {
-            return firebaseApp.auth().currentUser.updateProfile(userPart)
-          }).then(() => {
-            this.$toast.success('Profile successfully updated')
-          }).catch((error) => {
-            this.$toast.error(error.message)
-          })
-
+          this.updateUser(payload)
+            .then(() => {
+              return firebaseApp.auth().currentUser.updateProfile(userPart)
+            })
+            .then(() => {
+              this.$toast.success('Profile successfully updated')
+            })
+            .catch(error => {
+              this.$toast.error(error.message)
+            })
         })
       }
     }
@@ -220,7 +222,7 @@ export default {
   overflow: hidden;
 }
 
-.jbtn-file input[type=file] {
+.jbtn-file input[type='file'] {
   position: absolute;
   top: 0;
   right: 0;

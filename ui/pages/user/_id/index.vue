@@ -9,7 +9,9 @@
           dark
           flat>
           <v-card-title primary-title>
-            <v-layout row wrap>
+            <v-layout 
+              row 
+              wrap>
               <v-flex xs2>
                 <v-avatar
                   v-show="!profileUser.photoUrl"
@@ -50,53 +52,52 @@
 </template>
 
 <script>
-  import { findUserByOid } from '~/api/service/user'
-  import StoriesPreviewList from '~/components/StoriesPreviewList'
-  import debug from 'debug'
-  const log = debug('app:pages/user/_id/index')
+import { findUserByOid } from '~/api/service/user'
+import StoriesPreviewList from '~/components/StoriesPreviewList'
+import debug from 'debug'
+const log = debug('app:pages/user/_id/index')
 
-  export default {
-    name: 'UserProfile',
-    components: {
-      StoriesPreviewList
-    },
-    layout: 'default-protected',
-    data () {
-      return {
-        profileUser: {
-          bio: '',
-          displayName: '',
-          photoUrl: ''
-        }
-      }
-    },
-    computed: {
-      previewAuthorFilter () {
-        return {
-          byAuthorUid: this.$route.params.id
-        }
-      }
-    },
-    mounted: function () {
-      this.$nextTick(() => {
-        log('in mounted, uid:', this.$route.params.id)
-        this.loadPage(this.$route.params.id)
-      })
-    },
-    methods: {
-      loadPage (uid) {
-        findUserByOid(uid).then((userDoc) => {
-          if (userDoc.exists) {
-            this.profileUser = userDoc.data()
-          } else {
-            this.$toast.error('User profile does not exist')
-          }
-        })
+export default {
+  name: 'UserProfile',
+  components: {
+    StoriesPreviewList
+  },
+  layout: 'default-protected',
+  data() {
+    return {
+      profileUser: {
+        bio: '',
+        displayName: '',
+        photoUrl: ''
       }
     }
+  },
+  computed: {
+    previewAuthorFilter() {
+      return {
+        byAuthorUid: this.$route.params.id
+      }
+    }
+  },
+  mounted: function() {
+    this.$nextTick(() => {
+      log('in mounted, uid:', this.$route.params.id)
+      this.loadPage(this.$route.params.id)
+    })
+  },
+  methods: {
+    loadPage(uid) {
+      findUserByOid(uid).then(userDoc => {
+        if (userDoc.exists) {
+          this.profileUser = userDoc.data()
+        } else {
+          this.$toast.error('User profile does not exist')
+        }
+      })
+    }
   }
+}
 </script>
 
 <style scoped>
-
 </style>

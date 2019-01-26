@@ -12,27 +12,19 @@
 </template>
 
 <script>
-
 export default {
   name: 'MediumViewerImage',
-  components: {
-  },
+  components: {},
   props: {
     imageSrc: {
       type: String,
       required: true
     }
   },
-  data () {
-    return {
-    }
+  data() {
+    return {}
   },
-  computed: {
-
-  },
-  methods: {
-
-  }
+  computed: {},
+  methods: {}
 }
 </script>
-
