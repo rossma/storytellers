@@ -85,3 +85,6 @@
 
 # Firebase functions and firebase admin service account credentials
 **/service-account-credentials.json
+
+# PWA service worker related files
+sw.*
