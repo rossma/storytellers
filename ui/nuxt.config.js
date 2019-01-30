@@ -61,6 +61,7 @@ module.exports = {
       }
     ],
     ['@nuxtjs/dotenv'],
+    '@nuxtjs/pwa',
     // https://github.com/nuxt-community/modules/tree/master/packages/toast
     '@nuxtjs/toast'
   ],
