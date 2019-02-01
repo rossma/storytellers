@@ -62,12 +62,6 @@ export default {
     PageCommentsItem
   },
   props: {
-    comments: {
-      type: Array,
-      default: () => {
-        return []
-      }
-    },
     dialog: {
       type: Boolean,
       default: false
@@ -138,6 +132,3 @@ export default {
   }
 }
 </script>
-
-<style>
-</style>
