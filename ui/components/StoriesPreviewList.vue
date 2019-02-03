@@ -146,6 +146,9 @@ export default {
       findPreviewsByFilter(this.filterBy)
         .then(previewsSnapshot => {
           this.previews = previewsSnapshot
+          if (!this.previews || this.previews.length == 0) {
+            this.$toast.info('Sorry, there are no results based om you search')
+          }
         })
         .catch(error => {
           log(error)

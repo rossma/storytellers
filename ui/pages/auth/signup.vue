@@ -3,9 +3,11 @@
     column
     align-center
     justify-center>
-    <nuxt-link
-      to="/auth/signin"
-      class="signin-link">Already a user? Sign in</nuxt-link>
+    <span>
+      Already a user?
+      <nuxt-link
+        to="/auth/signin"
+        class="signin-link">Sign in</nuxt-link></span>
     <v-flex
       xs12
       sm10
@@ -29,8 +31,7 @@
           <v-divider class="mt-5" />
           <v-card-actions>
             <v-btn
-              flat
-              color="blue darken-1"
+              color="pink darken-1"
               type="submit">Sign Up</v-btn>
           </v-card-actions>
         </form>

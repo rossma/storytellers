@@ -15,7 +15,7 @@
               <v-flex xs2>
                 <v-avatar
                   v-show="!profileUser.photoUrl"
-                  class="indigo jbtn-file"
+                  class="pink jbtn-file"
                   size="48">
                   <v-icon dark>account_circle</v-icon>
                 </v-avatar>

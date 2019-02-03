@@ -12,7 +12,7 @@ export default {
   },
   watch: {
     user(newValue, oldValue) {
-      log('User has changed.........................', newValue, oldValue)
+      log('User has changed', newValue, oldValue)
     }
   },
   created: function() {

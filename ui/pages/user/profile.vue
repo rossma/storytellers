@@ -21,7 +21,7 @@
                     <v-avatar
                       v-show="!formUser.photoUrl"
                       slot="activator"
-                      class="indigo jbtn-file">
+                      class="pink jbtn-file">
                       <v-icon dark>account_circle</v-icon>
                       <input
                         type="file"

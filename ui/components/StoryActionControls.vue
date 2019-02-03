@@ -12,7 +12,7 @@
         v-if="canPublish() || canDeletePage()"
         slot="activator"
         v-model="dial.fab"
-        color="blue darken-2"
+        color="indigo darken-2"
         dark
         fab
         hover>
@@ -55,7 +55,7 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            color="blue darken-1"
+            color="indigo darken-1"
             @click="deleteCurrentPage">Yes</v-btn>
           <v-btn
             color="darken-1"
