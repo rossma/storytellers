@@ -11,15 +11,14 @@
         slot="activator"
         light />
       <v-avatar
-        v-if="photoUrl"
-        class="avatar">
+        v-if="photoUrl">
         <img
           :src="photoUrl"
           alt="no photo">
       </v-avatar>
       <v-avatar
         v-else
-        class="indigo avatar">
+        class="pink">
         <v-icon dark>account_circle</v-icon>
       </v-avatar>
 
@@ -68,13 +67,27 @@
         <nuxt-link to="/">Storytellers</nuxt-link>
       </v-toolbar-title>
       <v-spacer />
+      <v-layout
+        row 
+        align-center 
+        style="max-width: 300px;padding-right:10px;">
+        <v-text-field
+          v-model="query"
+          label="Search..."
+          append-icon="search"
+          color="pink"
+          hide-details
+          @click:append="search"
+          @keyup.enter="search"
+        />
+      </v-layout>
       <v-tooltip left>
         <v-btn
           slot="activator"
           fab
           dark
           small
-          color="indigo darken-2"
+          color="pink darken-2"
           to="/story/create">
           <v-icon>create</v-icon>
         </v-btn>
@@ -93,6 +106,11 @@ const log = debug('app:components/TheNavigationToolbar')
 export default {
   name: 'TheNavigationToolbar',
   mixins: [UserStateMixin],
+  data() {
+    return {
+      query: undefined
+    }
+  },
   computed: {
     ...mapGetters('common', ['sidebar']),
     // hasNavDrawerSlot () {
@@ -123,9 +141,20 @@ export default {
       }
     }
   },
+  mounted: function() {
+    this.$nextTick(() => {
+      if (!this.query && this.$route.params.query) {
+        this.query = this.$route.params.query
+      }
+    })
+  },
   methods: {
     ...mapActions('auth', ['logout']),
     ...mapActions('common', ['updateSidebar']),
+    search() {
+      log('in search', this.query)
+      this.$router.push(`/search/${this.query}`)
+    },
     signout() {
       this.logout()
         .then(() => {
@@ -140,29 +169,13 @@ export default {
   }
 }
 </script>
-<style>
-.home-title a {
-  text-decoration: none;
-}
-
+<style scoped>
 .v-speed-dial {
   margin-left: 10px;
 }
 
-a {
-  color: white !important;
-  /*font-weight: bold!important;*/
-  text-decoration: none !important;
-  text-transform: none !important;
-}
-
-a:hover {
-  text-decoration: none !important;
-}
-
-.avatar {
+.v-avatar {
   margin-top: 15px;
   margin-left: 15px;
 }
 </style>
-s -

@@ -24,10 +24,12 @@ function findPreviews(previewsRef) {
 
 export function findPreviewsByFilter(filterBy) {
   log(`Finding previews by filter:[${JSON.stringify(filterBy)}]`)
-  log(`Finding previews by filter:[${JSON.stringify(filterBy)}]`)
   let previewsRef = DB.collection('previews').orderBy('created', 'desc')
   if (filterBy.byAuthorUid) {
     previewsRef = previewsRef.where('uid', '==', filterBy.byAuthorUid)
+  }
+  if (filterBy.byKeywords) {
+    previewsRef = previewsRef.where('keywords', 'array-contains', filterBy.byKeywords)
   }
   return findPreviews(previewsRef)
 }

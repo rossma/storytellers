@@ -30,9 +30,3 @@ export default {
   middleware: 'anonymous'
 }
 </script>
-
-<style>
-.home-title a {
-  text-decoration: none;
-}
-</style>

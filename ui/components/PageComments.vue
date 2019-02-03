@@ -62,6 +62,12 @@ export default {
     PageCommentsItem
   },
   props: {
+    comments: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    },
     dialog: {
       type: Boolean,
       default: false
@@ -87,8 +93,8 @@ export default {
       form: false
     }
   },
-  computed: {},
   created: function() {
+    log('comments:', this.comments)
     this.mutableComments = clonedeep(this.comments)
   },
   methods: {
