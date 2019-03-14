@@ -5,7 +5,9 @@
         <v-card>
           <v-card-title
             primary
-            class="title">Create Story
+            class="title"
+          >
+            Create Story
           </v-card-title>
           <v-card-text>
             <story-summary :editable="true" />

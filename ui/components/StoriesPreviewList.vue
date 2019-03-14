@@ -2,7 +2,8 @@
   <v-container grid-list-md>
     <v-layout
       row
-      wrap>
+      wrap
+    >
       <v-flex
         v-for="preview in previews"
         :key="preview.id"
@@ -10,29 +11,40 @@
         d-flex
         xs12
         sm6
-        md3>
+        md3
+      >
         <v-hover>
           <v-card
             slot-scope="{ hover }"
             :class="`elevation-${hover ? 12 : 2}`"
-            class="mx-auto preview-card">
+            class="mx-auto preview-card"
+          >
             <div
               class="preview-detail-link"
-              @click="showDetail(preview.storyOid, preview.pageOid)">
+              @click="showDetail(preview.storyOid, preview.pageOid)"
+            >
               <v-img
                 :src="preview.previewImageUrl"
-                height="300px" />
+                height="300px"
+              />
               <v-card-title primary-title>
                 <div>
-                  <div class="headline truncate">{{ preview.title }}</div>
+                  <div class="headline truncate">
+                    {{ preview.title }}
+                  </div>
                   <span class="grey--text truncate">{{ preview.summary }}</span>
                 </div>
               </v-card-title>
             </div>
             <v-card-actions
               v-show="showActions"
-              class="black">
-              <h3><nuxt-link :to="'/user/' + preview.uid">{{ preview.userDisplayName || 'Anon' }}</nuxt-link></h3>
+              class="black"
+            >
+              <h3>
+                <nuxt-link :to="'/user/' + preview.uid">
+                  {{ preview.userDisplayName || 'Anon' }}
+                </nuxt-link>
+              </h3>
             </v-card-actions>
           </v-card>
         </v-hover>

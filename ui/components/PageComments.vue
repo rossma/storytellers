@@ -1,19 +1,23 @@
 <template>
   <v-layout 
     row 
-    justify-center>
+    justify-center
+  >
     <v-dialog 
       v-model="dialog" 
-      width="600px">
+      width="600px"
+    >
       <v-card>
         <v-toolbar 
           color="pink" 
-          dark>
+          dark
+        >
           <v-toolbar-title>Comments</v-toolbar-title>
-          <v-spacer/>
+          <v-spacer />
           <v-btn
             icon
-            @click="closeDialog()">
+            @click="closeDialog()"
+          >
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
@@ -24,7 +28,8 @@
             :comment="item"
             :index="index"
             :uid="uid"
-            @like="likeComment"/>
+            @like="likeComment"
+          />
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex>
@@ -34,16 +39,20 @@
                   box
                   color="pink"
                   label="Comment"
-                  rows="1" />
+                  rows="1"
+                />
               </v-flex>
             </v-layout>
           </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-spacer/>
+          <v-spacer />
           <v-btn
             flat
-            @click="addComment">Submit</v-btn>
+            @click="addComment"
+          >
+            Submit
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

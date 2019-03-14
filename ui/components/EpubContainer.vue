@@ -1,35 +1,32 @@
 <template>
-  <div>
-    <div v-if="hasBookUrl">
-      <v-card>
-        <v-responsive :aspect-ratio="16/9">
-          <v-card-text>
-            <div id="main">
-              <div 
-                id="viewer"
-                :class="[spreadLayout ? '' : 'single', 'ebook-viewer-spreads']" />
-              <a 
-                v-show="hasPrev" 
-                id="prev" 
-                href="#prev" 
-                class="arrow prev" 
-                @click.prevent="prevPage()">‹</a>
-              <a 
-                v-show="hasNext" 
-                id="next" 
-                href="#next" 
-                class="arrow next" 
-                @click.prevent="nextPage()">›</a>
-            </div>
-          </v-card-text>
-        </v-responsive>
-      </v-card>
-    </div>
-    <img
-      v-else
-      class="card-img-top"
-      src="/img/missing-image.png">
-  </div>
+  <v-layout>
+    <v-card>
+      <v-responsive :aspect-ratio="16/9">
+        <v-card-text>
+          <div id="main">
+            <div
+              id="viewer"
+              :class="[spreadLayout ? '' : 'single', 'ebook-viewer-spreads']"
+            />
+            <a
+              v-show="hasPrev"
+              id="prev"
+              href="#prev"
+              class="arrow prev"
+              @click.prevent="prevPage()"
+            >‹</a>
+            <a
+              v-show="hasNext"
+              id="next"
+              href="#next"
+              class="arrow next"
+              @click.prevent="nextPage()"
+            >›</a>
+          </div>
+        </v-card-text>
+      </v-responsive>
+    </v-card>
+  </v-layout>
 </template>
 
 <script>
@@ -37,6 +34,7 @@
 import Epub from 'epubjs/lib/index'
 import { EventBus } from '~/utils/event-bus.js'
 import debug from 'debug'
+
 const log = debug('app:components/EpubContainer')
 
 export default {
@@ -69,14 +67,14 @@ export default {
     }
   },
   computed: {
-    hasBookUrl: function() {
-      log('this.bookSrc', this.mutableBookSrc)
-      if (this.mutableBookSrc) {
-        return true
-      } else {
-        return false
-      }
-    }
+    // hasBookUrl: function() {
+    //   log('this.bookSrc', this.mutableBookSrc)
+    //   if (this.mutableBookSrc) {
+    //     return true
+    //   } else {
+    //     return false
+    //   }
+    // }
   },
   mounted: function() {
     log('mounted')

@@ -3,26 +3,30 @@
     <v-layout
       v-if="user.uid && story.id"
       row
-      wrap>
+      wrap
+    >
       <v-flex xs12>
         <story-detail
           :author="authorUser"
           :story="story"
           :editable="isEditable"
-          :story-exists="true"/>
+          :story-exists="true"
+        />
       </v-flex>
       <v-flex xs12>
         <page-detail
           :page="page"
           :editable="isEditable"
           :story-cover="story.cover"
-          :user="user" />
+          :user="user"
+        />
         <story-action-controls
           :page="page"
           :editable="isEditable"
           :total-story-pages="totalStoryPages"
           :user="user"
-          @delete-page="deletePage" />
+          @delete-page="deletePage"
+        />
       </v-flex>
     </v-layout>
   </v-container>

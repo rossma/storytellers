@@ -1,12 +1,22 @@
 <template>
-  <div class="medium-viewer-book-container">
+  <v-layout
+    justify-center
+    class="medium-viewer-book-container"
+  >
+    <img
+      v-if="!bookSrc"
+      class="card-img-top"
+      src="/img/missing-image.png"
+    >
     <pdf-container
-      v-if="bookType === 'application/pdf'"
-      :book-src="bookSrc" />
+      v-else-if="bookType === 'application/pdf'"
+      :book-src="bookSrc"
+    />
     <epub-container
       v-else
-      :book-src="bookSrc" />
-  </div>
+      :book-src="bookSrc"
+    />
+  </v-layout>
 </template>
 
 <script>
@@ -31,3 +41,8 @@ export default {
   }
 }
 </script>
+<style>
+.medium-viewer-book-container {
+  display: block;
+}
+</style>

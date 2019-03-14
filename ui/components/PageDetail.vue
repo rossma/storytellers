@@ -6,12 +6,14 @@
         v-show="pageImageSrc()"
         :src="pageImageSrc()"
         title="Upload"
-        @click.stop="openMediumDialog()" />
+        @click.stop="openMediumDialog()"
+      />
       <v-img
         v-show="!pageImageSrc()"
         src="/img/missing-image.png"
         title="Upload"
-        @click.stop="openMediumDialog()" />
+        @click.stop="openMediumDialog()"
+      />
       <!--<img-->
       <!--v-show="pageImageSrc()"-->
       <!--:src="pageImageSrc()"-->
@@ -26,18 +28,23 @@
       <!--@click.stop="openMediumDialog()">-->
       <v-card-actions
         v-if="page.public"
-        class="black">
+        class="black"
+      >
         <v-spacer />
         {{ likes }} likes
         <v-btn
           icon
-          @click="like()">
-          <v-icon :color="liked ? 'red' : 'white' ">favorite</v-icon>
+          @click="like()"
+        >
+          <v-icon :color="liked ? 'red' : 'white' ">
+            favorite
+          </v-icon>
         </v-btn>
         {{ comments }} comments
         <v-btn
           icon
-          @click="commentsDialog = true">
+          @click="commentsDialog = true"
+        >
           <v-icon>comments</v-icon>
         </v-btn>
       </v-card-actions>
@@ -56,7 +63,8 @@
       :image-src="pageImageSrc()"
       :book-src="pageBookSrc()"
       :book-type="pageBookType()"
-      @close="imageDialog = false" />
+      @close="imageDialog = false"
+    />
     <page-comments
       :comments="page.comments"
       :dialog="commentsDialog"

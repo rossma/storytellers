@@ -29,7 +29,11 @@ export function findPreviewsByFilter(filterBy) {
     previewsRef = previewsRef.where('uid', '==', filterBy.byAuthorUid)
   }
   if (filterBy.byKeywords) {
-    previewsRef = previewsRef.where('keywords', 'array-contains', filterBy.byKeywords)
+    previewsRef = previewsRef.where(
+      'keywords',
+      'array-contains',
+      filterBy.byKeywords
+    )
   }
   return findPreviews(previewsRef)
 }

@@ -2,23 +2,27 @@
   <v-layout
     column
     align-center
-    justify-center>
+    justify-center
+  >
     <span>
       Already a user?
       <nuxt-link
         to="/auth/signin"
-        class="signin-link">Sign in</nuxt-link></span>
+        class="signin-link"
+      >Sign in</nuxt-link></span>
     <v-flex
       xs12
       sm10
       md8
-      lg6>
+      lg6
+    >
       <v-card>
         <form @submit.prevent="signUp">
           <v-card-text ref="form">
             <v-text-field
               v-model="email"
-              label="email" />
+              label="email"
+            />
             <v-text-field
               v-model="password"
               :append-icon="showPassword ? 'visibility' : 'visibility_off'"
@@ -32,7 +36,10 @@
           <v-card-actions>
             <v-btn
               color="pink darken-1"
-              type="submit">Sign Up</v-btn>
+              type="submit"
+            >
+              Sign Up
+            </v-btn>
           </v-card-actions>
         </form>
       </v-card>

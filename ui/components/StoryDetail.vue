@@ -5,7 +5,8 @@
         <div><h2>{{ story.title }}</h2></div>
         <div
           v-show="author.displayName"
-          @click="showUserProfile()">
+          @click="showUserProfile()"
+        >
           <h4>{{ author.displayName }}</h4>
         </div>
       </div>
@@ -13,7 +14,8 @@
         :story="story"
         :editable="editable"
         :story-exists="true"
-        style="padding-bottom:10px;"/>
+        style="padding-bottom:10px;"
+      />
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>

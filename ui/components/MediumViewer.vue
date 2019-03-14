@@ -1,87 +1,137 @@
 <template>
-  <v-layout
-    row
-    justify-center>
-    <v-dialog
-      v-model="dialog"
-      hide-overlay
-      fullscreen
-      transition="dialog-bottom-transition">
-      <v-card>
+  <v-dialog
+    v-model="dialog"
+    hide-overlay
+    fullscreen
+    transition="dialog-bottom-transition"
+  >
+    <v-layout
+      dark
+      column
+      fill-height
+    >
+      <v-card class="dialog-container">
         <v-toolbar
           dark
-          color="primary">
+          color="primary"
+        >
           <v-btn
             icon
             dark
-            @click.native="closeDialog()">
+            @click.native="closeDialog()"
+          >
             <v-icon>close</v-icon>
           </v-btn>
           <v-toolbar-title>{{ story.title }}</v-toolbar-title>
           <v-spacer />
           <v-toolbar-items class="medium-viewer-toolbar">
+            <v-divider
+              class="mx-2"
+              vertical
+            />
             <v-tooltip bottom>
               <v-checkbox
                 v-if="editable && isImageViewer"
                 slot="activator"
+                v-model="isCover"
                 :label="`Cover`"
-                v-model="isCover"/>
+              />
               <span>Cover</span>
             </v-tooltip>
-            <v-tooltip bottom>
-              <v-btn
-                slot="activator"
-                :color="!isImageViewer ? 'green' : ''"
-                icon
-                dark
-                @click.native="initBook()">
-                <!--@click.native="init-ebook(); isImageViewer = false">-->
-                <v-icon>text_format</v-icon>
-              </v-btn>
-              <span>Words</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <v-btn
-                slot="activator"
-                :color="isImageViewer ? 'green' : ''"
-                icon
-                dark
-                @click.native="isImageViewer = true">
-                <v-icon>brush</v-icon>
-              </v-btn>
-              <span>Pictures</span>
-            </v-tooltip>
+            <v-divider
+              class="mx-2"
+              vertical
+            />
             <v-tooltip bottom>
               <upload-button
-                v-if="editable"
+                v-if="editable && (isImageViewer || isBookViewer)"
                 slot="activator"
                 :selected-callback="previewMediaFile"
-                icon="folder_open"/>
+                icon="cloud_upload"
+              />
               <span>Upload</span>
             </v-tooltip>
+            <v-divider
+              class="mx-2"
+              vertical
+            />
+            <v-btn-toggle
+              v-model="activeMedium"
+              class="transparent"
+            >
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    :value="1"
+                    flat
+                    @click.native="initRich()"
+                  >
+                    <v-icon>text_format</v-icon>
+                  </v-btn>
+                </template>
+                <span>sssssssssss</span>
+              </v-tooltip>
+              <v-btn
+                :value="2"
+                flat
+                @click.native="initBook()"
+              >
+                <v-icon>book</v-icon>
+              </v-btn>
+              <v-btn
+                :value="3"
+                flat
+                @click.native="initImage()"
+              >
+                <v-icon>brush</v-icon>
+              </v-btn>
+            </v-btn-toggle>
+            <v-divider
+              class="mx-2"
+              vertical
+            />
             <v-btn
               v-if="editable"
               slot="activator"
               dark
               flat
-              @click="saveMediaFile">
-              <v-icon left>save</v-icon>
+              @click="saveMediaFile"
+            >
+              <v-icon left>
+                save
+              </v-icon>
               Save
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-card-text class="text-xs-center">
+        <!--<v-card-text-->
+        <!--style="border: 4px solid pink;"-->
+        <!--fill-height-->
+        <!--class="text-xs-center">-->
+        <!--<v-responsive-->
+        <!--style="border: 4px solid pink;">-->
+        <v-layout
+          justify-center
+          dark
+          fill-height
+        >
           <medium-viewer-image
             v-show="isImageViewer"
-            :image-src="previewImageSrc" />
+            :image-src="previewImageSrc"
+          />
           <medium-viewer-book
-            v-show="!isImageViewer"
+            v-show="isBookViewer"
             :book-src="bookSrc"
-            :book-type="previewBookType" />
-        </v-card-text>
+            :book-type="previewBookType"
+          />
+          <medium-viewer-rich-text
+            v-show="isRichViewer"
+          />
+        </v-layout>
+        <!--</v-responsive>-->
       </v-card>
-    </v-dialog>
-  </v-layout>
+    </v-layout>
+  </v-dialog>
 </template>
 
 <script>
@@ -89,11 +139,13 @@ import { mapGetters } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
 import MediumViewerBook from '~/components/MediumViewerBook'
 import MediumViewerImage from '~/components/MediumViewerImage'
+import MediumViewerRichText from '~/components/MediumViewerRichText'
 import UploadButton from '~/components/UploadButton'
 import { uploadPageBook } from '~/api/service/book'
 import { uploadPageImage } from '~/api/service/image'
 import { deleteCover, updateStory } from '~/api/service/story'
 import debug from 'debug'
+
 const log = debug('app:components/MediumViewer')
 
 export default {
@@ -101,6 +153,7 @@ export default {
   components: {
     MediumViewerBook,
     MediumViewerImage,
+    MediumViewerRichText,
     UploadButton
   },
   props: {
@@ -157,11 +210,14 @@ export default {
   },
   data() {
     return {
+      activeMedium: 3,
       fileType: null,
       mediaFile: null,
       imagePreviewSrc: '',
       isCover: false,
+      isBookViewer: false,
       isImageViewer: true,
+      isRichViewer: false,
       hasImageChanged: false,
       hasBookChanged: false
     }
@@ -255,6 +311,17 @@ export default {
     isPdf(type) {
       return type && type.startsWith('application/pdf')
     },
+    initImage() {
+      this.isBookViewer = false
+      this.isImageViewer = true
+      this.isRichViewer = false
+    },
+    initRich() {
+      log('RichText editor')
+      this.isBookViewer = false
+      this.isImageViewer = false
+      this.isRichViewer = true
+    },
     initBook() {
       if (this.isEpub(this.fileType)) {
         log('emitting event to init ebook')
@@ -265,7 +332,9 @@ export default {
       } else {
         log('Unsupported file type:', this.fileType)
       }
+      this.isBookViewer = true
       this.isImageViewer = false
+      this.isRichViewer = false
     },
     saveMediaFile() {
       if (this.isImageViewer) {
@@ -362,11 +431,19 @@ export default {
 .v-toolbar__title {
   /*margin-right: 10px;*/
 }
+
 .medium-viewer-toolbar .v-tooltip {
-  margin-top: 8px;
+  /*margin-top: 8px;*/
 }
+
 /* below is for inpunts in toolbar (in particular checkbox) */
 .v-input--selection-controls {
   padding-top: 13px;
+}
+
+.dialog-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 </style>

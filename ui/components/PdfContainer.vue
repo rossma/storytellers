@@ -1,28 +1,20 @@
 <template>
-  <div>
-    <div v-if="hasBookUrl">
-      <v-card>
-        <v-responsive :aspect-ratio="16/9">
-          <v-card-text>
-            <!--pages: {{ pages.length }}-->
-            <div class="pdf-document">
-              <pdf-page
-                v-for="page in pages"
-                v-bind="{page, scale}"
-                :key="page.pageNumber"
-                @rendered="onPageRendered"
-                @errored="onPageErrored"
-              />
-            </div>
-          </v-card-text>
-        </v-responsive>
-      </v-card>
-    </div>
-    <img
-      v-else
-      class="card-img-top"
-      src="/img/missing-image.png">
-  </div>
+  <v-card>
+    <v-responsive :aspect-ratio="16/9">
+      <v-card-text>
+        <!--pages: {{ pages.length }}-->
+        <div class="pdf-document">
+          <pdf-page
+            v-for="page in pages"
+            :key="page.pageNumber"
+            v-bind="{page, scale}"
+            @errored="onPageErrored"
+            @rendered="onPageRendered"
+          />
+        </div>
+      </v-card-text>
+    </v-responsive>
+  </v-card>
 </template>
 
 <script>
@@ -30,6 +22,7 @@ import { EventBus } from '~/utils/event-bus.js'
 import range from 'lodash/range'
 import PdfPage from './PdfPage'
 import debug from 'debug'
+
 const log = debug('app:components/PdfContainer')
 
 export default {
@@ -54,14 +47,14 @@ export default {
     }
   },
   computed: {
-    hasBookUrl: function() {
-      log('pdf container this.bookSrc', this.mutableBookSrc)
-      if (this.mutableBookSrc) {
-        return true
-      } else {
-        return false
-      }
-    }
+    // hasBookUrl: function() {
+    //   log('pdf container this.bookSrc', this.mutableBookSrc)
+    //   if (this.mutableBookSrc) {
+    //     return true
+    //   } else {
+    //     return false
+    //   }
+    // }
   },
   watch: {
     pdf(pdf) {

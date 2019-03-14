@@ -7,28 +7,37 @@
         </div>
         <v-card
           dark
-          flat>
+          flat
+        >
           <v-card-title primary-title>
             <v-layout 
               row 
-              wrap>
+              wrap
+            >
               <v-flex xs2>
                 <v-avatar
                   v-show="!profileUser.photoUrl"
                   class="pink jbtn-file"
-                  size="48">
-                  <v-icon dark>account_circle</v-icon>
+                  size="48"
+                >
+                  <v-icon dark>
+                    account_circle
+                  </v-icon>
                 </v-avatar>
                 <v-avatar
                   v-show="profileUser.photoUrl"
-                  size="70">
+                  size="70"
+                >
                   <img
                     :src="profileUser.photoUrl"
-                    alt="no photo">
+                    alt="no photo"
+                  >
                 </v-avatar>
               </v-flex>
               <v-flex xs10>
-                <h3 class="headline mb-0">{{ profileUser.displayName }}</h3>
+                <h3 class="headline mb-0">
+                  {{ profileUser.displayName }}
+                </h3>
                 <div>{{ profileUser.bio }}</div>
               </v-flex>
             </v-layout>
@@ -38,13 +47,17 @@
     </v-layout>
     <v-layout
       row
-      wrap>
+      wrap
+    >
       <v-flex xs12>
         <v-card dark>
-          <v-card-title primary><h2>User Published Pages</h2></v-card-title>
+          <v-card-title primary>
+            <h2>User Published Pages</h2>
+          </v-card-title>
           <stories-preview-list
             :filter-by="previewAuthorFilter"
-            :is-public-user-profile="true" />
+            :is-public-user-profile="true"
+          />
         </v-card>
       </v-flex>
     </v-layout>
