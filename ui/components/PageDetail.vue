@@ -6,12 +6,14 @@
         v-show="pageImageSrc()"
         :src="pageImageSrc()"
         title="Upload"
-        @click.stop="openMediumDialog()" />
+        @click.stop="openMediumDialog()"
+      />
       <v-img
         v-show="!pageImageSrc()"
         src="/img/missing-image.png"
         title="Upload"
-        @click.stop="openMediumDialog()" />
+        @click.stop="openMediumDialog()"
+      />
       <!--<img-->
       <!--v-show="pageImageSrc()"-->
       <!--:src="pageImageSrc()"-->
@@ -26,18 +28,23 @@
       <!--@click.stop="openMediumDialog()">-->
       <v-card-actions
         v-if="page.public"
-        class="black">
+        class="black"
+      >
         <v-spacer />
         {{ likes }} likes
         <v-btn
           icon
-          @click="like()">
-          <v-icon :color="liked ? 'red' : 'white' ">favorite</v-icon>
+          @click="like()"
+        >
+          <v-icon :color="liked ? 'red' : 'white' ">
+            favorite
+          </v-icon>
         </v-btn>
         {{ comments }} comments
         <v-btn
           icon
-          @click="commentsDialog = true">
+          @click="commentsDialog = true"
+        >
           <v-icon>comments</v-icon>
         </v-btn>
       </v-card-actions>
@@ -48,7 +55,6 @@
       :chapter-oid="page.chapterOid"
       :page-oid="page.id"
       :current-image-oid="currentImageOid"
-      :current-book-oid="currentBookOid"
       :editable="editable"
       :story-cover="storyCover"
       :dialog="imageDialog"
@@ -56,7 +62,9 @@
       :image-src="pageImageSrc()"
       :book-src="pageBookSrc()"
       :book-type="pageBookType()"
-      @close="imageDialog = false" />
+      :rich-text-src="pageRichTextSrc()"
+      @close="imageDialog = false"
+    />
     <page-comments
       :comments="page.comments"
       :dialog="commentsDialog"
@@ -111,9 +119,6 @@ export default {
   computed: {
     currentImageOid: function() {
       return this.page.image && this.page.image.filename
-    },
-    currentBookOid: function() {
-      return this.page.book && this.page.book.filename
     },
     liked: {
       get() {
@@ -183,6 +188,7 @@ export default {
       }
     },
     pageBookSrc() {
+      log('in pageBookSrc')
       if (this.page.book && this.page.book.ref) {
         return this.page.book.ref
       } else {
@@ -190,8 +196,17 @@ export default {
       }
     },
     pageBookType() {
+      log('in pageBookType book', this.page.book)
       if (this.page.book && this.page.book.contentType) {
         return this.page.book.contentType
+      } else {
+        return ''
+      }
+    },
+    pageRichTextSrc() {
+      log('in pageRichTextSrc')
+      if (this.page.richText && this.page.richText.ref) {
+        return this.page.richText.ref
       } else {
         return ''
       }

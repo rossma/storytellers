@@ -3,7 +3,8 @@
     <input
       id="selectFile"
       type="file"
-      @change="fileSelected">
+      @change="fileSelected"
+    >
     <div class="btn__content">
       <v-icon>{{ icon }}</v-icon>
       {{ name }}

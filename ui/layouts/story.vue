@@ -3,19 +3,23 @@
   <v-app
     toolbar
     footer
-    dark>
+    dark
+  >
     <the-navigation-toolbar>
       <v-divider
         slot="nav-drawer"
-        light />
+        light
+      />
       <v-list
         slot="nav-drawer"
-        dense>
+        dense
+      >
         <v-list-tile>
           <v-list-tile-content>
             <v-list-tile-title
               v-if="story"
-              class="title">
+              class="title"
+            >
               {{ story.title }}
             </v-list-tile-title>
           </v-list-tile-content>
@@ -23,21 +27,24 @@
       </v-list>
       <v-divider
         slot="nav-drawer"
-        light />
+        light
+      />
       <v-list
         slot="nav-drawer"
         dense
-        class="grey darken-3">
+        class="grey darken-3"
+      >
         <template>
           <v-list>
             <v-list-group
               v-for="(chapter, chapterIdx) in filteredChapters"
-              v-if="chapter"
+              :key="chapter.id"
               :value="chapter.active"
-              :key="chapter.id">
+            >
               <v-list-tile
                 slot="activator"
-                class="chapter-tile">
+                class="chapter-tile"
+              >
                 <v-list-tile-content @click="enableChapterInput($event)">
                   <v-list-tile-title>
                     <v-text-field
@@ -57,7 +64,8 @@
                 v-for="(page, pageIdx) in chapterPages(chapter.id)"
                 :key="page.id"
                 :class="[page.active ? 'active-page': '', 'link-to-page']"
-                @click="$router.push(`/story/${page.id}`)">
+                @click="$router.push(`/story/${page.id}`)"
+              >
                 <v-list-tile-content>
                   <v-list-tile-title class="grey--text">
                     {{ chapter.chapter }}-{{ ++pageIdx }}
@@ -67,7 +75,8 @@
               <v-layout
                 v-if="isEditable"
                 row
-                align-center>
+                align-center
+              >
                 <v-flex
                   class="add-page-btn"
                   xs12
@@ -83,7 +92,8 @@
         <v-layout
           v-if="isEditable"
           row
-          align-center>
+          align-center
+        >
           <v-flex
             class="add-chapter-btn"
             xs12
@@ -96,7 +106,7 @@
       </v-list>
     </the-navigation-toolbar>
     <v-content>
-      <nuxt/>
+      <nuxt />
     </v-content>
     <the-page-footer />
   </v-app>
@@ -139,7 +149,7 @@ export default {
   computed: {
     ...mapGetters('auth', ['uid']),
     filteredChapters() {
-      return this.chapters.filter(c => this.chapterPages(c.id).length > 0)
+      return this.chapters.filter(c => c && this.chapterPages(c.id).length > 0)
     },
     isEditable() {
       return this.story.uid === this.uid

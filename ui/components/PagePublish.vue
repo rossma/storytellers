@@ -1,19 +1,23 @@
 <template>
   <v-layout
     row
-    justify-center>
+    justify-center
+  >
     <v-dialog
       v-model="dialog"
-      width="600px">
+      width="600px"
+    >
       <v-card>
         <v-toolbar
           color="pink"
-          dark>
+          dark
+        >
           <v-toolbar-title>Publish Page</v-toolbar-title>
-          <v-spacer/>
+          <v-spacer />
           <v-btn
             icon
-            @click="closeDialog()">
+            @click="closeDialog()"
+          >
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
@@ -28,16 +32,19 @@
                   color="pink"
                   label="Summary"
                   maxlength="500"
-                  rows="1"/>
+                  rows="1"
+                />
               </v-flex>
             </v-layout>
           </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-spacer/>
+          <v-spacer />
           <v-btn
             flat
-            @click="publish">Publish
+            @click="publish"
+          >
+            Publish
           </v-btn>
         </v-card-actions>
       </v-card>

@@ -5,27 +5,34 @@
       fixed
       app
       disable-route-watcher
-      dark>
-
+      dark
+    >
       <v-divider
         slot="activator"
-        light />
+        light
+      />
       <v-avatar
-        v-if="photoUrl">
+        v-if="photoUrl"
+      >
         <img
           :src="photoUrl"
-          alt="no photo">
+          alt="no photo"
+        >
       </v-avatar>
       <v-avatar
         v-else
-        class="pink">
-        <v-icon dark>account_circle</v-icon>
+        class="pink"
+      >
+        <v-icon dark>
+          account_circle
+        </v-icon>
       </v-avatar>
 
       <v-list>
         <v-list-group
           :prepend-icon="'account_circle'"
-          no-action>
+          no-action
+        >
           <v-list-tile slot="activator">
             <v-list-tile-content>
               <v-list-tile-title>{{ username }}</v-list-tile-title>
@@ -34,7 +41,8 @@
 
           <v-list-tile
             to="/user/profile"
-            @click="updateSidebar({ visible: false })">
+            @click="updateSidebar({ visible: false })"
+          >
             <v-list-tile-content>
               <v-list-tile-title>Account</v-list-tile-title>
             </v-list-tile-content>
@@ -60,17 +68,22 @@
     <v-toolbar
       dark
       app
-      fixed>
+      fixed
+    >
       <v-toolbar-side-icon
-        @click.stop="drawer = !drawer"/>
+        @click.stop="drawer = !drawer"
+      />
       <v-toolbar-title class="home-title">
-        <nuxt-link to="/">Storytellers</nuxt-link>
+        <nuxt-link to="/">
+          Storytellers
+        </nuxt-link>
       </v-toolbar-title>
       <v-spacer />
       <v-layout
         row 
         align-center 
-        style="max-width: 300px;padding-right:10px;">
+        style="max-width: 300px;padding-right:10px;"
+      >
         <v-text-field
           v-model="query"
           label="Search..."
@@ -88,7 +101,8 @@
           dark
           small
           color="pink darken-2"
-          to="/story/create">
+          to="/story/create"
+        >
           <v-icon>create</v-icon>
         </v-btn>
         <span>Create Story</span>

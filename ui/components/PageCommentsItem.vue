@@ -7,16 +7,22 @@
       class="comment-pamel"
     >
       <v-list-tile-content>
-        <v-list-tile-title class="comment-title">{{ comment.userDisplayName }}</v-list-tile-title>
+        <v-list-tile-title class="comment-title">
+          {{ comment.userDisplayName }}
+        </v-list-tile-title>
         <v-list-tile-sub-title>{{ comment.comment }}</v-list-tile-sub-title>
       </v-list-tile-content>
       <v-list-tile-action>
         <v-btn
           icon
-          @click="like()">
+          @click="like()"
+        >
           <v-icon
             :color="liked ? 'red' : 'grey lighten-1'"
-            small>favorite</v-icon>
+            small
+          >
+            favorite
+          </v-icon>
         </v-btn>
       </v-list-tile-action>
     </v-list-tile>

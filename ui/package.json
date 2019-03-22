@@ -5,16 +5,16 @@
   "author": "Ross Mahony",
   "private": true,
   "engines": {
-    "node": "8.9.4"
+    "node": "10.15.3"
   },
   "repository": {
     "type": "git",
     "url": "git@github.com:rossma/storytellers.git"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server",
+    "dev": "cross-env NODE_ENV=development nodemon -r esm server/index.js --watch server",
     "build": "nuxt build",
-    "start": "cross-env NODE_ENV=production node server/index.js",
+    "start": "cross-env NODE_ENV=production node -r esm server/index.js",
     "generate": "nuxt generate",
     "lint": "eslint --ext .js,.vue .",
     "lint-fix": "eslint --ext .js,.vue --fix .",
@@ -26,7 +26,8 @@
     "@nuxtjs/dotenv": "1.1.1",
     "@nuxtjs/pwa": "^2.6.0",
     "@nuxtjs/toast": "3.0.1",
-    "ajv": "6.5.4",
+    "acorn": "^6.1.1",
+    "ajv": "^6.10.0",
     "body-parser": "1.18.3",
     "child-process-promise": "^2.2.0",
     "child_process": "^1.0.2",
@@ -45,10 +46,12 @@
     "node-pre-gyp": "^0.11.0",
     "nuxt": "2.0.0",
     "pdfjs-dist": "^2.0.943",
+    "quill-image-resize-module": "^3.0.0",
     "standard": "^12.0.1",
     "tls": "0.0.1",
     "uuid": "3.3.2",
-    "vuetify": "1.2.5"
+    "vue-quill-editor": "^3.0.6",
+    "vuetify": "1.5.5"
   },
   "devDependencies": {
     "babel-eslint": "10.0.1",
@@ -63,8 +66,8 @@
     "eslint-plugin-prettier": "2.7.0",
     "eslint-plugin-promise": "4.0.1",
     "eslint-plugin-standard": "4.0.0",
-    "eslint-plugin-vue": "4.7.1",
-    "nodemon": "1.18.4",
+    "eslint-plugin-vue": "5.2.2",
+    "nodemon": "1.18.10",
     "prettier": "1.14.3",
     "stylus": "0.54.5",
     "stylus-loader": "3.0.2"

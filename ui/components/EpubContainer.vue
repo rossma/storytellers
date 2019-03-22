@@ -1,35 +1,32 @@
 <template>
-  <div>
-    <div v-if="hasBookUrl">
-      <v-card>
-        <v-responsive :aspect-ratio="16/9">
-          <v-card-text>
-            <div id="main">
-              <div 
-                id="viewer"
-                :class="[spreadLayout ? '' : 'single', 'ebook-viewer-spreads']" />
-              <a 
-                v-show="hasPrev" 
-                id="prev" 
-                href="#prev" 
-                class="arrow prev" 
-                @click.prevent="prevPage()">‹</a>
-              <a 
-                v-show="hasNext" 
-                id="next" 
-                href="#next" 
-                class="arrow next" 
-                @click.prevent="nextPage()">›</a>
-            </div>
-          </v-card-text>
-        </v-responsive>
-      </v-card>
-    </div>
-    <img
-      v-else
-      class="card-img-top"
-      src="/img/missing-image.png">
-  </div>
+  <v-layout class="epub-wrapper">
+    <v-card>
+      <v-responsive :aspect-ratio="16/9">
+        <v-card-text>
+          <div id="main">
+            <div
+              id="viewer"
+              :class="[spreadLayout ? '' : 'single', 'ebook-viewer-spreads']"
+            />
+            <a
+              v-show="hasPrev"
+              id="prev"
+              href="#prev"
+              class="arrow prev"
+              @click.prevent="prevPage()"
+            >‹</a>
+            <a
+              v-show="hasNext"
+              id="next"
+              href="#next"
+              class="arrow next"
+              @click.prevent="nextPage()"
+            >›</a>
+          </div>
+        </v-card-text>
+      </v-responsive>
+    </v-card>
+  </v-layout>
 </template>
 
 <script>
@@ -37,6 +34,7 @@
 import Epub from 'epubjs/lib/index'
 import { EventBus } from '~/utils/event-bus.js'
 import debug from 'debug'
+
 const log = debug('app:components/EpubContainer')
 
 export default {
@@ -69,17 +67,25 @@ export default {
     }
   },
   computed: {
-    hasBookUrl: function() {
-      log('this.bookSrc', this.mutableBookSrc)
-      if (this.mutableBookSrc) {
-        return true
-      } else {
-        return false
-      }
-    }
+    // hasBookUrl: function() {
+    //   log('this.bookSrc', this.mutableBookSrc)
+    //   if (this.mutableBookSrc) {
+    //     return true
+    //   } else {
+    //     return false
+    //   }
+    // }
+  },
+  beforeCreate: function() {
+    log('in before create')
+  },
+  created: function() {
+    log('in created')
   },
   mounted: function() {
-    log('mounted')
+    log('EPUB ............. mounted')
+    this.createBook(this.bookSrc2)
+
     this.$nextTick(() => {
       EventBus.$on('init-ebook', () => {
         this.init()
@@ -96,12 +102,13 @@ export default {
   },
   methods: {
     init() {
+      log('IN EPUB INIT')
       if (!this.book && this.bookSrc) {
         this.createBook(this.bookSrc)
       }
     },
     createBook(src) {
-      log('In epub create book')
+      log('In epub create book', src)
 
       if (src) {
         this.mutableBookSrc = src
@@ -121,7 +128,7 @@ export default {
         })
 
         const display = this.rendition.display()
-        log('display:', display)
+        log('my display:', display)
 
         this.book.ready.then(() => {
           var keyListener = e => {
@@ -182,6 +189,10 @@ body {
   height: 100%;
   width: 100%;
   min-height: 800px;
+}
+
+.epub-wrapper > div {
+  width: 100%;
 }
 
 .ebook-viewer-spreads {

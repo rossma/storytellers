@@ -29,14 +29,15 @@ firebase deploy --only functions:onDeleteStory
 #### Deploy function
 firebase deploy --only functions:onDeleteChapter
 
-### delete-page
-> This function is triggered every time a record is deleted from the stories collection.
+### update-page
+> This function is triggered every time a document is updated from the pages collection.
 
-#### Deploy function
-firebase deploy --only functions:onDeletePage
+### delete-page
+> This function is triggered every time a record is deleted from the pages collection.
 
 ### delete-image
 > This function is triggered every time a record is deleted from the images collection.
 
-#### Deploy function
+#### Deploy individual functions
 firebase deploy --only functions:onDeleteImage
+firebase deploy --only functions:onDeletePage

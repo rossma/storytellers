@@ -3,26 +3,30 @@
     <v-layout
       v-if="user.uid && story.id"
       row
-      wrap>
+      wrap
+    >
       <v-flex xs12>
         <story-detail
           :author="authorUser"
           :story="story"
           :editable="isEditable"
-          :story-exists="true"/>
+          :story-exists="true"
+        />
       </v-flex>
       <v-flex xs12>
         <page-detail
           :page="page"
           :editable="isEditable"
           :story-cover="story.cover"
-          :user="user" />
+          :user="user"
+        />
         <story-action-controls
           :page="page"
           :editable="isEditable"
           :total-story-pages="totalStoryPages"
           :user="user"
-          @delete-page="deletePage" />
+          @delete-page="deletePage"
+        />
       </v-flex>
     </v-layout>
   </v-container>
@@ -72,7 +76,11 @@ export default {
           ref: null
         },
         likes: [],
-        number: null
+        number: null,
+        richText: {
+          filename: null,
+          ref: null
+        }
       },
       mutablePages: [],
       story: {
@@ -128,6 +136,14 @@ export default {
         }
       })
 
+      EventBus.$on('story-rich-text-file-key', richTextDetails => {
+        log(`story-rich-text-file-key event received:`, richTextDetails)
+        this.page.richText = {
+          filename: richTextDetails.filenameKey,
+          ref: richTextDetails.richTextSrc
+        }
+      })
+
       EventBus.$on('save-pages', pages => {
         log(`savePages event received:`, pages)
         this.mutablePages = this.pages.slice()
@@ -135,9 +151,9 @@ export default {
     })
   },
   beforeDestroy() {
-    EventBus.$off('story-image-file-key2')
     EventBus.$off('story-image-file-key')
     EventBus.$off('story-book-file-key')
+    EventBus.$off('story-rich-text-file-key')
     EventBus.$off('save-pages')
   },
   methods: {
@@ -158,6 +174,7 @@ export default {
                 likes: pageDoc.data().likes,
                 page: pageDoc.data().page,
                 public: pageDoc.data().public,
+                richText: pageDoc.data().richText,
                 storyOid: pageDoc.data().storyOid,
                 uid: pageDoc.data().uid
               }

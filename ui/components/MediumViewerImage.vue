@@ -1,14 +1,20 @@
 <template>
-  <div>
+  <v-layout
+    justify-center
+    style="border:1px solid blue;"
+    class="medium-viewer-image-container"
+  >
     <img
       v-show="imageSrc"
       :src="imageSrc"
-      class="card-img-top">
+      class="card-img-top"
+    >
     <img
       v-show="!imageSrc"
       class="card-img-top"
-      src="/img/missing-image.png">
-  </div>
+      src="/img/missing-image.png"
+    >
+  </v-layout>
 </template>
 
 <script>
@@ -28,3 +34,13 @@ export default {
   methods: {}
 }
 </script>
+<style scoped>
+.medium-viewer-image-container {
+  display: block;
+}
+
+.medium-viewer-image-container img {
+  margin: 0 auto;
+  display: block;
+}
+</style>

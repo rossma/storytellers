@@ -4,7 +4,8 @@
       <v-flex xs12>
         <v-expansion-panel
           v-model="panel"
-          expand>
+          expand
+        >
           <v-expansion-panel-content>
             <div slot="header">
               <h2>User Profile</h2>
@@ -12,31 +13,40 @@
             <v-layout
               row
               wrap
-              text-xs-center>
+              text-xs-center
+            >
               <v-flex xs2>
                 <v-card
                   dark
-                  flat>
+                  flat
+                >
                   <v-tooltip top>
                     <v-avatar
                       v-show="!formUser.photoUrl"
                       slot="activator"
-                      class="pink jbtn-file">
-                      <v-icon dark>account_circle</v-icon>
+                      class="pink jbtn-file"
+                    >
+                      <v-icon dark>
+                        account_circle
+                      </v-icon>
                       <input
                         type="file"
-                        @change="profileImageSelected">
+                        @change="profileImageSelected"
+                      >
                     </v-avatar>
                     <v-avatar
                       v-show="formUser.photoUrl"
                       slot="activator"
-                      class="jbtn-file">
+                      class="jbtn-file"
+                    >
                       <img
                         :src="formUser.photoUrl"
-                        alt="no photo">
+                        alt="no photo"
+                      >
                       <input
                         type="file"
-                        @change="profileImageSelected">
+                        @change="profileImageSelected"
+                      >
                     </v-avatar>
                     <span>Upload Profile</span>
                   </v-tooltip>
@@ -47,29 +57,37 @@
                   <v-form
                     ref="form"
                     v-model="valid"
-                    lazy-validation>
+                    lazy-validation
+                  >
                     <v-text-field
                       v-model="computedUser.email"
                       label="Email"
                       readonly
-                      disabled />
+                      disabled
+                    />
                     <v-text-field
                       v-model="formUser.displayName"
                       :rules="nameRules"
                       label="Display Name"
-                      required />
+                      required
+                    />
                     <v-text-field
                       v-model="formUser.bio"
-                      label="Bio" />
+                      label="Bio"
+                    />
                   </v-form>
                 </v-card>
               </v-flex>
               <v-flex
                 xs12
-                text-xs-right>
+                text-xs-right
+              >
                 <v-btn
                   :disabled="!valid"
-                  @click="submit">submit</v-btn>
+                  @click="submit"
+                >
+                  submit
+                </v-btn>
               </v-flex>
             </v-layout>
           </v-expansion-panel-content>
@@ -78,13 +96,17 @@
     </v-layout>
     <v-layout
       row
-      wrap>
+      wrap
+    >
       <v-flex xs12>
         <v-card dark>
-          <v-card-title primary><h2>My Stories</h2></v-card-title>
+          <v-card-title primary>
+            <h2>My Stories</h2>
+          </v-card-title>
           <stories-preview-list
             :filter-by="previewAuthorFilter"
-            :is-private-user-profile="true" />
+            :is-private-user-profile="true"
+          />
         </v-card>
       </v-flex>
     </v-layout>
@@ -128,7 +150,6 @@ export default {
         return this.user.data
       },
       set: function(newValue) {
-        console.log('abc', newValue)
         this.initFormUser(newValue)
       }
     },

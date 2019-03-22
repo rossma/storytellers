@@ -4,24 +4,28 @@
       ref="form"
       v-model="valid"
       class="text-xs-right"
-      lazy-validation>
+      lazy-validation
+    >
       <v-card flat>
         <v-card-text>
           <v-container
             v-if="editable"
-            fluid>
+            fluid
+          >
             <v-layout row>
               <v-flex xs12>
                 <v-text-field
                   v-model="mutableStory.title"
                   label="Title"
-                  required/>
+                  required
+                />
                 <v-textarea
                   v-model="mutableStory.summary"
                   name="summary"
                   label="Summary"
                   outline
-                  dark/>
+                  dark
+                />
               </v-flex>
             </v-layout>
           </v-container>
@@ -35,7 +39,9 @@
           v-if="storyExists && editable"
           slot="activator"
           color="red"
-          @click.stop="deleteDialog = true">delete
+          @click.stop="deleteDialog = true"
+        >
+          delete
         </v-btn>
         <span>Delete Story</span>
       </v-tooltip>
@@ -44,7 +50,9 @@
           v-if="editable"
           slot="activator"
           :disabled="!valid"
-          @click="submit">save
+          @click="submit"
+        >
+          save
         </v-btn>
         <span>Save Story</span>
       </v-tooltip>
@@ -52,7 +60,8 @@
     <story-summary-delete-dialog
       :story="mutableStory"
       :dialog="deleteDialog"
-      @close="deleteDialog = false" />
+      @close="deleteDialog = false"
+    />
   </div>
 </template>
 

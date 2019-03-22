@@ -1,4 +1,8 @@
+import webpack from 'webpack'
+// const webpack = require('webpack')
+
 const pkg = require('./package')
+
 // const bodyParser = require('body-parser')
 // const session = require('express-session')
 
@@ -19,7 +23,11 @@ module.exports = {
     title: pkg.name,
     meta: [
       { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      {
+        name: 'viewport',
+        content:
+          'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui'
+      },
       { hid: 'description', name: 'description', content: pkg.description }
     ],
     link: [
@@ -45,7 +53,10 @@ module.exports = {
   /*
   ** Plugins to load before mounting the App
   */
-  plugins: ['@/plugins/vuetify'],
+  plugins: [
+    { ssr: false, src: '~/plugins/vue-quill-editor.client.js' },
+    '~/plugins/vuetify'
+  ],
 
   /*
   ** Nuxt.js modules
@@ -124,7 +135,15 @@ module.exports = {
 
       /* because in utils/constant referencing windows I need to set this, more here: https://github.com/webpack/webpack/issues/6642 */
       config.output.globalObject = 'this'
-    }
+
+      config.resolve.alias["vue"] = "vue/dist/vue.common";
+    },
+    plugins: [
+      new webpack.ProvidePlugin({
+        'window.Quill': 'quill/dist/quill.js',
+        Quill: 'quill/dist/quill.js'
+      })
+    ]
   },
   env: {
     FIREBASE_CLIENT_API_KEY: process.env.FIREBASE_CLIENT_API_KEY,
