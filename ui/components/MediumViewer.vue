@@ -26,29 +26,43 @@
           <v-spacer />
           <v-toolbar-items class="medium-viewer-toolbar">
             <v-divider
+              v-if="editable && isImageViewer"
               class="mx-2"
               vertical
             />
-            <v-tooltip bottom>
-              <v-checkbox
-                v-if="editable && isImageViewer"
-                slot="activator"
-                v-model="isCover"
-                :label="`Cover`"
-              />
-              <span>Cover</span>
-            </v-tooltip>
+            <v-item-group v-if="editable && isImageViewer">
+              <v-item>
+                <v-tooltip bottom>
+                  <template #activator="{ on }">
+                    <v-checkbox
+                      v-model="isCover"
+                      :label="`Cover`"
+                      class="toolbar-checkbox"
+                      v-on="on"
+                    />
+                  </template>
+                  <span>Cover</span>
+                </v-tooltip>
+              </v-item>
+            </v-item-group>
             <v-divider
+              v-if="editable && (isImageViewer || isBookViewer)"
               class="mx-2"
               vertical
             />
             <v-tooltip bottom>
-              <upload-button
-                v-if="editable && (isImageViewer || isBookViewer)"
-                slot="activator"
-                :selected-callback="previewMediaFile"
-                icon="cloud_upload"
-              />
+              <template #activator="{ on }">
+                <span
+                  class="toolbar-upload"
+                  v-on="on"
+                >
+                  <upload-button
+                    v-if="editable && (isImageViewer || isBookViewer)"
+                    :selected-callback="previewMediaFile"
+                    icon="cloud_upload"
+                  />
+                </span>
+              </template>
               <span>Upload</span>
             </v-tooltip>
             <v-divider
@@ -60,36 +74,64 @@
               class="transparent"
             >
               <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
+                <template #activator="{ on }">
                   <v-btn
+                    v-if="showRichText"
                     :value="1"
                     flat
-                    @click.native="initRich()"
+                    v-on="on"
+                    @click.native="initRichText()"
                   >
                     <v-icon>text_format</v-icon>
                   </v-btn>
                 </template>
-                <span>sssssssssss</span>
+                <span>Rich Text</span>
               </v-tooltip>
-              <v-btn
-                :value="2"
-                flat
-                @click.native="initBook()"
-              >
-                <v-icon>book</v-icon>
-              </v-btn>
-              <v-btn
-                :value="3"
-                flat
-                @click.native="initImage()"
-              >
-                <v-icon>brush</v-icon>
-              </v-btn>
+              <v-tooltip bottom>
+                <template #activator="{ on }">
+                  <v-btn
+                    v-if="showBook"
+                    :value="2"
+                    flat
+                    v-on="on"
+                    @click.native="initBook()"
+                  >
+                    <v-icon>book</v-icon>
+                  </v-btn>
+                </template>
+                <span>Words</span>
+              </v-tooltip>
+              <v-tooltip bottom>
+                <template #activator="{ on }">
+                  <v-btn
+                    v-if="showImage"
+                    :value="3"
+                    flat
+                    v-on="on"
+                    @click.native="initImage()"
+                  >
+                    <v-icon>brush</v-icon>
+                  </v-btn>
+                </template>
+                <span>Pictures</span>
+              </v-tooltip>
             </v-btn-toggle>
             <v-divider
               class="mx-2"
               vertical
             />
+            <v-btn
+              v-if="editable && isRichViewer"
+              slot="activator"
+              dark
+              flat
+              @click="previewRichText"
+            >
+              <v-icon left>
+                search
+              </v-icon>
+              {{ richTextPreview? 'Editor' : 'Preview' }}
+            </v-btn>
             <v-btn
               v-if="editable"
               slot="activator"
@@ -114,6 +156,7 @@
           justify-center
           dark
           fill-height
+          style="border:1px solid red;"
         >
           <medium-viewer-image
             v-show="isImageViewer"
@@ -122,10 +165,12 @@
           <medium-viewer-book
             v-show="isBookViewer"
             :book-src="bookSrc"
-            :book-type="previewBookType"
+            :book-type="bookType"
           />
           <medium-viewer-rich-text
             v-show="isRichViewer"
+            :editable="editable"
+            :rich-text-src="richTextSrc"
           />
         </v-layout>
         <!--</v-responsive>-->
@@ -173,10 +218,6 @@ export default {
       type: String,
       default: null
     },
-    currentBookOid: {
-      type: String,
-      default: null
-    },
     editable: {
       type: Boolean,
       default: false
@@ -206,6 +247,10 @@ export default {
     bookType: {
       type: String,
       default: null
+    },
+    richTextSrc: {
+      type: String,
+      default: null
     }
   },
   data() {
@@ -219,7 +264,8 @@ export default {
       isImageViewer: true,
       isRichViewer: false,
       hasImageChanged: false,
-      hasBookChanged: false
+      hasBookChanged: false,
+      richTextPreview: false
     }
   },
   computed: {
@@ -231,12 +277,30 @@ export default {
         return this.imageSrc
       }
     },
-    previewBookType: function() {
-      if (this.fileType) {
-        return this.fileType
-      } else {
-        return this.bookType
-      }
+    // previewBookType: function() {
+    //   if (this.fileType) {
+    //     return this.fileType
+    //   } else {
+    //     return this.bookType
+    //   }
+    // }
+    showBook: function() {
+      return this.editable || this.bookSrc
+    },
+    showImage: function() {
+      return this.editable || this.imageSrc
+    },
+    showRichText: function() {
+      return this.editable || this.richTextSrc
+    }
+  },
+  beforeMount: function() {
+    if (this.showImage) {
+      this.activeMedium = 3
+    } else if (this.showBook) {
+      this.activeMedium = 2
+    } else if (this.showRichText) {
+      this.activeMedium = 1
     }
   },
   mounted: function() {
@@ -265,12 +329,19 @@ export default {
         if (this.isImageViewer) {
           this.imagePreviewSrc = reader.result
         } else {
-          if (this.previewBookType === 'application/pdf') {
-            EventBus.$emit('pdf-book-src', reader.result)
-          } else {
-            // default is epub
-            EventBus.$emit('epub-book-src', reader.result)
-          }
+          EventBus.$emit('book-src', {
+            fileType: this.fileType,
+            src: reader.result
+          })
+
+          // if (this.previewBookType === 'application/pdf') {
+          //   log('e')
+          //
+          //   EventBus.$emit('pdf-book-src', reader.result)
+          // } else {
+          //   // default is epub
+          //   EventBus.$emit('epub-book-src', reader.result)
+          // }
         }
       }
 
@@ -281,23 +352,21 @@ export default {
         if (file.size > limit) {
           log(`file size if over the limit:${limit}`)
           this.$toast.error(
-            `The file is over the ${limit / 1000 / 1000}MB limit`
+            `Th e file is over the ${limit / 1000 / 1000}MB limit`
           )
         } else {
           log('mime type:', file.type)
           this.fileType = file.type
           if (file.type && file.type.startsWith('image/')) {
-            this.isImageViewer = true
+            this.activeMedium = 3
             this.hasImageChanged = true
             reader.readAsDataURL(file)
-          } else if (this.isPdf(file.type)) {
-            this.isImageViewer = false
+            this.initImage()
+          } else if (this.isPdf(file.type) || this.isEpub(file.type)) {
+            this.activeMedium = 2
             this.hasBookChanged = true
             reader.readAsArrayBuffer(file)
-          } else if (this.isEpub(file.type)) {
-            this.isImageViewer = false
-            this.hasBookChanged = true
-            reader.readAsArrayBuffer(file)
+            this.initBook()
           } else {
             log('unknown file type')
             this.$toast.error(`The file is an supported file type`)
@@ -306,9 +375,11 @@ export default {
       }
     },
     isEpub(type) {
+      // todo remove this
       return type && type.startsWith('application/epub')
     },
     isPdf(type) {
+      // todo remove this
       return type && type.startsWith('application/pdf')
     },
     initImage() {
@@ -316,35 +387,48 @@ export default {
       this.isImageViewer = true
       this.isRichViewer = false
     },
-    initRich() {
+    initRichText() {
       log('RichText editor')
       this.isBookViewer = false
       this.isImageViewer = false
       this.isRichViewer = true
     },
     initBook() {
-      if (this.isEpub(this.fileType)) {
-        log('emitting event to init ebook')
-        EventBus.$emit('init-ebook')
-      } else if (this.isPdf(this.fileType)) {
-        log('emitting event to init pdf')
-        EventBus.$emit('initPdf')
-      } else {
-        log('Unsupported file type:', this.fileType)
-      }
+      log('initBook...firing event', this.bookSrc)
+      EventBus.$emit('init-book')
+      //   if (this.isEpub(this.fileType)) {
+      //     log('emitting event to init ebook')
+      //     EventBus.$emit('init-ebook')
+      //   } else if (this.isPdf(this.fileType)) {
+      //     log('emitting event to init pdf')
+      //     EventBus.$emit('initPdf')
+      //   } else {
+      //     log('Unsupported file type:', this.fileType)
+      //   }
       this.isBookViewer = true
       this.isImageViewer = false
       this.isRichViewer = false
+    },
+    previewRichText() {
+      log('In preview Rich Text')
+      this.richTextPreview = !this.richTextPreview
+      EventBus.$emit('rich-text-preview', {
+        isPreview: this.richTextPreview
+      })
     },
     saveMediaFile() {
       if (this.isImageViewer) {
         this.saveImageFile().then(() => {
           this.$toast.success('Image updated')
         })
-      } else {
+      } else if (this.isBookViewer) {
         this.saveBookFile().then(() => {
           this.$toast.success('Book updated')
         })
+      } else if (this.isRichViewer) {
+        this.saveRichText()
+      } else {
+        log('Nothing saved, unknown media')
       }
     },
     saveImageFile() {
@@ -369,16 +453,6 @@ export default {
           })
           .catch(error => {
             log('There was an error uploading page image', error)
-            //
-            // There was an error uploading page image Error: Function DocumentReference.set() called with invalid data. Data must be an object, but it was: a function
-            // at new FirestoreError (vendors.app.js:35053)
-            // at ParseContext.push../node_modules/@firebase/firestore/dist/esm/src/api/user_data_converter.js.ParseContext.createError (vendors.app.js:20131)
-            // at validatePlainObject (vendors.app.js:20440)
-            // at UserDataConverter.push../node_modules/@firebase/firestore/dist/esm/src/api/user_data_converter.js.UserDataConverter.parseMergeData (vendors.app.js:20184)
-            // at DocumentReference.push../node_modules/@firebase/firestore/dist/esm/src/api/database.js.DocumentReference.set (vendors.app.js:18777)
-            // at updateStory (profile.b741b9b79028750abcb1.hot-update.js:47)
-            // at VueComponent.saveCover (index.js:1471)
-            // at index.js:1414
             this.$toast.error(error.message)
           })
       } else {
@@ -395,7 +469,7 @@ export default {
     saveBookFile() {
       log('saving book')
       if (this.mediaFile && this.hasBookChanged) {
-        return uploadPageBook(this.pageOid, this.currentBookOid, this.mediaFile)
+        return uploadPageBook(this.pageOid, this.mediaFile)
           .then(result => {
             EventBus.$emit('story-book-file-key', {
               filenameKey: result.filenameKey,
@@ -409,6 +483,12 @@ export default {
             this.$toast.error(error.message)
           })
       }
+    },
+    saveRichText() {
+      log('saving richText')
+      EventBus.$emit('rich-text-save', {
+        pageOid: this.pageOid
+      })
     },
     saveCover(imageUrl, filename) {
       if (this.isCover && this.imageSrc && this.imageFilename) {
@@ -436,9 +516,13 @@ export default {
   /*margin-top: 8px;*/
 }
 
-/* below is for inpunts in toolbar (in particular checkbox) */
-.v-input--selection-controls {
-  padding-top: 13px;
+.toolbar-checkbox {
+  margin-top: 15px !important;
+}
+
+.toolbar-upload {
+  align-self: center;
+  align-items: center;
 }
 
 .dialog-container {

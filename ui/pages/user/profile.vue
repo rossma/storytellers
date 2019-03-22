@@ -150,7 +150,6 @@ export default {
         return this.user.data
       },
       set: function(newValue) {
-        console.log('abc', newValue)
         this.initFormUser(newValue)
       }
     },

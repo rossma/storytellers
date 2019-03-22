@@ -14,7 +14,8 @@ function findPages(pagesRef) {
         storyOid: m.data().storyOid,
         uid: m.data().uid,
         image: { ...m.data().image },
-        book: { ...m.data().book }
+        book: { ...m.data().book },
+        richText: { ...m.data().richText }
       }
       log('page:', page)
       return page

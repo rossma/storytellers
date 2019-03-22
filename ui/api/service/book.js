@@ -19,56 +19,37 @@ function uploadBookToStorage(file, path, metadata) {
   })
 }
 
-export function uploadPageBook(pageOid, currentBookOid, bookFile) {
+export function uploadPageBook(pageOid, bookFile) {
   log(`Upload page book for page oid:[${pageOid}]`)
 
   const bookOid = uuidv4()
   const bookExt = bookFile.name.split('.').pop()
+  const filename = `${bookOid}.${bookExt}`
 
   let metadata = {
     contentType: bookFile.type
   }
 
-  return uploadBookToStorage(
-    bookFile,
-    `books/${bookOid}.${bookExt}`,
-    metadata
-  ).then(downloadUrl => {
-    const pageBookData = {
-      book: {
-        filename: `${bookOid}.${bookExt}`,
-        contentType: metadata.contentType,
-        ref: downloadUrl,
-        created: Date.now()
+  return uploadBookToStorage(bookFile, `books/${filename}`, metadata).then(
+    downloadUrl => {
+      const pageBookData = {
+        book: {
+          filename: filename,
+          contentType: metadata.contentType,
+          ref: downloadUrl,
+          created: Date.now()
+        }
       }
-    }
-    let batch = DB.batch()
+      let batch = DB.batch()
+      let pageRef = DB.collection('pages').doc(pageOid)
+      batch.update(pageRef, pageBookData)
 
-    if (currentBookOid) {
-      let currentBookRef = DB.collection('books').doc(currentBookOid)
-      batch.delete(currentBookRef)
-    }
-
-    let pageRef = DB.collection('pages').doc(pageOid)
-    batch.update(pageRef, pageBookData)
-
-    return batch.commit().then(() => {
-      return Promise.resolve({
-        filenameKey: pageBookData.book.filename,
-        downloadUrl: pageBookData.book.ref
+      return batch.commit().then(() => {
+        return Promise.resolve({
+          filenameKey: pageBookData.book.filename,
+          downloadUrl: pageBookData.book.ref
+        })
       })
-    })
-  })
-}
-
-export function findBookByOid(bookOid) {
-  log(`Finding book by oid:[${bookOid}]`)
-  let bookRef = DB.collection('books').doc(bookOid)
-  return bookRef.get()
-}
-
-export function deleteBook(bookOid) {
-  log(`Deleting book by book id/filename:[${bookOid}]`)
-  let bookRef = DB.collection('books').doc(bookOid)
-  return bookRef.delete()
+    }
+  )
 }

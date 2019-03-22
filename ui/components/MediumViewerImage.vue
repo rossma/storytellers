@@ -1,6 +1,7 @@
 <template>
   <v-layout
     justify-center
+    style="border:1px solid blue;"
     class="medium-viewer-image-container"
   >
     <img
@@ -33,8 +34,13 @@ export default {
   methods: {}
 }
 </script>
-<style>
+<style scoped>
 .medium-viewer-image-container {
+  display: block;
+}
+
+.medium-viewer-image-container img {
+  margin: 0 auto;
   display: block;
 }
 </style>

@@ -135,6 +135,8 @@ module.exports = {
 
       /* because in utils/constant referencing windows I need to set this, more here: https://github.com/webpack/webpack/issues/6642 */
       config.output.globalObject = 'this'
+
+      config.resolve.alias["vue"] = "vue/dist/vue.common";
     },
     plugins: [
       new webpack.ProvidePlugin({

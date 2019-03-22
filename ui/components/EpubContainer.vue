@@ -1,5 +1,5 @@
 <template>
-  <v-layout>
+  <v-layout class="epub-wrapper">
     <v-card>
       <v-responsive :aspect-ratio="16/9">
         <v-card-text>
@@ -76,8 +76,16 @@ export default {
     //   }
     // }
   },
+  beforeCreate: function() {
+    log('in before create')
+  },
+  created: function() {
+    log('in created')
+  },
   mounted: function() {
-    log('mounted')
+    log('EPUB ............. mounted')
+    this.createBook(this.bookSrc2)
+
     this.$nextTick(() => {
       EventBus.$on('init-ebook', () => {
         this.init()
@@ -94,12 +102,13 @@ export default {
   },
   methods: {
     init() {
+      log('IN EPUB INIT')
       if (!this.book && this.bookSrc) {
         this.createBook(this.bookSrc)
       }
     },
     createBook(src) {
-      log('In epub create book')
+      log('In epub create book', src)
 
       if (src) {
         this.mutableBookSrc = src
@@ -119,7 +128,7 @@ export default {
         })
 
         const display = this.rendition.display()
-        log('display:', display)
+        log('my display:', display)
 
         this.book.ready.then(() => {
           var keyListener = e => {
@@ -180,6 +189,10 @@ body {
   height: 100%;
   width: 100%;
   min-height: 800px;
+}
+
+.epub-wrapper > div {
+  width: 100%;
 }
 
 .ebook-viewer-spreads {

@@ -79,17 +79,20 @@ export default {
     log('pdf container mounted')
 
     this.$nextTick(() => {
-      EventBus.$on('initPdf', () => {
+      EventBus.$on('init-pdf', () => {
+        log('initPdf')
         this.init()
       })
 
       EventBus.$on('pdf-book-src', src => {
+        log('pdf-book-src')
+
         this.createBook(src)
       })
     })
   },
   beforeDestroy() {
-    EventBus.$off('initPdf')
+    EventBus.$off('init-pdf')
     EventBus.$off('pdf-book-src')
   },
   methods: {
@@ -100,7 +103,7 @@ export default {
       }
     },
     createBook(src) {
-      log('In pdf create book', src)
+      log('In pdf create book')
 
       if (src) {
         this.mutableBookSrc = src

@@ -76,7 +76,11 @@ export default {
           ref: null
         },
         likes: [],
-        number: null
+        number: null,
+        richText: {
+          filename: null,
+          ref: null
+        }
       },
       mutablePages: [],
       story: {
@@ -132,6 +136,14 @@ export default {
         }
       })
 
+      EventBus.$on('story-rich-text-file-key', richTextDetails => {
+        log(`story-rich-text-file-key event received:`, richTextDetails)
+        this.page.richText = {
+          filename: richTextDetails.filenameKey,
+          ref: richTextDetails.richTextSrc
+        }
+      })
+
       EventBus.$on('save-pages', pages => {
         log(`savePages event received:`, pages)
         this.mutablePages = this.pages.slice()
@@ -139,9 +151,9 @@ export default {
     })
   },
   beforeDestroy() {
-    EventBus.$off('story-image-file-key2')
     EventBus.$off('story-image-file-key')
     EventBus.$off('story-book-file-key')
+    EventBus.$off('story-rich-text-file-key')
     EventBus.$off('save-pages')
   },
   methods: {
@@ -162,6 +174,7 @@ export default {
                 likes: pageDoc.data().likes,
                 page: pageDoc.data().page,
                 public: pageDoc.data().public,
+                richText: pageDoc.data().richText,
                 storyOid: pageDoc.data().storyOid,
                 uid: pageDoc.data().uid
               }
