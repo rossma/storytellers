@@ -50,14 +50,16 @@
               class="mx-2"
               vertical
             />
-            <v-tooltip bottom>
+            <v-tooltip
+              v-if="editable && (isImageViewer || isBookViewer)"
+              bottom
+            >
               <template #activator="{ on }">
                 <span
                   class="toolbar-upload"
                   v-on="on"
                 >
                   <upload-button
-                    v-if="editable && (isImageViewer || isBookViewer)"
                     :selected-callback="previewMediaFile"
                     icon="cloud_upload"
                   />
