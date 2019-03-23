@@ -3,7 +3,7 @@
     <v-card>
       <v-responsive :aspect-ratio="16/9">
         <v-card-text>
-          <div id="main">
+          <div class="viewer-container">
             <div
               id="viewer"
               :class="[spreadLayout ? '' : 'single', 'ebook-viewer-spreads']"
@@ -197,6 +197,7 @@ body {
 
 .ebook-viewer-spreads {
   width: 900px;
+  max-width: 100%;
   height: 600px;
   box-shadow: 0 0 4px #ccc;
   border-radius: 5px;
@@ -294,5 +295,9 @@ body {
 
 svg {
   display: block;
+}
+
+.viewer-container {
+  max-width: 100%;
 }
 </style>
