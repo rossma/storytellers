@@ -308,10 +308,9 @@ export default {
   mounted: function() {
     this.$nextTick(() => {
       log('MediumViewer:Mounted', this.storyCover)
-      this.isCover =
+      this.isCover = !!(
         this.storyCover && this.storyCover.filename === this.imageFilename
-          ? true
-          : false
+      )
 
       if (this.bookType) {
         this.fileType = this.bookType
@@ -325,7 +324,7 @@ export default {
     previewMediaFile(file) {
       log('in previewMediaFile')
       this.mediaFile = file
-      let reader = new FileReader()
+      const reader = new FileReader()
 
       reader.onloadend = () => {
         if (this.isImageViewer) {

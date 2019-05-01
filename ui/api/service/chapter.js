@@ -32,13 +32,13 @@ export function findChaptersByStory(storyOid) {
 
 export function findChapterByOid(chapterOid) {
   log(`Finding chapter by oid:[${chapterOid}]`)
-  let chaptersRef = DB.collection('chapters').doc(chapterOid)
+  const chaptersRef = DB.collection('chapters').doc(chapterOid)
   return chaptersRef.get()
 }
 
 export function updateChapterName(chapterOid, chapterName) {
   log(`Updating chapter:[${chapterOid}] with name:[${chapterName}]`)
-  let chapterRef = DB.collection('chapters').doc(chapterOid)
+  const chapterRef = DB.collection('chapters').doc(chapterOid)
   chapterRef.update({
     name: chapterName
   })
@@ -51,6 +51,6 @@ export function addChapter(chapter) {
 
 export function deleteChapter(chapterOid) {
   log(`Deleting chapter:[${chapterOid}`)
-  let chapterRef = DB.collection('chapters').doc(chapterOid)
+  const chapterRef = DB.collection('chapters').doc(chapterOid)
   return chapterRef.delete()
 }

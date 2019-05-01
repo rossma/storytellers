@@ -46,7 +46,7 @@ export const actions = {
     try {
       const userDoc = await findUserByOid(uid)
       if (userDoc.exists) {
-        let user = {
+        const user = {
           uid: userDoc.id,
           data: userDoc.data()
         }

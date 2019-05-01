@@ -33,7 +33,7 @@ export const getters = {
 }
 
 export const actions = {
-  resetState({ dispatch, commit }) {
+  resetState({ commit }) {
     log('reset state')
     commit('resetState')
   },

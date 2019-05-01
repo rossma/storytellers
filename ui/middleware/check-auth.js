@@ -11,7 +11,7 @@ export default function({ store, req }) {
       verify it. Firebase by default uses persisted state which keeps a user signed in even if they close their browser
       and reopen it.
      */
-    let user = getUserFromSession(req)
+    const user = getUserFromSession(req)
     log('user from session:', user)
     // if (!user || !user.uid) {
     //   log('User not found in session, looking up in cookie')

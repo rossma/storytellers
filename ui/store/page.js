@@ -18,7 +18,7 @@ export const actions = {
     commit('resetState')
   },
 
-  async savePages({ commit }, pagesPayload) {
+  savePages({ commit }, pagesPayload) {
     commit('savePages', pagesPayload)
   }
 }

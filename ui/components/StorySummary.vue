@@ -70,8 +70,8 @@ import { mapGetters, mapActions } from 'vuex'
 import { findPreviewsByStory, updatePreview } from '~/api/service/preview'
 import { addStory, updateStory } from '~/api/service/story'
 import stringUtils from '~/utils/string'
-import StorySummaryDeleteDialog from './StorySummaryDeleteDialog'
 import debug from 'debug'
+import StorySummaryDeleteDialog from './StorySummaryDeleteDialog'
 const log = debug('app:components/StorySummary')
 
 export default {
@@ -141,19 +141,19 @@ export default {
       }
     },
     createStory(mutableStory) {
-      let story = {
+      const story = {
         title: mutableStory.title,
         summary: mutableStory.summary,
         uid: mutableStory.uid,
         created: mutableStory.created
       }
 
-      let chapter = {
+      const chapter = {
         chapter: 1,
         uid: mutableStory.uid
       }
 
-      let page = {
+      const page = {
         page: 1,
         uid: mutableStory.uid,
         public: false
@@ -165,7 +165,7 @@ export default {
           this.mutableStory.id = result.storyOid
           this.currentPageOid = result.pageOid
           this.currentChapterOid = result.chapterOid
-          //this.mutableStory.activePage = result.pageOid
+          // this.mutableStory.activePage = result.pageOid
           this.saveStory(this.mutableStory)
           this.$router.push(`/story/${result.pageOid}`)
         })
@@ -175,7 +175,7 @@ export default {
         })
     },
     updateStory(mutableStory) {
-      let story = {
+      const story = {
         title: mutableStory.title,
         summary: mutableStory.summary
       }

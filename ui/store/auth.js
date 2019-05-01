@@ -26,11 +26,11 @@ export const actions = {
     commit('resetState')
   },
 
-  async initUserOnAuthStateChange({ dispatch, commit, state }) {
+  initUserOnAuthStateChange({ dispatch, commit, state }) {
     log('initUserOnAuthStateChange')
 
-    let user = null
-    return new Promise(async (resolve, reject) => {
+    const user = null
+    return new Promise(async resolve => {
       if (state.unsubscribeAuthObserver) {
         state.unsubscribeAuthObserver()
       }

@@ -112,7 +112,7 @@ export default {
       this.findImageFilenameKey()
         .then(imageDoc => {
           if (imageDoc.exists) {
-            let preview = {
+            const preview = {
               storyOid: this.story.id,
               chapterOid: this.page.chapterOid,
               pageOid: this.page.id,

@@ -109,7 +109,7 @@ export default {
           if (val) {
             this.deltaStr = val
             log('delta string is set')
-            var startDelta = new Delta(this.deltaStr)
+            const startDelta = new Delta(this.deltaStr)
             log('getcontent', this.editor.getContents())
             this.editor.setContents(startDelta)
 
@@ -135,9 +135,9 @@ export default {
       log('data:', data)
       this.deltaStr = data
     },
-    async getContentFromUrl(url) {
+    getContentFromUrl(url) {
       log('in getContentFromUrl')
-      return await this.$axios.$get(url)
+      return this.$axios.$get(url)
     },
     configureEditor(change) {
       this.editor.on('text-change', function(delta) {

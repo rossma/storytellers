@@ -5,7 +5,7 @@ const log = debug('app:api/service/user')
 
 export function findUserByOid(userOid) {
   log(`Finding user by oid:[${userOid}]`)
-  let usersRef = DB.collection('users').doc(userOid)
+  const usersRef = DB.collection('users').doc(userOid)
   return usersRef.get()
 }
 

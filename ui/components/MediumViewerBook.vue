@@ -91,7 +91,7 @@ export default {
         }
       })
 
-      EventBus.$on('init-book', src => {
+      EventBus.$on('init-book', () => {
         log('init-book event')
         this.initBook()
       })

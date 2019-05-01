@@ -30,7 +30,7 @@ export function findStoriesByUser(userOid) {
 
 export function findStoryByOid(storyOid) {
   log(`Finding story by oid:[${storyOid}]`)
-  let storiesRef = DB.collection('stories').doc(storyOid)
+  const storiesRef = DB.collection('stories').doc(storyOid)
   return storiesRef.get()
 }
 
@@ -54,15 +54,15 @@ export function deleteCover(storyOid) {
 export function addStory(story, chapter, page) {
   log(`Adding story:`, story, chapter, page)
 
-  let batch = DB.batch()
-  let storiesRef = DB.collection('stories').doc()
+  const batch = DB.batch()
+  const storiesRef = DB.collection('stories').doc()
   batch.set(storiesRef, story)
 
-  let chaptersRef = DB.collection('chapters').doc()
+  const chaptersRef = DB.collection('chapters').doc()
   chapter.storyOid = storiesRef.id
   batch.set(chaptersRef, chapter)
 
-  let pagesRef = DB.collection('pages').doc()
+  const pagesRef = DB.collection('pages').doc()
   page.storyOid = storiesRef.id
   page.chapterOid = chaptersRef.id
   batch.set(pagesRef, page)
@@ -78,6 +78,6 @@ export function addStory(story, chapter, page) {
 
 export function deleteStory(storyOid) {
   log(`Deleting story:[${storyOid}`)
-  let storyRef = DB.collection('stories').doc(storyOid)
+  const storyRef = DB.collection('stories').doc(storyOid)
   return storyRef.delete()
 }

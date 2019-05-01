@@ -5,19 +5,20 @@ module.exports = {
     node: true
   },
   parserOptions: {
-    parser: 'babel-eslint'
+    parser: '@typescript-eslint/parser'
   },
   extends: [
-    'plugin:vue/recommended',
-    'plugin:prettier/recommended'
+    '@nuxtjs',
+    'plugin:prettier/recommended',
+    'prettier/@typescript-eslint'
   ],
-  // required to lint *.vue files
   plugins: [
-    'vue',
-    'prettier'
+    'prettier',
+    '@typescript-eslint'
   ],
   // add your custom rules here
   rules: {
+    '@typescript-eslint/no-unused-vars': 'error',
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
   }
