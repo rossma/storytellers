@@ -2,6 +2,39 @@ import { AUTH } from 'fire/app'
 import debug from 'debug'
 const log = debug('app:middleware/check-auth')
 
+function getUserFromSession(req) {
+  log('[CHECK-AUTH] - checking if user is stored in session')
+  return req.session ? req.session.user : null
+}
+//
+// function getUserFromCookie (req) {
+//   log('[CHECK-AUTH] - checking if user is stored in cookie')
+//   if (!req.headers.cookie) return
+//
+//   const accessTokenCookie = req.headers.cookie.split(';').find(c => c.trim().startsWith('access_token='))
+//   if (!accessTokenCookie) return
+//
+//   const accessToken = accessTokenCookie.split('=')[1]
+//   const decodedToken = jwtDecode(accessToken)
+//   if (!decodedToken) return
+//
+//   return { uid: decodedToken.sub }
+// }
+
+/* get the encoded token stored in cookie */
+function getEncodedIdToken(req) {
+  log('[CHECK-AUTH] - getting decoded ID token')
+  if (!req.headers.cookie) return
+
+  const accessTokenCookie = req.headers.cookie
+    .split(';')
+    .find(c => c.trim().startsWith('access_token='))
+  if (!accessTokenCookie) return
+
+  const accessToken = accessTokenCookie.split('=')[1]
+  return accessToken
+}
+
 export default function({ store, req }) {
   if (process.server && !store.getters['auth/isAuthenticated']) {
     // log('Request Headers:', req.headers)
@@ -41,37 +74,4 @@ export default function({ store, req }) {
       }
     }
   }
-}
-
-function getUserFromSession(req) {
-  log('[CHECK-AUTH] - checking if user is stored in session')
-  return req.session ? req.session.user : null
-}
-//
-// function getUserFromCookie (req) {
-//   log('[CHECK-AUTH] - checking if user is stored in cookie')
-//   if (!req.headers.cookie) return
-//
-//   const accessTokenCookie = req.headers.cookie.split(';').find(c => c.trim().startsWith('access_token='))
-//   if (!accessTokenCookie) return
-//
-//   const accessToken = accessTokenCookie.split('=')[1]
-//   const decodedToken = jwtDecode(accessToken)
-//   if (!decodedToken) return
-//
-//   return { uid: decodedToken.sub }
-// }
-
-/* get the encoded token stored in cookie */
-function getEncodedIdToken(req) {
-  log('[CHECK-AUTH] - getting decoded ID token')
-  if (!req.headers.cookie) return
-
-  const accessTokenCookie = req.headers.cookie
-    .split(';')
-    .find(c => c.trim().startsWith('access_token='))
-  if (!accessTokenCookie) return
-
-  const accessToken = accessTokenCookie.split('=')[1]
-  return accessToken
 }

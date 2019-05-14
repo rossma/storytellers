@@ -1,12 +1,19 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const consola = require('consola')
-const { Nuxt, Builder } = require('nuxt')
+import express from 'express'
+// const express = require('express')
+
+// const bodyParser = require('body-parser')
+import bodyParser from 'body-parser'
+
+// const consola = require('consola')
+import consola from 'consola'
+
+// const { Nuxt, Builder } = require('nuxt')
+import { Nuxt, Builder } from 'nuxt'
 
 const app = express()
 
 const host = process.env.HOST || '0.0.0.0'
-const port = process.env.PORT || 3000
+const port = Number(process.env.PORT) || 3000
 
 const session = require('express-session')
 
@@ -46,7 +53,11 @@ async function start() {
   app.use(nuxt.render)
 
   // Listen the server
-  app.listen(port, host)
+  app.listen(port, host, () => {
+    // tslint:disable-next-line:no-console
+    consola.info(`server started at http://localhost:${port}`)
+    // console.log( `server started at http://localhost:${ port }` );
+  })
 
   consola.ready({
     message: `Server listening on http://${host}:${port}`,

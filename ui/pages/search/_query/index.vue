@@ -1,8 +1,5 @@
 <template>
-  <stories-preview-list
-    :filter-by="filterBy"
-    :show-actions="true"
-  />
+  <stories-preview-list :filter-by="filterBy" :show-actions="true" />
 </template>
 
 <script>

@@ -1,48 +1,49 @@
 import { AUTH, onAuthStateChanged } from 'fire/app'
+import { Auth } from '~/types'
+import { Unsubscribe } from 'firebase'
 import debug from 'debug'
 const log = debug('app:store/auth')
 
-const defaultState = () => ({
-  uid: null,
+const defaultState = (): Auth => ({
+  uid: undefined,
   unsubscribeAuthObserver: null
 })
 
 export const state = defaultState
 
 export const getters = {
-  isAuthenticated(state, getters, rootState) {
+  isAuthenticated(state, getters, rootState): boolean {
     return !!state.uid || !!rootState.user.user.uid
   },
 
-  uid(state) {
+  uid(state): string {
     return state.uid
   }
 }
 
 export const actions = {
-  resetState({ dispatch, commit }) {
+  resetState({ dispatch, commit }): void {
     log('auth reset state')
     dispatch('user/resetState', {}, { root: true })
     commit('resetState')
   },
 
-  initUserOnAuthStateChange({ dispatch, commit, state }) {
+  initUserOnAuthStateChange({ dispatch, commit, state }): Promise<any> {
     log('initUserOnAuthStateChange')
-
-    const user = null
+    let user2: any = null
     return new Promise(async resolve => {
       if (state.unsubscribeAuthObserver) {
         state.unsubscribeAuthObserver()
       }
 
       // const unsubscribe = AUTH.onAuthStateChanged(user => {
-      const unsubscribe = await onAuthStateChanged(user => {
+      const unsubscribe: Unsubscribe = await onAuthStateChanged(user => {
         log('[AUTH ACTION] firebase user has changed', user)
         if (user) {
           dispatch('user/saveUserByUid', user.uid, { root: true })
             .then(() => {
               log('[AUTH ACTION] - finished saving user to store')
-              this.user = user
+              user2 = user
               // resolve(user)
             })
             .catch(error => {
@@ -58,7 +59,7 @@ export const actions = {
         )
         commit('setUnsubscribeAuthObserver', unsubscribe)
       }
-      resolve(user)
+      resolve(user2)
     })
   },
 
@@ -95,20 +96,26 @@ export const actions = {
 
   async login({ dispatch, state }, uid) {
     log('login', uid)
+
     try {
-      const token = await AUTH.currentUser.getIdToken(true)
+      const auth = await AUTH
+      if (auth && auth.currentUser) {
+        const token = auth.currentUser.getIdToken(true)
 
-      const { status } = await this.$axios.$post('/login', {
-        user: state.user,
-        token: token
-      })
+        const { status } = await (this as any).$axios.$post('/login', {
+          user: state.user,
+          token: token
+        })
 
-      log('in login, response:', status)
+        log('in login, response:', status)
 
-      await dispatch('saveUID', uid)
-      // await dispatch('user/saveUserByUid', uid, { root: true })
+        await dispatch('saveUID', uid)
+        // await dispatch('user/saveUserByUid', uid, { root: true })
 
-      dispatch('initUserOnAuthStateChange')
+        dispatch('initUserOnAuthStateChange')
+      } else {
+        // todo
+      }
     } catch (error) {
       log('caught error', error)
       return Promise.reject(new Error('Error logging in user'))
@@ -122,7 +129,7 @@ export const actions = {
 
       await dispatch('resetState')
 
-      const { status } = await this.$axios.post('/logout')
+      const { status } = await (this as any).$axios.post('/logout')
       log('in logout, response:', status)
     } catch (error) {
       log('caught error', error)

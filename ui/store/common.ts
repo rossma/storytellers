@@ -1,7 +1,8 @@
 import debug from 'debug'
+import { Common } from '~/types'
 const log = debug('app:store/common')
 
-const defaultState = () => ({
+const defaultState = (): Common => ({
   sidebar: {
     visible: false
   },
@@ -18,8 +19,8 @@ const defaultState = () => ({
     color: ''
   },
   error: {
-    code: null,
-    level: null,
+    code: undefined,
+    level: undefined,
     message: ''
   }
 })
@@ -27,7 +28,7 @@ const defaultState = () => ({
 export const state = defaultState
 
 export const getters = {
-  sidebar(state) {
+  sidebar(state: Common) {
     return state.sidebar
   }
 }
@@ -64,32 +65,32 @@ export const actions = {
 }
 
 export const mutations = {
-  resetState(state) {
+  resetState(state: Common) {
     log('[COMMON MUTATIONS] - resetState')
     Object.assign(state, defaultState())
   },
 
-  updateSidebar(state, options) {
-    state.sidebar = Object.assign({}, defaultState.sidebar, options)
+  updateSidebar(state: Common, options: any) {
+    state.sidebar = Object.assign({}, defaultState().sidebar, options)
   },
 
-  updateTitle(state, title) {
+  updateTitle(state: Common, title: string) {
     state.title = title
   },
 
-  updateLayout(state, layout) {
+  updateLayout(state: Common, layout: string) {
     state.layout = layout
   },
 
-  updateDialog(state, options) {
-    state.dialog = Object.assign({}, defaultState.dialog, options)
+  updateDialog(state: Common, options: any) {
+    state.dialog = Object.assign({}, defaultState().dialog, options)
   },
 
-  updateSnackbar(state, options) {
-    state.snackbar = Object.assign({}, defaultState.snackbar, options)
+  updateSnackbar(state: Common, options: any) {
+    state.snackbar = Object.assign({}, defaultState().snackbar, options)
   },
 
-  error(state, options) {
-    state.error = Object.assign({}, defaultState.error, options)
+  error(state: Common, options: any) {
+    state.error = Object.assign({}, defaultState().error, options)
   }
 }

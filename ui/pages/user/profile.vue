@@ -2,24 +2,14 @@
   <v-container grid-list-xl>
     <v-layout v-if="user.uid">
       <v-flex xs12>
-        <v-expansion-panel
-          v-model="panel"
-          expand
-        >
+        <v-expansion-panel v-model="panel" expand>
           <v-expansion-panel-content>
             <div slot="header">
               <h2>User Profile</h2>
             </div>
-            <v-layout
-              row
-              wrap
-              text-xs-center
-            >
+            <v-layout row wrap text-xs-center>
               <v-flex xs2>
-                <v-card
-                  dark
-                  flat
-                >
+                <v-card dark flat>
                   <v-tooltip top>
                     <v-avatar
                       v-show="!formUser.photoUrl"
@@ -29,24 +19,15 @@
                       <v-icon dark>
                         account_circle
                       </v-icon>
-                      <input
-                        type="file"
-                        @change="profileImageSelected"
-                      >
+                      <input type="file" @change="profileImageSelected" />
                     </v-avatar>
                     <v-avatar
                       v-show="formUser.photoUrl"
                       slot="activator"
                       class="jbtn-file"
                     >
-                      <img
-                        :src="formUser.photoUrl"
-                        alt="no photo"
-                      >
-                      <input
-                        type="file"
-                        @change="profileImageSelected"
-                      >
+                      <img :src="formUser.photoUrl" alt="no photo" />
+                      <input type="file" @change="profileImageSelected" />
                     </v-avatar>
                     <span>Upload Profile</span>
                   </v-tooltip>
@@ -54,11 +35,7 @@
               </v-flex>
               <v-flex xs10>
                 <v-card flat>
-                  <v-form
-                    ref="form"
-                    v-model="valid"
-                    lazy-validation
-                  >
+                  <v-form ref="form" v-model="valid" lazy-validation>
                     <v-text-field
                       v-model="computedUser.email"
                       label="Email"
@@ -71,21 +48,12 @@
                       label="Display Name"
                       required
                     />
-                    <v-text-field
-                      v-model="formUser.bio"
-                      label="Bio"
-                    />
+                    <v-text-field v-model="formUser.bio" label="Bio" />
                   </v-form>
                 </v-card>
               </v-flex>
-              <v-flex
-                xs12
-                text-xs-right
-              >
-                <v-btn
-                  :disabled="!valid"
-                  @click="submit"
-                >
+              <v-flex xs12 text-xs-right>
+                <v-btn :disabled="!valid" @click="submit">
                   submit
                 </v-btn>
               </v-flex>
@@ -94,10 +62,7 @@
         </v-expansion-panel>
       </v-flex>
     </v-layout>
-    <v-layout
-      row
-      wrap
-    >
+    <v-layout row wrap>
       <v-flex xs12>
         <v-card dark>
           <v-card-title primary>
@@ -169,7 +134,7 @@ export default {
     this.computedUser = this.user.data
   },
   methods: {
-    ...mapActions('user', ['updateUser']),
+    ...mapActions('user.ts', ['updateUser']),
     initFormUser(formValue) {
       if (formValue) {
         this.formUser.photoUrl = formValue.photoUrl

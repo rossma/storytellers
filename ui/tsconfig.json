@@ -1,0 +1,54 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": [
+        "./*"
+      ],
+      "@/*": [
+        "./*"
+      ],
+      "fire/*": [
+        "./firebase/*"
+      ]
+    },
+    "target": "esnext",
+//    "module": "esnext",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": [
+      "esnext",
+      "esnext.asynciterable",
+      "dom"
+    ],
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "allowJs": true,
+    "sourceMap": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "types": [
+      "@types/node",
+      "@types/express",
+      //"@nuxt",
+      "@nuxt/vue-app",
+      "@nuxtjs/axios",
+      "@nuxtjs/toast",
+      "@types/webpack-env",
+      "@types/webpack",
+      "firebase",
+      "vue-toasted",
+      "vue-router"
+    ]
+  },
+  "exclude": [
+    "**/*.spec.ts",
+    "node_modules",
+    ".nuxt",
+    "dist",
+    "dist.js"
+  ]
+}
+

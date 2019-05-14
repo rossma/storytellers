@@ -3,10 +3,7 @@
     <v-layout>
       <v-flex>
         <v-card>
-          <v-card-title
-            primary
-            class="title"
-          >
+          <v-card-title primary class="title">
             Create Story
           </v-card-title>
           <v-card-text>

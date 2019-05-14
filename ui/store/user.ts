@@ -1,8 +1,9 @@
 import { findUserByOid, updateUserDoc } from '~/api/service/user'
 import debug from 'debug'
+import { User } from '~/types'
 const log = debug('app:store/user')
 
-const defaultState = () => ({
+const defaultState = (): User => ({
   user: {}
 })
 

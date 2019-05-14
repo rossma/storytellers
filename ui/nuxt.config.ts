@@ -1,7 +1,6 @@
 import webpack from 'webpack'
 // const webpack = require('webpack')
 
-const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
 const pkg = require('./package')
 
 // const bodyParser = require('body-parser')
@@ -9,9 +8,9 @@ const pkg = require('./package')
 
 require('dotenv').config()
 
-const serviceAccount =
+let serviceAccount =
   process.env.NODE_ENV === 'production'
-    ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_CONFIG)
+    ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_CONFIG || '')
     : require('./firebase/service-account-credentials.json')
 
 module.exports = {
@@ -111,19 +110,6 @@ module.exports = {
   ** Build configuration
   */
   build: {
-    transpile: ['vuetify/lib'],
-    plugins: [
-      new VuetifyLoaderPlugin(),
-      new webpack.ProvidePlugin({
-        'window.Quill': 'quill/dist/quill.js',
-        Quill: 'quill/dist/quill.js'
-      })
-    ],
-    loaders: {
-      stylus: {
-        import: ['~assets/style/variables.styl']
-      }
-    },
     /*
     ** You can extend webpack config here
     */
@@ -145,18 +131,24 @@ module.exports = {
       }
       config.resolve.alias['fire/app'] = `~/firebase/${
         ctx.isClient ? 'app' : 'admin'
-      }.js`
+        }.js`
 
       /* because in utils/constant referencing windows I need to set this, more here: https://github.com/webpack/webpack/issues/6642 */
       config.output.globalObject = 'this'
 
-      config.resolve.alias.vue = 'vue/dist/vue.common'
-    }
+      config.resolve.alias["vue"] = "vue/dist/vue.common";
+    },
+    plugins: [
+      new webpack.ProvidePlugin({
+        'window.Quill': 'quill/dist/quill.js',
+        Quill: 'quill/dist/quill.js'
+      })
+    ]
   },
   env: {
     FIREBASE_CLIENT_API_KEY: process.env.FIREBASE_CLIENT_API_KEY,
     FIREBASE_CLIENT_MESSAGING_SENDER_ID:
-      process.env.FIREBASE_CLIENT_MESSAGING_SENDER_ID,
+    process.env.FIREBASE_CLIENT_MESSAGING_SENDER_ID,
     FIREBASE_CLIENT_PROJECT_ID: process.env.FIREBASE_CLIENT_PROJECT_ID,
     FIREBASE_SERVICE_ACCOUNT_CONFIG: serviceAccount
   }

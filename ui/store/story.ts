@@ -1,8 +1,9 @@
 import { EventBus } from '~/utils/event-bus.js'
 import debug from 'debug'
+import { Story } from '~/types'
 const log = debug('app:store/story')
 
-const defaultState = () => ({
+const defaultState = (): Story => ({
   story: {}
 })
 

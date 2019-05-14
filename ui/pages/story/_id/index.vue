@@ -1,10 +1,6 @@
 <template>
   <v-container grid-list-xl>
-    <v-layout
-      v-if="user.uid && story.id"
-      row
-      wrap
-    >
+    <v-layout v-if="user.uid && story.id" row wrap>
       <v-flex xs12>
         <story-detail
           :author="authorUser"
@@ -92,7 +88,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('page', ['pages']),
+    ...mapGetters('page.ts', ['pages']),
     isEditable: function() {
       return this.page.uid === this.user.uid
     },

@@ -1,7 +1,8 @@
 import debug from 'debug'
+import { Page } from '~/types'
 const log = debug('app:store/page')
 
-const defaultState = () => ({
+const defaultState = (): Page => ({
   pages: [] // total pages in story
 })
 

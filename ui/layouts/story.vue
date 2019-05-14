@@ -1,39 +1,19 @@
 <!--suppress CssUnusedSymbol -->
 <template>
-  <v-app
-    toolbar
-    footer
-    dark
-  >
+  <v-app toolbar footer dark>
     <the-navigation-toolbar>
-      <v-divider
-        slot="nav-drawer"
-        light
-      />
-      <v-list
-        slot="nav-drawer"
-        dense
-      >
+      <v-divider slot="nav-drawer" light />
+      <v-list slot="nav-drawer" dense>
         <v-list-tile>
           <v-list-tile-content>
-            <v-list-tile-title
-              v-if="story"
-              class="title"
-            >
+            <v-list-tile-title v-if="story" class="title">
               {{ story.title }}
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
-      <v-divider
-        slot="nav-drawer"
-        light
-      />
-      <v-list
-        slot="nav-drawer"
-        dense
-        class="grey darken-3"
-      >
+      <v-divider slot="nav-drawer" light />
+      <v-list slot="nav-drawer" dense class="grey darken-3">
         <template>
           <v-list>
             <v-list-group
@@ -41,10 +21,7 @@
               :key="chapter.id"
               :value="chapter.active"
             >
-              <v-list-tile
-                slot="activator"
-                class="chapter-tile"
-              >
+              <v-list-tile slot="activator" class="chapter-tile">
                 <v-list-tile-content @click="enableChapterInput($event)">
                   <v-list-tile-title>
                     <v-text-field
@@ -63,7 +40,7 @@
               <v-list-tile
                 v-for="(page, pageIdx) in chapterPages(chapter.id)"
                 :key="page.id"
-                :class="[page.active ? 'active-page': '', 'link-to-page']"
+                :class="[page.active ? 'active-page' : '', 'link-to-page']"
                 @click="$router.push(`/story/${page.id}`)"
               >
                 <v-list-tile-content>
@@ -72,11 +49,7 @@
                   </v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>
-              <v-layout
-                v-if="isEditable"
-                row
-                align-center
-              >
+              <v-layout v-if="isEditable" row align-center>
                 <v-flex
                   class="add-page-btn"
                   xs12
@@ -89,16 +62,8 @@
             </v-list-group>
           </v-list>
         </template>
-        <v-layout
-          v-if="isEditable"
-          row
-          align-center
-        >
-          <v-flex
-            class="add-chapter-btn"
-            xs12
-            @click="addNewChapter()"
-          >
+        <v-layout v-if="isEditable" row align-center>
+          <v-flex class="add-chapter-btn" xs12 @click="addNewChapter()">
             <v-icon>add</v-icon>
             <span class="ml-2">Chapter</span>
           </v-flex>
@@ -112,7 +77,7 @@
   </v-app>
 </template>
 
-<script>
+<script lang="ts">
 import { mapGetters, mapActions } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
 import ThePageFooter from '~/components/ThePageFooter'
@@ -171,7 +136,7 @@ export default {
     EventBus.$off('storyEvent')
   },
   methods: {
-    ...mapActions('page', ['savePages']),
+    ...mapActions('page.ts', ['savePages']),
     loadChapters(story) {
       findChaptersByStory(story.id)
         .then(chapters => {

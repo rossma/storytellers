@@ -8,7 +8,7 @@ const log = debug('app:mixins/UserStateMixin')
 export default {
   computed: {
     ...mapGetters('auth', ['isAuthenticated', 'uid']),
-    ...mapGetters('user', ['user'])
+    ...mapGetters('user.ts', ['user.ts'])
   },
   watch: {
     user(newValue, oldValue) {

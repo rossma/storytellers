@@ -5,15 +5,9 @@
         <div slot="header">
           <h2>User Profile</h2>
         </div>
-        <v-card
-          dark
-          flat
-        >
+        <v-card dark flat>
           <v-card-title primary-title>
-            <v-layout 
-              row 
-              wrap
-            >
+            <v-layout row wrap>
               <v-flex xs2>
                 <v-avatar
                   v-show="!profileUser.photoUrl"
@@ -24,14 +18,8 @@
                     account_circle
                   </v-icon>
                 </v-avatar>
-                <v-avatar
-                  v-show="profileUser.photoUrl"
-                  size="70"
-                >
-                  <img
-                    :src="profileUser.photoUrl"
-                    alt="no photo"
-                  >
+                <v-avatar v-show="profileUser.photoUrl" size="70">
+                  <img :src="profileUser.photoUrl" alt="no photo" />
                 </v-avatar>
               </v-flex>
               <v-flex xs10>
@@ -45,10 +33,7 @@
         </v-card>
       </v-flex>
     </v-layout>
-    <v-layout
-      row
-      wrap
-    >
+    <v-layout row wrap>
       <v-flex xs12>
         <v-card dark>
           <v-card-title primary>
@@ -112,5 +97,4 @@ export default {
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
