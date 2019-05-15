@@ -6,104 +6,95 @@
     dark
   >
     <the-navigation-toolbar>
-      <v-divider
-        slot="nav-drawer"
-        light
-      />
-      <v-list
-        slot="nav-drawer"
-        dense
-      >
-        <v-list-tile>
-          <v-list-tile-content>
-            <v-list-tile-title
-              v-if="story"
-              class="title"
-            >
-              {{ story.title }}
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
-      <v-divider
-        slot="nav-drawer"
-        light
-      />
-      <v-list
-        slot="nav-drawer"
-        dense
-        class="grey darken-3"
-      >
-        <template>
-          <v-list>
-            <v-list-group
-              v-for="(chapter, chapterIdx) in filteredChapters"
-              :key="chapter.id"
-              :value="chapter.active"
-            >
-              <v-list-tile
-                slot="activator"
-                class="chapter-tile"
+      <template #nav-drawer>
+        <v-divider light />
+        <v-list dense>
+          <v-list-tile>
+            <v-list-tile-content>
+              <v-list-tile-title
+                v-if="story"
+                class="title"
               >
-                <v-list-tile-content @click="enableChapterInput($event)">
-                  <v-list-tile-title>
-                    <v-text-field
-                      :value="chapterDisplayName(chapter, chapterIdx)"
-                      :readonly="!isEditable"
-                      name="chapterNameTxt"
-                      label="Chapter"
-                      class="chapter-name-in-txt"
-                      hide-details
-                      single-line
-                      @blur="saveChapterName($event, chapter)"
-                    />
-                  </v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-              <v-list-tile
-                v-for="(page, pageIdx) in chapterPages(chapter.id)"
-                :key="page.id"
-                :class="[page.active ? 'active-page': '', 'link-to-page']"
-                @click="$router.push(`/story/${page.id}`)"
-              >
-                <v-list-tile-content>
-                  <v-list-tile-title class="grey--text">
-                    {{ chapter.chapter }}-{{ ++pageIdx }}
-                  </v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-              <v-layout
-                v-if="isEditable"
-                row
-                align-center
-              >
-                <v-flex
-                  class="add-page-btn"
-                  xs12
-                  @click="addNewPage(chapter.id)"
-                >
-                  <v-icon>add</v-icon>
-                  <span class="ml-2">Page</span>
-                </v-flex>
-              </v-layout>
-            </v-list-group>
-          </v-list>
-        </template>
-        <v-layout
-          v-if="isEditable"
-          row
-          align-center
+                {{ story.title }}
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+        <v-divider light />
+        <v-list
+          dense
+          class="grey darken-3"
         >
-          <v-flex
-            class="add-chapter-btn"
-            xs12
-            @click="addNewChapter()"
+          <template>
+            <v-list>
+              <v-list-group
+                v-for="(chapter, chapterIdx) in filteredChapters"
+                :key="chapter.id"
+                :value="chapter.active"
+              >
+                <template #activator>
+                  <v-list-tile class="chapter-tile">
+                    <v-list-tile-content @click="enableChapterInput($event)">
+                      <v-list-tile-title>
+                        <v-text-field
+                          :value="chapterDisplayName(chapter, chapterIdx)"
+                          :readonly="!isEditable"
+                          name="chapterNameTxt"
+                          label="Chapter"
+                          class="chapter-name-in-txt"
+                          hide-details
+                          single-line
+                          @blur="saveChapterName($event, chapter)"
+                        />
+                      </v-list-tile-title>
+                    </v-list-tile-content>
+                  </v-list-tile>
+                </template>
+                <v-list-tile
+                  v-for="(page, pageIdx) in chapterPages(chapter.id)"
+                  :key="page.id"
+                  :class="[page.active ? 'active-page': '', 'link-to-page']"
+                  @click="$router.push(`/story/${page.id}`)"
+                >
+                  <v-list-tile-content>
+                    <v-list-tile-title class="grey--text">
+                      {{ chapter.chapter }}-{{ ++pageIdx }}
+                    </v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+                <v-layout
+                  v-if="isEditable"
+                  row
+                  align-center
+                >
+                  <v-flex
+                    class="add-page-btn"
+                    xs12
+                    @click="addNewPage(chapter.id)"
+                  >
+                    <v-icon>add</v-icon>
+                    <span class="ml-2">Page</span>
+                  </v-flex>
+                </v-layout>
+              </v-list-group>
+            </v-list>
+          </template>
+          <v-layout
+            v-if="isEditable"
+            row
+            align-center
           >
-            <v-icon>add</v-icon>
-            <span class="ml-2">Chapter</span>
-          </v-flex>
-        </v-layout>
-      </v-list>
+            <v-flex
+              class="add-chapter-btn"
+              xs12
+              @click="addNewChapter()"
+            >
+              <v-icon>add</v-icon>
+              <span class="ml-2">Chapter</span>
+            </v-flex>
+          </v-layout>
+        </v-list>
+      </template>
     </the-navigation-toolbar>
     <v-content>
       <nuxt />
