@@ -21,33 +21,35 @@
                   flat
                 >
                   <v-tooltip top>
-                    <v-avatar
-                      v-show="!formUser.photoUrl"
-                      slot="activator"
-                      class="pink jbtn-file"
-                    >
-                      <v-icon dark>
-                        account_circle
-                      </v-icon>
-                      <input
-                        type="file"
-                        @change="profileImageSelected"
+                    <template #activator="{ on }">
+                      <v-avatar
+                        v-show="!formUser.photoUrl"
+                        v-on="on"
+                        class="pink jbtn-file"
                       >
-                    </v-avatar>
-                    <v-avatar
-                      v-show="formUser.photoUrl"
-                      slot="activator"
-                      class="jbtn-file"
-                    >
-                      <img
-                        :src="formUser.photoUrl"
-                        alt="no photo"
+                        <v-icon dark>
+                          account_circle
+                        </v-icon>
+                        <input
+                          type="file"
+                          @change="profileImageSelected"
+                        >
+                      </v-avatar>
+                      <v-avatar
+                        v-show="formUser.photoUrl"
+                        v-on="on"
+                        class="jbtn-file"
                       >
-                      <input
-                        type="file"
-                        @change="profileImageSelected"
-                      >
-                    </v-avatar>
+                        <img
+                          :src="formUser.photoUrl"
+                          alt="no photo"
+                        >
+                        <input
+                          type="file"
+                          @change="profileImageSelected"
+                        >
+                      </v-avatar>
+                    </template>
                     <span>Upload Profile</span>
                   </v-tooltip>
                 </v-card>

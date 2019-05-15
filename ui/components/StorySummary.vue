@@ -35,26 +35,30 @@
         </v-card-text>
       </v-card>
       <v-tooltip top>
-        <v-btn
-          v-if="storyExists && editable"
-          slot="activator"
-          color="red"
-          @click.stop="deleteDialog = true"
-        >
-          delete
-        </v-btn>
-        <span>Delete Story</span>
+        <template #activator="{ on }">
+          <v-btn
+            v-if="storyExists && editable"
+            v-on="on"
+            color="red"
+            @click.stop="deleteDialog = true"
+          >
+            delete
+          </v-btn>
+          <span>Delete Story</span>
+        </template>
       </v-tooltip>
       <v-tooltip top>
-        <v-btn
-          v-if="editable"
-          slot="activator"
-          :disabled="!valid"
-          @click="submit"
-        >
-          save
-        </v-btn>
-        <span>Save Story</span>
+        <template #activator="{ on }">
+          <v-btn
+            v-if="editable"
+            v-on="on"
+            :disabled="!valid"
+            @click="submit"
+          >
+            save
+          </v-btn>
+          <span>Save Story</span>
+        </template>
       </v-tooltip>
     </v-form>
     <story-summary-delete-dialog

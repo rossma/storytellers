@@ -7,10 +7,6 @@
       disable-route-watcher
       dark
     >
-      <v-divider
-        slot="activator"
-        light
-      />
       <v-avatar
         v-if="photoUrl"
       >
@@ -33,12 +29,13 @@
           :prepend-icon="'account_circle'"
           no-action
         >
-          <v-list-tile slot="activator">
-            <v-list-tile-content>
-              <v-list-tile-title>{{ username }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-
+          <template #activator>
+            <v-list-tile>
+              <v-list-tile-content>
+                <v-list-tile-title>{{ username }}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </template>
           <v-list-tile
             to="/user/profile"
             @click="updateSidebar({ visible: false })"
@@ -95,16 +92,18 @@
         />
       </v-layout>
       <v-tooltip left>
-        <v-btn
-          slot="activator"
-          fab
-          dark
-          small
-          color="pink darken-2"
-          to="/story/create"
-        >
-          <v-icon>create</v-icon>
-        </v-btn>
+        <template #activator="{ on }">
+          <v-btn
+            fab
+            dark
+            small
+            v-on="on"
+            color="pink darken-2"
+            to="/story/create"
+          >
+            <v-icon>create</v-icon>
+          </v-btn>
+        </template>
         <span>Create Story</span>
       </v-tooltip>
     </v-toolbar>

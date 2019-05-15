@@ -29,20 +29,20 @@ export const actions = {
   initUserOnAuthStateChange({ dispatch, commit, state }) {
     log('initUserOnAuthStateChange')
 
-    const user = null
+    let user = null
     return new Promise(async resolve => {
       if (state.unsubscribeAuthObserver) {
         state.unsubscribeAuthObserver()
       }
 
       // const unsubscribe = AUTH.onAuthStateChanged(user => {
-      const unsubscribe = await onAuthStateChanged(user => {
-        log('[AUTH ACTION] firebase user has changed', user)
-        if (user) {
-          dispatch('user/saveUserByUid', user.uid, { root: true })
+      const unsubscribe = await onAuthStateChanged(u => {
+        log('[AUTH ACTION] firebase user has changed', u)
+        if (u) {
+          dispatch('user/saveUserByUid', u.uid, { root: true })
             .then(() => {
               log('[AUTH ACTION] - finished saving user to store')
-              this.user = user
+              user = u
               // resolve(user)
             })
             .catch(error => {

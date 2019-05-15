@@ -124,8 +124,6 @@
             />
             <v-btn
               v-if="editable && isRichViewer"
-              slot="activator"
-              dark
               flat
               @click="previewRichText"
             >
@@ -136,7 +134,6 @@
             </v-btn>
             <v-btn
               v-if="editable"
-              slot="activator"
               dark
               flat
               @click="saveMediaFile"
@@ -148,12 +145,6 @@
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <!--<v-card-text-->
-        <!--style="border: 4px solid pink;"-->
-        <!--fill-height-->
-        <!--class="text-xs-center">-->
-        <!--<v-responsive-->
-        <!--style="border: 4px solid pink;">-->
         <v-layout
           justify-center
           dark

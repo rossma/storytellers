@@ -9,44 +9,50 @@
       fixed
       right
     >
-      <v-btn
-        v-if="canPublish() || canDeletePage()"
-        slot="activator"
-        v-model="dial.fab"
-        color="indigo darken-2"
-        dark
-        fab
-        hover
-      >
-        <v-icon>launch</v-icon>
-      </v-btn>
-      <v-tooltip left>
+      <template #activator="{ on }">
         <v-btn
-          v-if="canPublish()"
-          slot="activator"
-          color="green"
-          fab
+          v-if="canPublish() || canDeletePage()"
+          v-on="on"
+          v-model="dial.fab"
+          color="indigo darken-2"
           dark
-          small
-          @click="publishDialog = true"
+          fab
+          hover
         >
-          <v-icon>publish</v-icon>
+          <v-icon>launch</v-icon>
         </v-btn>
-        <span>Publish Page</span>
+      </template>
+      <v-tooltip left>
+        <template #activator="{ on }">
+          <v-btn
+            v-if="canPublish()"
+            v-on="on"
+            color="green"
+            fab
+            dark
+            small
+            @click="publishDialog = true"
+          >
+            <v-icon>publish</v-icon>
+          </v-btn>
+          <span>Publish Page</span>
+        </template>
       </v-tooltip>
       <v-tooltip left>
-        <v-btn
-          v-if="canDeletePage()"
-          slot="activator"
-          color="red"
-          fab
-          dark
-          small
-          @click.stop="deletePageDialog = true"
-        >
-          <v-icon>delete</v-icon>
-        </v-btn>
-        <span>Delete Page</span>
+        <template #activator="{ on }">
+          <v-btn
+            v-if="canDeletePage()"
+            v-on="on"
+            color="red"
+            fab
+            dark
+            small
+            @click.stop="deletePageDialog = true"
+          >
+            <v-icon>delete</v-icon>
+          </v-btn>
+          <span>Delete Page</span>
+        </template>
       </v-tooltip>
     </v-speed-dial>
     <v-dialog
