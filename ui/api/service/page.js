@@ -35,7 +35,7 @@ export function findPagesByStory(storyOid) {
 
 export function findPageByOid(pageOid) {
   log(`Finding page by oid:[${pageOid}]`)
-  let pagesRef = DB.collection('pages').doc(pageOid)
+  const pagesRef = DB.collection('pages').doc(pageOid)
   return pagesRef.get()
 }
 
@@ -54,11 +54,11 @@ export function updatePage(pageOid, page) {
 export function publishPage(preview) {
   log(`Publishing page:[${preview.pageOid} for story:[${preview.storyOid}]}]`)
 
-  let batch = DB.batch()
-  let pageRef = DB.collection('pages').doc(preview.pageOid)
+  const batch = DB.batch()
+  const pageRef = DB.collection('pages').doc(preview.pageOid)
   batch.update(pageRef, { public: true })
 
-  let previewsRef = DB.collection('previews').doc()
+  const previewsRef = DB.collection('previews').doc()
   batch.set(previewsRef, preview)
 
   return batch.commit()
@@ -66,6 +66,6 @@ export function publishPage(preview) {
 
 export function deletePage(pageOid) {
   log(`Deleting page:[${pageOid}]`)
-  let pageRef = DB.collection('pages').doc(pageOid)
+  const pageRef = DB.collection('pages').doc(pageOid)
   return pageRef.delete()
 }

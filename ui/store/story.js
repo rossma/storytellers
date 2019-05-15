@@ -19,7 +19,7 @@ export const actions = {
     commit('resetState')
   },
 
-  async saveStory({ commit }, storyPayload) {
+  saveStory({ commit }, storyPayload) {
     commit('saveStory', storyPayload)
     EventBus.$emit('storyEvent', storyPayload)
   }

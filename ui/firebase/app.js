@@ -4,6 +4,7 @@ import 'firebase/storage'
 import 'firebase/firestore'
 import config from '~/firebase/config'
 import debug from 'debug'
+
 const log = debug('app:firebase/app')
 
 log(
@@ -18,7 +19,7 @@ const firebaseApp = !firebase.apps.length
 export default firebaseApp
 
 export const DB = firebaseApp.firestore()
-const settings = { /* your settings... */ timestampsInSnapshots: true }
+const settings = { timestampsInSnapshots: true }
 DB.settings(settings)
 
 export const STORAGE = firebaseApp.storage()
@@ -29,7 +30,7 @@ export const STORAGE_REF = firebaseApp.storage().ref()
 
 export const AUTH = firebaseApp.auth()
 
-export async function onAuthStateChanged(nextOrObserver) {
-  log('[FIREBASE APP] - checking if onAuthStateChanged')
+export function onAuthStateChanged(nextOrObserver) {
+  log(`[FIREBASE APP] - checking if onAuthStateChanged: ${nextOrObserver}`)
   return firebaseApp.auth().onAuthStateChanged(nextOrObserver)
 }

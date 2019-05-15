@@ -172,9 +172,9 @@ export default {
     ...mapActions('user', ['updateUser']),
     initFormUser(formValue) {
       if (formValue) {
-        ;(this.formUser.photoUrl = formValue.photoUrl),
-          (this.formUser.displayName = formValue.displayName),
-          (this.formUser.bio = formValue.bio)
+        this.formUser.photoUrl = formValue.photoUrl
+        this.formUser.displayName = formValue.displayName
+        this.formUser.bio = formValue.bio
       }
     },
     profileImageSelected(e) {

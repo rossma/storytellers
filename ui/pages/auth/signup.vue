@@ -77,7 +77,7 @@ export default {
           .auth()
           .createUserWithEmailAndPassword(this.email.trim(), this.password)
         log('successful user creation in firebase', firebaseUser.user.uid)
-        let user = {
+        const user = {
           uid: firebaseUser.user.uid,
           email: this.email.trim(),
           created: Date.now()

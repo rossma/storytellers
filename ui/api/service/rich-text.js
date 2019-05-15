@@ -8,7 +8,7 @@ const uuidv4 = require('uuid/v4')
 
 function uploadRichTextToStorage(json, path) {
   log(`Uploading richText:[${path}] to storage`)
-  let uploadTask = STORAGE_REF.child(path).putString(
+  const uploadTask = STORAGE_REF.child(path).putString(
     btoa(JSON.stringify(json)),
     'base64'
   )
@@ -38,8 +38,8 @@ export function uploadPageRichText(pageOid, richTextJson) {
           created: Date.now()
         }
       }
-      let batch = DB.batch()
-      let pageRef = DB.collection('pages').doc(pageOid)
+      const batch = DB.batch()
+      const pageRef = DB.collection('pages').doc(pageOid)
       batch.update(pageRef, pageRichTextData)
 
       return batch.commit().then(() => {

@@ -1,6 +1,7 @@
 import webpack from 'webpack'
 // const webpack = require('webpack')
 
+const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
 const pkg = require('./package')
 
 // const bodyParser = require('body-parser')
@@ -8,7 +9,7 @@ const pkg = require('./package')
 
 require('dotenv').config()
 
-let serviceAccount =
+const serviceAccount =
   process.env.NODE_ENV === 'production'
     ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_CONFIG)
     : require('./firebase/service-account-credentials.json')
@@ -110,6 +111,19 @@ module.exports = {
   ** Build configuration
   */
   build: {
+    transpile: ['vuetify/lib'],
+    plugins: [
+      new VuetifyLoaderPlugin(),
+      new webpack.ProvidePlugin({
+        'window.Quill': 'quill/dist/quill.js',
+        Quill: 'quill/dist/quill.js'
+      })
+    ],
+    loaders: {
+      stylus: {
+        import: ['~assets/style/variables.styl']
+      }
+    },
     /*
     ** You can extend webpack config here
     */
@@ -136,14 +150,8 @@ module.exports = {
       /* because in utils/constant referencing windows I need to set this, more here: https://github.com/webpack/webpack/issues/6642 */
       config.output.globalObject = 'this'
 
-      config.resolve.alias["vue"] = "vue/dist/vue.common";
-    },
-    plugins: [
-      new webpack.ProvidePlugin({
-        'window.Quill': 'quill/dist/quill.js',
-        Quill: 'quill/dist/quill.js'
-      })
-    ]
+      config.resolve.alias.vue = 'vue/dist/vue.common'
+    }
   },
   env: {
     FIREBASE_CLIENT_API_KEY: process.env.FIREBASE_CLIENT_API_KEY,

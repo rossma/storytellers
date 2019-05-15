@@ -92,7 +92,7 @@ export default {
     }
   },
   watch: {
-    user: function(val) {
+    user: function() {
       if (this.isPrivateUserProfile && this.user.uid) {
         this.fetchUserProfileStories()
       }
@@ -131,7 +131,7 @@ export default {
                 }
               }
 
-              let cover = storyCover()
+              const cover = storyCover()
 
               return {
                 chapterOid: cover.chapterOid,
@@ -158,7 +158,7 @@ export default {
       findPreviewsByFilter(this.filterBy)
         .then(previewsSnapshot => {
           this.previews = previewsSnapshot
-          if (!this.previews || this.previews.length == 0) {
+          if (!this.previews || this.previews.length === 0) {
             this.$toast.info('Sorry, there are no results based om you search')
           }
         })
@@ -175,7 +175,7 @@ export default {
         // in the event no page id is defined in cover take the first page
         findPagesByStory(storyOid)
           .then(pages => {
-            let page = pages.sort((a, b) => a.page - b.page)[0]
+            const page = pages.sort((a, b) => a.page - b.page)[0]
             if (page) {
               this.$router.push(`/story/${page.id}`)
             } else {

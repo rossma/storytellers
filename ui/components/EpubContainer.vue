@@ -131,12 +131,12 @@ export default {
         log('my display:', display)
 
         this.book.ready.then(() => {
-          var keyListener = e => {
-            if ((e.keyCode || e.which) == 37) {
+          const keyListener = e => {
+            if ((e.keyCode || e.which) === 37) {
               this.prevPage()
             }
 
-            if ((e.keyCode || e.which) == 39) {
+            if ((e.keyCode || e.which) === 39) {
               this.nextPage()
             }
           }

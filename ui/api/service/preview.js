@@ -40,7 +40,11 @@ export function findPreviewsByFilter(filterBy) {
 
 export function findPreviewsByStory(storyOid) {
   log(`Finding previews by story:[${storyOid}]`)
-  let previewsRef = DB.collection('previews').where('storyOid', '==', storyOid)
+  const previewsRef = DB.collection('previews').where(
+    'storyOid',
+    '==',
+    storyOid
+  )
   return findPreviews(previewsRef)
 }
 

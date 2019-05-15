@@ -11,7 +11,7 @@ const uuidv4 = require('uuid/v4')
 
 function uploadBookToStorage(file, path, metadata) {
   log(`Uploading book:[${path}] to storage`)
-  let uploadTask = STORAGE_REF.child(path).put(file, metadata)
+  const uploadTask = STORAGE_REF.child(path).put(file, metadata)
 
   return uploadTask.then(snapshot => {
     log('Uploaded', snapshot.totalBytes, 'bytes.')
@@ -26,7 +26,7 @@ export function uploadPageBook(pageOid, bookFile) {
   const bookExt = bookFile.name.split('.').pop()
   const filename = `${bookOid}.${bookExt}`
 
-  let metadata = {
+  const metadata = {
     contentType: bookFile.type
   }
 
@@ -40,8 +40,8 @@ export function uploadPageBook(pageOid, bookFile) {
           created: Date.now()
         }
       }
-      let batch = DB.batch()
-      let pageRef = DB.collection('pages').doc(pageOid)
+      const batch = DB.batch()
+      const pageRef = DB.collection('pages').doc(pageOid)
       batch.update(pageRef, pageBookData)
 
       return batch.commit().then(() => {
