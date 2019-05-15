@@ -11,7 +11,7 @@ const port = process.env.PORT || 3000
 const session = require('express-session')
 
 // Import and Set Nuxt.js options
-const config = require('../nuxt.config.ts')
+const config = require('../nuxt.config.js')
 const auth = require('./auth')(app)
 config.dev = !(process.env.NODE_ENV === 'production')
 
