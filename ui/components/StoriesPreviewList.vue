@@ -13,41 +13,10 @@
         sm6
         md3
       >
-        <v-hover>
-          <v-card
-            slot-scope="{ hover }"
-            :class="`elevation-${hover ? 12 : 2}`"
-            class="mx-auto preview-card"
-          >
-            <div
-              class="preview-detail-link"
-              @click="showDetail(preview.storyOid, preview.pageOid)"
-            >
-              <v-img
-                :src="preview.previewImageUrl"
-                height="300px"
-              />
-              <v-card-title primary-title>
-                <div>
-                  <div class="headline truncate">
-                    {{ preview.title }}
-                  </div>
-                  <span class="grey--text truncate">{{ preview.summary }}</span>
-                </div>
-              </v-card-title>
-            </div>
-            <v-card-actions
-              v-show="showActions"
-              class="black"
-            >
-              <h3>
-                <nuxt-link :to="'/user/' + preview.uid">
-                  {{ preview.userDisplayName || 'Anon' }}
-                </nuxt-link>
-              </h3>
-            </v-card-actions>
-          </v-card>
-        </v-hover>
+        <stories-preview-card
+          :preview="preview"
+          :show-actions="showActions"
+        />
       </v-flex>
     </v-layout>
   </v-container>
@@ -55,14 +24,17 @@
 
 <script>
 import { findStoriesByUser } from '~/api/service/story'
-import { findPagesByStory } from '~/api/service/page'
 import { findPreviewsByFilter } from '~/api/service/preview'
+import StoriesPreviewCard from '~/components/StoriesPreviewCard'
 import UserStateMixin from '~/mixins/UserStateMixin'
 import debug from 'debug'
 const log = debug('app:components/StoriesPreviewList')
 
 export default {
   name: 'StoriesPreviewList',
+  components: {
+    StoriesPreviewCard
+  },
   mixins: [UserStateMixin],
   props: {
     filterBy: {
@@ -166,39 +138,7 @@ export default {
           log(error)
           this.$toast.error(error.message)
         })
-    },
-    showDetail(storyOid, pageOid) {
-      log(`storyOid:${storyOid} pageOid:${pageOid}`)
-      if (pageOid) {
-        this.$router.push(`/story/${pageOid}`)
-      } else {
-        // in the event no page id is defined in cover take the first page
-        findPagesByStory(storyOid)
-          .then(pages => {
-            const page = pages.sort((a, b) => a.page - b.page)[0]
-            if (page) {
-              this.$router.push(`/story/${page.id}`)
-            } else {
-              this.$toast.error('Page does not exist')
-            }
-          })
-          .catch(error => {
-            this.$toast.error(error.message)
-          })
-      }
     }
   }
 }
 </script>
-
-<style>
-.preview-detail-link {
-  cursor: pointer;
-}
-
-.preview-card {
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-}
-</style>

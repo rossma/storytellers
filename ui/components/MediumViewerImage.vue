@@ -1,16 +1,15 @@
 <template>
   <v-layout
     justify-center
-    style="border:1px solid blue;"
     class="medium-viewer-image-container"
   >
     <img
-      v-show="imageSrc"
-      :src="imageSrc"
+      v-show="mutableSrc"
+      :src="mutableSrc"
       class="card-img-top"
     >
     <img
-      v-show="!imageSrc"
+      v-show="!mutableSrc"
       class="card-img-top"
       src="/img/missing-image.png"
     >
@@ -18,20 +17,65 @@
 </template>
 
 <script>
+import { EventBus } from '~/utils/event-bus.js'
+
+import debug from 'debug'
+import MediumViewerMixin from '../mixins/MediumViewerMixin'
+const log = debug('app:components/MediumViewerImage')
+
 export default {
   name: 'MediumViewerImage',
   components: {},
+  mixins: [MediumViewerMixin],
   props: {
-    imageSrc: {
+    origin: {
       type: String,
-      required: true
+      default: 'page'
+    },
+    src: {
+      type: String,
+      default: ''
+    }
+  },
+  watch: {
+    src: function(newValue, oldValue) {
+      this.mutableSrc = newValue
     }
   },
   data() {
-    return {}
+    return {
+      mutableSrc: null
+    }
   },
-  computed: {},
-  methods: {}
+  mounted: function() {
+    this.$nextTick(() => {
+      log('in medium viewer image mounted', this.src)
+
+      this.mutableSrc = this.src
+
+      EventBus.$on('upload-preview-updated', ({ origin, file }) => {
+        log('in preview upload', this.origin, origin, this.isImage(file.type))
+        if (this.origin === origin && this.isImage(file.type)) {
+          log('origins are the same and is an image')
+          this.init(file)
+        }
+      })
+    })
+  },
+  beforeDestroy() {
+    EventBus.$off('upload-preview-updated')
+  },
+  methods: {
+    init(file) {
+      const reader = new FileReader()
+
+      reader.onloadend = () => {
+        this.mutableSrc = reader.result
+      }
+
+      reader.readAsDataURL(file)
+    }
+  }
 }
 </script>
 <style scoped>

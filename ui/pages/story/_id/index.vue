@@ -16,7 +16,6 @@
       <v-flex xs12>
         <page-detail
           :page="page"
-          :editable="isEditable"
           :story-cover="story.cover"
           :user="user"
         />
@@ -73,12 +72,15 @@ export default {
           filename: null,
           ref: null
         },
+        invite: false,
         likes: [],
         number: null,
+        public: false,
         richText: {
           filename: null,
           ref: null
-        }
+        },
+        previewOid: null
       },
       mutablePages: [],
       story: {
@@ -86,8 +88,6 @@ export default {
         title: null,
         summary: null,
         cover: {}
-        // ,
-        // ext: {}
       }
     }
   },
@@ -157,38 +157,60 @@ export default {
   methods: {
     ...mapActions('story', ['saveStory']),
     loadPage(pageOid) {
+      // todo clean up this logic
       if (this.user.uid) {
         findPageByOid(pageOid)
           .then(pageDoc => {
             if (pageDoc.exists) {
-              this.page = {
-                id: pageOid,
-                book: { ...pageDoc.data().book },
-                chapterOid: pageDoc.data().chapterOid,
-                comments: pageDoc.data().comments
-                  ? clonedeep(pageDoc.data().comments)
-                  : [],
-                image: { ...pageDoc.data().image },
-                likes: pageDoc.data().likes,
-                page: pageDoc.data().page,
-                public: pageDoc.data().public,
-                richText: pageDoc.data().richText,
-                storyOid: pageDoc.data().storyOid,
-                uid: pageDoc.data().uid
-              }
+              log('parents page:', pageDoc.data().parentPagesOid)
 
-              if (this.isAuthorised()) {
-                this.initAuthorUser(this.page.uid)
-                this.initStory(this.page.storyOid)
-                this.initChapter(this.page.chapterOid)
+              if (pageDoc.data().parentPagesOid) {
+                // find parent page to use to init story
+                findPageByOid(pageDoc.data().parentPagesOid)
+                  .then(parentPageDoc => {
+                    if (parentPageDoc.exists) {
+                      this.initPage(parentPageDoc.id, parentPageDoc.data())
+                    } else {
+                      this.$toast.error('Page does not exist')
+                    }
+                  })
+                  .catch(error => log('err', error))
               } else {
-                this.$toast.error('User not authorised to view this page')
+                this.initPage(pageDoc.id, pageDoc.data())
               }
             } else {
               this.$toast.error('Page does not exist')
             }
           })
           .catch(error => log('err', error))
+      }
+    },
+    initPage(pageOid, pageData) {
+      log('in init page:', pageOid)
+      this.page = {
+        id: pageOid,
+        book: { ...pageData.book },
+        chapterOid: pageData.chapterOid,
+        comments: pageData.comments ? clonedeep(pageData.comments) : [],
+        image: { ...pageData.image },
+        likes: pageData.likes,
+        page: pageData.page,
+        invite: pageData.invite,
+        public: pageData.public,
+        richText: pageData.richText,
+        storyOid: pageData.storyOid,
+        uid: pageData.uid,
+        previewOid: pageData.previewRef ? pageData.previewRef.id : undefined
+      }
+
+      log('this page:', this.page)
+
+      if (this.isAuthorised()) {
+        this.initAuthorUser(this.page.uid)
+        this.initStory(this.page.storyOid)
+        this.initChapter(this.page.chapterOid)
+      } else {
+        this.$toast.error('User not authorised to view this page')
       }
     },
     initAuthorUser(userOid) {

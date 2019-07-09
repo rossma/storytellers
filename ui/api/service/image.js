@@ -1,44 +1,21 @@
-// import 'firebase/storage' // this is needed if page is refreshed otherwise error is thrown: ...storage() is not a function
-// import firebaseApp from 'fire/app'
-import { DB, STORAGE_REF } from 'fire/app'
+import { DB } from 'fire/app'
 import debug from 'debug'
+import { uploadFileToStorage } from './storage'
+
 const log = debug('app:api/service/image')
 
-const uuidv4 = require('uuid/v4')
-
-function uploadImageToStorage(file, path, metadata) {
-  log(`Uploading image:[${path}] to storage`)
-  const uploadTask = STORAGE_REF.child(path).put(file, metadata)
-
-  return uploadTask.then(snapshot => {
-    log('Uploaded', snapshot.totalBytes, 'bytes.')
-    log('Metadata:', snapshot.metadata)
-    log('DownloadURL:', snapshot.downloadURL)
-    return snapshot.ref.getDownloadURL()
-  })
-}
-
 export function uploadPageImage(pageOid, currentImageOid, imageFile) {
-  log(`Upload page image for page oid:[${pageOid}]`)
+  log(
+    `Upload page image for page oid:[${pageOid}] current image oid:[${currentImageOid}]`
+  )
 
-  const imageOid = uuidv4()
-  const imageExt = imageFile.name.split('.').pop()
-
-  const metadata = {
-    contentType: imageFile.type
-  }
-
-  return uploadImageToStorage(
-    imageFile,
-    `images/original/${imageOid}.${imageExt}`,
-    metadata
-  ).then(downloadUrl => {
-    log('in here download URL:', downloadUrl)
+  return uploadImage(imageFile).then(result => {
+    log('in here download image URL:', result)
 
     const pageImageData = {
       image: {
-        filename: `${imageOid}.${imageExt}`,
-        ref: downloadUrl,
+        filename: result.filename,
+        ref: result.downloadUrl,
         created: Date.now()
       }
     }
@@ -49,8 +26,8 @@ export function uploadPageImage(pageOid, currentImageOid, imageFile) {
       batch.delete(currentImageRef)
     }
 
-    const pageRef = DB.collection('pages').doc(pageOid)
-    batch.update(pageRef, pageImageData)
+    const pagesRef = DB.collection('pages').doc(pageOid)
+    batch.update(pagesRef, pageImageData)
 
     return batch.commit().then(() => {
       return Promise.resolve({
@@ -61,14 +38,14 @@ export function uploadPageImage(pageOid, currentImageOid, imageFile) {
   })
 }
 
-export function uploadProfileImage(imageFile, metadata, userOid) {
-  log(`Uploading profile image for user oid:[${userOid}]`)
+export function uploadImage(imageFile) {
+  log(`Uploading image`)
+  return uploadFileToStorage(imageFile, 'images/original')
+}
 
-  return uploadImageToStorage(
-    imageFile,
-    `images/profiles/${userOid}/${imageFile.name}`,
-    metadata
-  )
+export function uploadProfileImage(imageFile, userOid) {
+  log(`Uploading profile image for user oid:[${userOid}]`)
+  return uploadFileToStorage(imageFile, `images/profiles/${userOid}`)
 }
 
 export function findImageByOid(imageOid) {

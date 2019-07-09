@@ -35,7 +35,7 @@
           <v-divider class="mt-5" />
           <v-card-actions>
             <v-btn
-              color="pink darken-1"
+              color="primary"
               type="submit"
             >
               Sign In

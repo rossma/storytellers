@@ -45,19 +45,25 @@
         </v-card>
       </v-flex>
     </v-layout>
-    <v-layout
-      row
-      wrap
-    >
+    <v-layout row wrap justify-center>
       <v-flex xs12>
+        <v-toolbar color="info" dark>
+          <v-toolbar-side-icon>
+            <v-icon
+              large
+              left
+              class="toolbar-icon"
+            >
+              portrait
+            </v-icon>
+          </v-toolbar-side-icon>
+          <v-toolbar-title>{{ profileUser.displayName }}'s Published Pages</v-toolbar-title>
+        </v-toolbar>
         <v-card dark>
-          <v-card-title primary>
-            <h2>User Published Pages</h2>
-          </v-card-title>
           <stories-preview-list
             :filter-by="previewAuthorFilter"
             :is-public-user-profile="true"
-          />
+            />
         </v-card>
       </v-flex>
     </v-layout>

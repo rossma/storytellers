@@ -24,8 +24,8 @@
                     <template #activator="{ on }">
                       <v-avatar
                         v-show="!formUser.photoUrl"
-                        v-on="on"
                         class="pink jbtn-file"
+                        v-on="on"
                       >
                         <v-icon dark>
                           account_circle
@@ -37,8 +37,8 @@
                       </v-avatar>
                       <v-avatar
                         v-show="formUser.photoUrl"
-                        v-on="on"
                         class="jbtn-file"
+                        v-on="on"
                       >
                         <img
                           :src="formUser.photoUrl"
@@ -96,15 +96,21 @@
         </v-expansion-panel>
       </v-flex>
     </v-layout>
-    <v-layout
-      row
-      wrap
-    >
+    <v-layout row wrap justify-center>
       <v-flex xs12>
+        <v-toolbar color="info" dark>
+          <v-toolbar-side-icon>
+            <v-icon
+              large
+              left
+              class="toolbar-icon"
+            >
+              portrait
+            </v-icon>
+          </v-toolbar-side-icon>
+          <v-toolbar-title>My Stories</v-toolbar-title>
+        </v-toolbar>
         <v-card dark>
-          <v-card-title primary>
-            <h2>My Stories</h2>
-          </v-card-title>
           <stories-preview-list
             :filter-by="previewAuthorFilter"
             :is-private-user-profile="true"
@@ -192,26 +198,21 @@ export default {
         this.$toast.error('No profile image selected')
       }
     },
-    uploadProfileImage() {
+    uploadProfile() {
       if (this.newProfileImageFile) {
-        const metadata = {
-          contentType: this.newProfileImageFile.type
-        }
-        return uploadProfileImage(
-          this.newProfileImageFile,
-          metadata,
-          this.user.uid
-        ).then(downloadUrl => {
-          this.newProfileImageFile = null
-          return downloadUrl
-        })
+        return uploadProfileImage(this.newProfileImageFile, this.user.uid).then(
+          downloadUrl => {
+            this.newProfileImageFile = null
+            return downloadUrl
+          }
+        )
       } else {
         return Promise.resolve(this.formUser.photoUrl || '')
       }
     },
     submit() {
       if (this.$refs.form.validate()) {
-        this.uploadProfileImage().then(downloadUrl => {
+        this.uploadProfile().then(downloadUrl => {
           log('downloadUrl:', downloadUrl)
 
           const userPart = {

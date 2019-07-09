@@ -9,10 +9,9 @@
       fixed
       right
     >
-      <template #activator="{ on }">
+      <template #activator>
         <v-btn
-          v-if="canPublish() || canDeletePage()"
-          v-on="on"
+          v-if="canPublish() || canDeletePage() || canInvite()"
           v-model="dial.fab"
           color="indigo darken-2"
           dark
@@ -26,33 +25,49 @@
         <template #activator="{ on }">
           <v-btn
             v-if="canPublish()"
-            v-on="on"
-            color="green"
+            primary
             fab
             dark
             small
+            v-on="on"
             @click="publishDialog = true"
           >
             <v-icon>publish</v-icon>
           </v-btn>
-          <span>Publish Page</span>
         </template>
+        <span>Publish Page</span>
+      </v-tooltip>
+      <v-tooltip left>
+        <template #activator="{ on }">
+          <v-btn
+            v-if="canInvite()"
+            color="secondary"
+            fab
+            dark
+            small
+            v-on="on"
+            @click="publishDialog = true"
+          >
+            <v-icon>group_add</v-icon>
+          </v-btn>
+        </template>
+        <span>Invite Collaboration</span>
       </v-tooltip>
       <v-tooltip left>
         <template #activator="{ on }">
           <v-btn
             v-if="canDeletePage()"
-            v-on="on"
             color="red"
             fab
             dark
             small
+            v-on="on"
             @click.stop="deletePageDialog = true"
           >
             <v-icon>delete</v-icon>
           </v-btn>
-          <span>Delete Page</span>
         </template>
+        <span>Delete Page</span>
       </v-tooltip>
     </v-speed-dial>
     <v-dialog
@@ -87,8 +102,9 @@
       :page="page"
       :uid="user.uid"
       :user-display-name="user.data.displayName ? user.data.displayName : 'Anon'"
+      :is-published="isPublicPage"
       @close="publishDialog = false"
-      @published="isPublicPage = true"
+      @published="onPublishComplete"
     />
   </div>
 </template>
@@ -129,6 +145,7 @@ export default {
         hover: false,
         transition: 'slide-y-reverse-transition'
       },
+      isInvitePage: this.page.invite,
       isPublicPage: this.page.public
     }
   },
@@ -136,12 +153,23 @@ export default {
     canPublish() {
       return !this.isPublicPage && this.page.uid === this.user.uid
     },
+    canInvite() {
+      return (
+        !this.isInvitePage &&
+        this.isPublicPage &&
+        this.page.uid === this.user.uid
+      )
+    },
     deleteCurrentPage() {
       this.deletePageDialog = false
       this.$emit('delete-page', this.page)
     },
     canDeletePage() {
       return this.editable && this.totalStoryPages > 1
+    },
+    onPublishComplete(isInvite) {
+      this.isPublicPage = true
+      this.isInvitePage = isInvite
     }
   }
 }

@@ -1,5 +1,6 @@
 // import firebaseApp from 'fire/app'
 import { DB } from 'fire/app'
+
 import debug from 'debug'
 const log = debug('app:api/service/page')
 
@@ -10,17 +11,29 @@ function findPages(pagesRef) {
         id: m.id,
         chapterOid: m.data().chapterOid,
         page: m.data().page,
+        invite: m.data().invite,
         public: m.data().public,
         storyOid: m.data().storyOid,
         uid: m.data().uid,
         image: { ...m.data().image },
         book: { ...m.data().book },
-        richText: { ...m.data().richText }
+        richText: { ...m.data().richText },
+        parentPagesOid: m.data().parentPagesOid,
+        // parentPagesRef: m.data().parentPagesRef,
+        parentPagesRef: `pages/${m.data().parentPagesOid}`,
+        summary: m.data().summary
       }
       log('page:', page)
       return page
     })
   })
+}
+
+export function findPagesByParent(parentPagesRef) {
+  log(`Finding pages by parent page:[${parentPagesRef.id}]`)
+  return findPages(
+    DB.collection('pages').where('parentPagesRef', '==', parentPagesRef)
+  )
 }
 
 export function findPagesByUser(userOid) {
@@ -41,6 +54,9 @@ export function findPageByOid(pageOid) {
 
 export function addPage(page) {
   log(`Adding page:[${JSON.stringify(page)}]`)
+  if (page.parentPagesOid) {
+    page.parentPagesRef = DB.doc(`pages/${page.parentPagesOid}`)
+  }
   return DB.collection('pages').add(page)
 }
 
@@ -55,8 +71,11 @@ export function publishPage(preview) {
   log(`Publishing page:[${preview.pageOid} for story:[${preview.storyOid}]}]`)
 
   const batch = DB.batch()
-  const pageRef = DB.collection('pages').doc(preview.pageOid)
-  batch.update(pageRef, { public: true })
+  const pagesRef = DB.collection('pages').doc(preview.pageOid)
+  batch.update(pagesRef, {
+    public: true,
+    invite: preview.invite
+  })
 
   const previewsRef = DB.collection('previews').doc()
   batch.set(previewsRef, preview)
@@ -64,8 +83,31 @@ export function publishPage(preview) {
   return batch.commit()
 }
 
+export function setPageAndPreviewInviteState(pageOid, previewOid, isInvite) {
+  log(
+    `Setting page:[${pageOid}] and preview:[${previewOid}] invite state:[${isInvite}`
+  )
+
+  const batch = DB.batch()
+  const pagesRef = DB.collection('pages').doc(pageOid)
+  batch.update(pagesRef, {
+    invite: isInvite
+  })
+
+  const previewsRef = DB.collection('previews').doc(previewOid)
+  batch.update(previewsRef, {
+    invite: isInvite
+  })
+
+  return batch.commit()
+}
+
 export function deletePage(pageOid) {
   log(`Deleting page:[${pageOid}]`)
-  const pageRef = DB.collection('pages').doc(pageOid)
-  return pageRef.delete()
+  const pagesRef = DB.collection('pages').doc(pageOid)
+  return pagesRef.delete()
+}
+
+export function getPagesRef(pageOid) {
+  return DB.collection('pages').doc(pageOid)
 }

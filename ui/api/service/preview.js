@@ -11,12 +11,15 @@ function findPreviews(previewsRef) {
         chapterOid: m.data().chapterOid,
         imageFilenameOid: m.data().imageFilenameOid,
         pageOid: m.data().pageOid,
+        pagesRef: m.data().pagesRef,
         previewImageUrl: m.data().previewImageUrl,
         storyOid: m.data().storyOid,
         summary: m.data().summary,
         title: m.data().title,
         uid: m.data().uid,
-        userDisplayName: m.data().userDisplayName
+        userDisplayName: m.data().userDisplayName,
+        usersRef: m.data().usersRef,
+        invite: m.data().invite
       }
     })
   })

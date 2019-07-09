@@ -44,8 +44,8 @@
           >
             delete
           </v-btn>
-          <span>Delete Story</span>
         </template>
+        <span>Delete Story</span>
       </v-tooltip>
       <v-tooltip top>
         <template #activator="{ on }">
@@ -57,8 +57,8 @@
           >
             save
           </v-btn>
-          <span>Save Story</span>
         </template>
+        <span>Save Story</span>
       </v-tooltip>
     </v-form>
     <story-summary-delete-dialog
@@ -160,6 +160,7 @@ export default {
       const page = {
         page: 1,
         uid: mutableStory.uid,
+        invite: false,
         public: false
       }
 
@@ -206,7 +207,8 @@ export default {
           previews = previewsSnapshot
         })
         .catch(error => {
-          console(`Error looking up previews for story:${story.id}`, error)
+          log(`Error looking up previews for story:${story.id}`, error)
+          this.$toast.error(`Error updating preview:${error.message}`)
         })
       previews.forEach(preview => {
         updatePreview(preview.id, {

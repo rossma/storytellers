@@ -33,7 +33,6 @@ export const actions = {
       if (userPart.bio) user.data.bio = userPart.bio
       if (userPart.displayName) user.data.displayName = userPart.displayName
       if (userPart.photoUrl) user.data.photoUrl = userPart.photoUrl
-      log('boooo1', user)
       await dispatch('saveUser', user)
     } catch (error) {
       log('[USER ACTIONS] - caught error', error)
@@ -44,11 +43,11 @@ export const actions = {
   async saveUserByUid({ dispatch }, uid) {
     log('[USER ACTIONS] - saveUserByUid:', uid)
     try {
-      const userDoc = await findUserByOid(uid)
-      if (userDoc.exists) {
+      const usersDoc = await findUserByOid(uid)
+      if (usersDoc.exists) {
         const user = {
-          uid: userDoc.id,
-          data: userDoc.data()
+          uid: usersDoc.id,
+          data: usersDoc.data()
         }
         log('[USER ACTIONS] - saving user to store:', user)
         await dispatch('saveUser', user)

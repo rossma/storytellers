@@ -6,13 +6,13 @@
         v-show="pageImageSrc()"
         :src="pageImageSrc()"
         title="Upload"
-        @click.stop="openMediumDialog()"
+        @click.stop="openPageMediumDialog()"
       />
       <v-img
         v-show="!pageImageSrc()"
         src="/img/missing-image.png"
         title="Upload"
-        @click.stop="openMediumDialog()"
+        @click.stop="openPageMediumDialog()"
       />
       <!--<img-->
       <!--v-show="pageImageSrc()"-->
@@ -50,20 +50,17 @@
       </v-card-actions>
       <!--</v-card-text>-->
     </v-card>
-    <medium-viewer
-      :story-oid="page.storyOid"
-      :chapter-oid="page.chapterOid"
+    <page-contribution-list
+      v-if="page.invite"
       :page-oid="page.id"
-      :current-image-oid="currentImageOid"
-      :editable="editable"
+      :user="user"
+    />
+    <page-medium-viewer
+      :dialog="pageMediumDialog"
+      :page="page"
       :story-cover="storyCover"
-      :dialog="imageDialog"
-      :image-filename="pageImageFilename()"
-      :image-src="pageImageSrc()"
-      :book-src="pageBookSrc()"
-      :book-type="pageBookType()"
-      :rich-text-src="pageRichTextSrc()"
-      @close="imageDialog = false"
+      :user="user"
+      @close="pageMediumDialog = false"
     />
     <page-comments
       :comments="page.comments"
@@ -78,26 +75,25 @@
 </template>
 
 <script>
-import MediumViewer from '~/components/MediumViewer'
+
+import PageMediumViewer from '~/components/PageMediumViewer'
 import PageComments from '~/components/PageComments'
 import { updatePage } from '~/api/service/page'
 import debug from 'debug'
+import PageContributionList from './PageContributionList'
 const log = debug('app:components/PageDetail')
 
 export default {
   name: 'PageDetail',
   components: {
-    MediumViewer,
+    PageContributionList,
+    PageMediumViewer,
     PageComments
   },
   props: {
     page: {
       type: Object,
       required: true
-    },
-    editable: {
-      type: Boolean,
-      default: false
     },
     storyCover: {
       type: Object,
@@ -113,13 +109,17 @@ export default {
   data() {
     return {
       commentsDialog: false,
-      imageDialog: false
+      pageMediumDialog: false,
+      isCollaboration: false,
+      selectedPageCollaboration: {
+        image: null
+      }
     }
   },
   computed: {
-    currentImageOid: function() {
-      return this.page.image && this.page.image.filename
-    },
+    // currentImageOid: function() {
+    //   return this.page.image && this.page.image.filename
+    // },
     liked: {
       get() {
         log('in liked get', this.page.likes)
@@ -173,46 +173,14 @@ export default {
         this.page.comments = [comment]
       }
     },
-    pageImageFilename() {
-      if (this.page.image && this.page.image.filename) {
-        return this.page.image.filename
-      } else {
-        return ''
-      }
-    },
     pageImageSrc() {
       if (this.page.image && this.page.image.ref) {
         return this.page.image.ref
-      } else {
-        return ''
       }
+      return ''
     },
-    pageBookSrc() {
-      log('in pageBookSrc')
-      if (this.page.book && this.page.book.ref) {
-        return this.page.book.ref
-      } else {
-        return ''
-      }
-    },
-    pageBookType() {
-      log('in pageBookType book', this.page.book)
-      if (this.page.book && this.page.book.contentType) {
-        return this.page.book.contentType
-      } else {
-        return ''
-      }
-    },
-    pageRichTextSrc() {
-      log('in pageRichTextSrc')
-      if (this.page.richText && this.page.richText.ref) {
-        return this.page.richText.ref
-      } else {
-        return ''
-      }
-    },
-    openMediumDialog() {
-      this.imageDialog = true
+    openPageMediumDialog() {
+      this.pageMediumDialog = true
     }
   }
 }

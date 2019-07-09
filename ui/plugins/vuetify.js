@@ -15,6 +15,9 @@ import colors from 'vuetify/es5/util/colors'
 // })
 
 Vue.use(Vuetify, {
+  options: {
+    customProperties: true
+  },
   theme: {
     accent: colors.grey.darken3,
     primary: colors.pink.darken1,

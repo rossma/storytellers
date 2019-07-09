@@ -177,14 +177,19 @@ export default {
           return findPagesByStory(story.id)
         })
         .then(pages => {
-          this.pages = pages.map(page => {
-            if (story.activePage) {
-              page.active = page.id === story.activePage.id
-            }
-            return page
-          })
-          this.savePages(pages)
-          EventBus.$emit('save-pages', pages)
+          // we only want parent pages
+          this.pages = pages
+            .filter(page => {
+              return typeof page.parentPagesOid === 'undefined'
+            })
+            .map(page => {
+              if (story.activePage) {
+                page.active = page.id === story.activePage.id
+              }
+              return page
+            })
+          this.savePages(this.pages)
+          EventBus.$emit('save-pages', this.pages)
         })
     },
     chapterPages(chapterOid) {
@@ -231,6 +236,7 @@ export default {
         chapterOid: chapterOid,
         page: chapterPage,
         uid: this.uid,
+        invite: false,
         public: false
       })
         .then(pageDocRef => {
@@ -252,6 +258,7 @@ export default {
 <style>
 .chapter-name-in-txt {
   padding-top: 0px;
+  margin-top: 0px;
 }
 
 .chapter-name-in-txt .input-group__input {

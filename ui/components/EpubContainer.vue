@@ -1,11 +1,12 @@
 <template>
   <v-layout class="epub-wrapper">
-    <v-card>
+    <v-card flat>
       <v-responsive :aspect-ratio="16/9">
         <v-card-text>
           <div class="viewer-container">
             <div
               id="viewer"
+              ref="viewer"
               :class="[spreadLayout ? '' : 'single', 'ebook-viewer-spreads']"
             />
             <a
@@ -30,8 +31,8 @@
 </template>
 
 <script>
-// https://github.com/futurepress/epub.js/tree/v0.3/libs
-import Epub from 'epubjs/lib/index'
+import { Book, Rendition } from 'epubjs'
+import FileUtils from '~/utils/file'
 import { EventBus } from '~/utils/event-bus.js'
 import debug from 'debug'
 
@@ -40,15 +41,24 @@ const log = debug('app:components/EpubContainer')
 export default {
   name: 'EpubContainer',
   props: {
-    bookSrc: {
+    origin: {
       type: String,
-      required: true
+      default: 'page'
+    },
+    src: {
+      type: String,
+      default: ''
+    },
+    fileType: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
       book: null,
-      mutableBookSrc: null,
+      display: null,
+      // mutableBookSrc: null,
       displayed: null,
       rendition: null,
       nextNav: null,
@@ -63,72 +73,47 @@ export default {
       },
       hasPrev: false,
       hasNext: false,
-      spreadLayout: true
+      spreadLayout: true,
+      showme: false
     }
   },
-  computed: {
-    // hasBookUrl: function() {
-    //   log('this.bookSrc', this.mutableBookSrc)
-    //   if (this.mutableBookSrc) {
-    //     return true
-    //   } else {
-    //     return false
-    //   }
-    // }
-  },
-  beforeCreate: function() {
-    log('in before create')
-  },
-  created: function() {
-    log('in created')
-  },
   mounted: function() {
-    log('EPUB ............. mounted')
-    this.createBook(this.bookSrc2)
-
     this.$nextTick(() => {
-      EventBus.$on('init-ebook', () => {
-        this.init()
-      })
+      if (FileUtils.isEpub(this.fileType)) {
+        this.init(this.src)
+      }
 
-      EventBus.$on('epub-book-src', src => {
-        this.createBook(src)
+      EventBus.$on('upload-preview-updated', ({ origin, file }) => {
+        log('in update ebook', this.origin, origin, FileUtils.isEpub(file.type))
+        if (this.origin === origin && FileUtils.isEpub(file.type)) {
+          this.update(file)
+        }
       })
     })
   },
   beforeDestroy() {
-    EventBus.$off('init-ebook')
-    EventBus.$off('epub-book-src')
+    EventBus.$off('upload-preview-updated')
+    this.destroyBook()
   },
   methods: {
-    init() {
-      log('IN EPUB INIT')
-      if (!this.book && this.bookSrc) {
-        this.createBook(this.bookSrc)
-      }
-    },
-    createBook(src) {
-      log('In epub create book', src)
+    init(src) {
+      log('In epub init book', src)
 
       if (src) {
-        this.mutableBookSrc = src
+        this.destroyBook()
 
-        if (this.book) {
-          this.book.destroy()
-        }
-
-        window.ePub = Epub
-
-        this.book = window.ePub(src, {})
-
-        this.rendition = this.book.renderTo('viewer', {
+        this.book = new Book(src, {})
+        this.rendition = new Rendition(this.book, {
           width: '100%',
           height: 600,
           spread: 'always'
         })
+        this.rendition.attachTo(this.$refs.viewer)
 
-        const display = this.rendition.display()
-        log('my display:', display)
+        // call rendition.display to display book
+        // this.display = this.rendition.display()
+        // log('my display:', this.display)
+        this.rendition.display()
 
         this.book.ready.then(() => {
           const keyListener = e => {
@@ -149,20 +134,38 @@ export default {
         // })
 
         this.rendition.on('relocated', location => {
-          log('relocated: ', location)
+          // log('in relocated: ', location)
+          // log(location.start.cfi)
           this.hasNext = !location.atEnd
           this.hasPrev = !location.atStart
         })
 
-        // this.rendition.on("layout", (layout) => {
-        //   log('rendition on layout', layout)
+        this.rendition.on('rendered', section => {
+          this.hasNext = !!section.next()
+          this.hasPrev = !!section.prev()
+        })
+
+        // this.rendition.on('layout', function(layout) {
+        //   log('In Layout')
+        //   log(layout.spread)
         // })
 
-        window.addEventListener('unload', () => {
-          log('unloading')
-          this.book.destroy()
-        })
+        // this.rendition.on('resize', function(width, height) {
+        //   log('In resize')
+        //   log('Resized to:', width, height)
+        // })
+
       }
+    },
+    update(file) {
+      log('in update ebook')
+      const reader = new FileReader()
+
+      reader.onloadend = () => {
+        this.init(reader.result)
+      }
+
+      reader.readAsArrayBuffer(file)
     },
     nextPage() {
       this.book.package.metadata.direction === 'rtl'
@@ -173,6 +176,14 @@ export default {
       this.book.package.metadata.direction === 'rtl'
         ? this.rendition.next()
         : this.rendition.prev()
+    },
+    destroyBook() {
+      if (this.book) {
+        this.book.destroy()
+      }
+      if (this.rendition) {
+        this.rendition.destroy()
+      }
     }
   }
 }
