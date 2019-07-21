@@ -1,14 +1,14 @@
 export default {
   findKeywords: str => {
     return str
-      .split(' ')
+      .split(/\s+/)
       .filter(v => v.startsWith('#'))
       .map(v => v.substr(1))
   },
 
   findAuthorTags: str => {
     return str
-      .split(' ')
+      .split(/\s+/)
       .filter(v => v.startsWith('@'))
       .map(v => v.substr(1))
   },

@@ -1,6 +1,6 @@
 <script>
-import debug from 'debug'
-const log = debug('app:components/PdfPage')
+// import debug from 'debug'
+// const log = debug('app:components/PdfPage')
 
 export default {
   props: {
@@ -28,7 +28,7 @@ export default {
       const [pixelWidth, pixelHeight] = [actualSizeWidth, actualSizeHeight].map(
         dim => Math.ceil(dim / pixelRatio)
       )
-      log(`width: ${pixelWidth}px; height: ${pixelHeight}px;`)
+      // log(`width: ${pixelWidth}px; height: ${pixelHeight}px;`)
       return `width: ${pixelWidth}px; height: ${pixelHeight}px;`
     },
 
@@ -64,7 +64,7 @@ export default {
   },
 
   mounted() {
-    log(`Page ${this.pageNumber} mounted`)
+    // log(`Page ${this.pageNumber} mounted`)
     this.renderPage()
   },
 
@@ -77,9 +77,9 @@ export default {
       // PDFPageProxy#render
       // https://mozilla.github.io/pdf.js/api/draft/PDFPageProxy.html
       this.renderTask = this.page.render(this.getRenderContext())
-      this.renderTask
-        .then(() => this.$emit('rendered', this.page))
-        .then(() => log(`Page ${this.pageNumber} rendered`))
+      this.renderTask.then(() => this.$emit('rendered', this.page)).then(() => {
+        // log(`Page ${this.pageNumber} rendered`))
+      })
     },
 
     destroyPage(page) {

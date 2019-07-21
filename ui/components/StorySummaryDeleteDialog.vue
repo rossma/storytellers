@@ -15,12 +15,14 @@
           color="blue darken-1"
           @click="deleteStory"
         >
+          <v-icon left>done</v-icon>
           Yes
         </v-btn>
         <v-btn
           color="darken-1"
           @click.native="closeDialog()"
         >
+          <v-icon left>clear</v-icon>
           No
         </v-btn>
       </v-card-actions>

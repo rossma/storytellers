@@ -1,102 +1,60 @@
-const commonDB = require('./database-common');
+const common = require('./common')
+const commonDB = require('./common-database')
 
-const BATCH_SIZE = 100;
+const BATCH_SIZE = 100
 
 /**
  *  This will run when a page record is deleted from the pages collection. Any other collection referencing this
  *  record deleted is also deleted. Any files uploaded to storage that belong to this page are deleted.
  */
-exports.handler = function(snap, context, database) {
-  const pageOid = context.params.pageId;
-  console.log(`Page:${pageOid} was deleted`);
+exports.handler = async (snap, context, database, storage, bucketName) => {
+  const pageOid = context.params.pageId
+  console.log(`Page:${pageOid} was deleted`)
 
-  const deletedValue = snap.data();
-  console.log('Deleted record:', deletedValue);
+  const deletedValue = snap.data()
+  console.log('Deleted record:', deletedValue)
 
-  let bookFilename = getBookFilename(deletedValue.book);
-  console.log(`bookFilename:${bookFilename}`);
+  const bucket = storage.bucket(bucketName)
 
-  deleteBookFromDB(database, bookFilename).then(() => {
-    console.log('book deletion complete');
-    return true;
-  }).catch((error) => {
-    console.log(`Error: There was an error in the onDeletePage function deleting book:${bookFilename} for page:${pageOid}`, error);
-  });
-
-  let imageFilename = getImageFilename(deletedValue.image);
-  console.log(`imageFilename:${imageFilename}`);
-
-  return deleteImageFromDB(database, imageFilename).then(() => {
-    console.log('image deletion complete');
-    return pageIsCoverToStory(database, pageOid, imageFilename);
-  }).then((isCover) => {
-    if (isCover) {
-      console.log('Page image is cover story');
-      return updateStoryCoverImage(database, deletedValue.storyOid);
-    } else {
-      console.log('Page image is not cover story');
-      return Promise.resolve();
-    }
-  }).then(() => {
-    console.log('Story cover updated');
-    let previewsRef = database.collection('previews').where('pageOid', '==', pageOid);
-    return commonDB.deleteCollection(database, previewsRef, BATCH_SIZE);
-  }).then(() => {
-    console.log('Preview deleted');
-    return true;
-  }).catch((error) => {
-    console.log(`Error: There was an error in the onDeletePage function for page:${pageOid}`, error);
-  });
-}
-
-function getBookFilename(book) {
-  if (book && book.filename) {
-    return book.filename;
-  } else {
-    return null;
-  }
-}
-
-function getImageFilename(image) {
-  if (image && image.filename) {
-    return image.filename;
-  } else {
-    return null;
-  }
-}
-
-function pageIsCoverToStory(database, pageOid, imageFilename) {
-  console.log(`Looking up story for page:${pageOid}`);
-  let storyRef = database.collection('stories').doc(pageOid);
-  return storyRef.get().then((storyDoc) => {
-    if (storyDoc.exists && storyDoc.data.cover && storyDoc.data.cover.imageFilename === imageFilename) {
-      return Promise.resolve(true);
-    } else {
-      return Promise.resolve(false);
-    }
-  });
-}
-
-function updateStoryCoverImage(database, storyOid) {
-  console.log(`Setting story cover image to blank`);
-  return database.collection('stories').doc(storyOid).set({cover: {}}, { merge: true })
-}
-
-
-function deleteBookFromDB(database, bookFilename) {
+  const bookFilename = common.getBookFilename(deletedValue.book)
+  console.log(`bookFilename:${bookFilename}`)
   if (bookFilename) {
-    return database.collection('books').doc(bookFilename).delete();
-  } else {
-    console.log('Book filename is empty there nothing to delete');
-    return Promise.resolve();
+    await removeFile(bucket, 'books', bookFilename)
   }
+
+  const richTextsFilename = common.getRichTextFilename(deletedValue.richText)
+  console.log(`richTextsFilename:${richTextsFilename}`)
+  if (richTextsFilename) {
+    await removeFile(bucket, 'richTexts', richTextsFilename)
+  }
+
+  const imageFilename = common.getImageFilename(deletedValue.image)
+  console.log(`imageFilename:${imageFilename}`)
+  if (imageFilename) {
+    await common.deleteImageFromDB(database, imageFilename)
+  }
+
+  if (common.pageIsCoverToStory(database, pageOid, imageFilename)) {
+    console.log('Page image is cover story')
+    if (deletedValue.storyOid) {
+      await common.updateStoryCoverImage(database, deletedValue.storyOid)
+    }
+  }
+
+  if (deletedValue.parentPagesRef) {
+    console.log(`Page document is child record:${deletedValue.parentPagesRef}`)
+    // do nothing?
+  }
+
+  const previewsRef = database
+    .collection('previews')
+    .where('pageOid', '==', pageOid)
+  await commonDB.deleteCollection(database, previewsRef, BATCH_SIZE)
+
+  return console.log('post page deletion tasks complete')
 }
 
-function deleteImageFromDB(database, imageFilename) {
-  if (imageFilename) {
-    return database.collection('images').doc(imageFilename).delete();
-  } else {
-    console.log('Image filename is empty there nothing to delete');
-    return Promise.resolve();
-  }
+function removeFile(bucket, path, filename) {
+  const file = bucket.file(`${path}/${filename}`)
+  return file.delete()
 }

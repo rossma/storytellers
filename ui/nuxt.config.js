@@ -147,7 +147,10 @@ module.exports = {
         ctx.isClient ? 'app' : 'admin'
       }.js`
 
-      /* because in utils/constant referencing windows I need to set this, more here: https://github.com/webpack/webpack/issues/6642 */
+      /*
+        for now to get pdf container to upload we set this to windows global ref
+        https://github.com/webpack/webpack/issues/6642
+      */
       config.output.globalObject = 'this'
 
       config.resolve.alias.vue = 'vue/dist/vue.common'

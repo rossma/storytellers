@@ -35,9 +35,10 @@
           <v-divider class="mt-5" />
           <v-card-actions>
             <v-btn
-              color="pink darken-1"
+              color="primary"
               type="submit"
             >
+              <v-icon left>account_box</v-icon>
               Sign Up
             </v-btn>
           </v-card-actions>
@@ -68,7 +69,6 @@ export default {
   },
   methods: {
     ...mapActions('auth', ['login']),
-    ...mapActions('user', ['saveUser']),
     async signUp() {
       log('signing up')
 

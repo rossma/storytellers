@@ -17,7 +17,7 @@
       </v-avatar>
       <v-avatar
         v-else
-        class="pink"
+        color="primary"
       >
         <v-icon dark>
           account_circle
@@ -85,7 +85,7 @@
           v-model="query"
           label="Search..."
           append-icon="search"
-          color="pink"
+          color="primary"
           hide-details
           @click:append="search"
           @keyup.enter="search"

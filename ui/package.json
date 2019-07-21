@@ -34,13 +34,14 @@
     "core-js": "2.5.7",
     "cross-env": "5.2.0",
     "debug": "^4.1.1",
-    "epubjs": "0.3.72",
+    "epubjs": "0.3.73",
     "event-stream": "3.3.4",
     "express": "4.16.3",
     "express-session": "1.15.6",
     "firebase": "5.5.8",
     "firebase-admin": "~6.0.0",
     "fs": "0.0.1-security",
+    "js-base64": "^2.5.1",
     "lodash": "^4.17.11",
     "net": "^1.0.2",
     "node-fetch": "^2.4.1",
@@ -58,6 +59,7 @@
   "devDependencies": {
     "@nuxtjs/eslint-config": "0.0.1",
     "babel-eslint": "10.0.1",
+    "css-loader": "^2.1.1",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.2.0",
     "eslint-config-standard": "^12.0.0",
@@ -73,7 +75,8 @@
     "eslint-plugin-vue": "^5.2.2",
     "nodemon": "1.18.10",
     "prettier": "1.14.3",
-    "stylus": "0.54.5",
-    "stylus-loader": "3.0.2"
+    "style-loader": "^0.23.1",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2"
   }
 }

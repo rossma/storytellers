@@ -3,7 +3,7 @@
     class="editor-container"
   >
     <quill-editor
-      v-show="editable && !isPreview"
+      v-show="!readOnly && !isPreview"
       ref="textEditor"
       v-model="editorContent"
       :options="editorOption"
@@ -11,7 +11,7 @@
 
     <component
       :is="compiled"
-      v-show="!editable || isPreview"
+      v-show="readOnly || isPreview"
       class="preview-container"
     />
   </v-layout>
@@ -20,7 +20,6 @@
 <script>
 import { EventBus } from '~/utils/event-bus.js'
 import Vue from 'vue'
-import { uploadPageRichText } from '~/api/service/rich-text'
 import debug from 'debug'
 const log = debug('app:components/RichTextContainer')
 
@@ -28,13 +27,17 @@ export default {
   name: 'RichTextContainer',
   components: {},
   props: {
-    editable: {
-      type: Boolean,
-      default: false
-    },
-    richTextSrc: {
+    origin: {
       type: String,
-      required: true
+      default: 'page'
+    },
+    readOnly: {
+      type: Boolean,
+      default: true
+    },
+    src: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -62,33 +65,45 @@ export default {
     //   }
     // }
   },
-  beforeMount: function() {
-    log('before mounted downloaded url:', this.richTextSrc)
-    // if (this.richTextSrc) {
-    //   this.setContentFromUrl(this.richTextSrc)
-    // }
-  },
   mounted: function() {
     log('mounted', this.editor)
-    log('editable', this.editable)
+    log('readOnly', this.readOnly)
     log('ispreview', this.isPreview)
 
     this.$nextTick(() => {
-      log('next tick', this.richTextSrc)
+      log('next tick', this.src)
 
       // register events
-      EventBus.$on('rich-text-preview', params => {
-        this.isPreview = params.isPreview
-        if (this.isPreview) {
-          this.preview(this.editor.root.innerHTML)
+      EventBus.$on('rich-text-preview', ({ origin, isPreview }) => {
+
+        if (this.origin === origin) {
+          this.isPreview = isPreview
+          if (this.isPreview) {
+            this.preview(this.editor.root.innerHTML)
+          }
         }
       })
 
-      EventBus.$on('rich-text-save', params => {
-        this.save(params.pageOid, this.editor.getContents())
+      EventBus.$on('rich-text-save', () => {
+        this.$emit('save', this.editor.getContents())
       })
 
-      // initialise RichText
+      this.init()
+
+    })
+  },
+  beforeDestroy() {
+    EventBus.$off('rich-text-preview')
+    EventBus.$off('rich-text-save')
+  },
+  methods: {
+    // async setContentFromUrl(url) {
+    //   log('in setContentFromUrl')
+    //   const data = await this.$axios.$get(url)
+    //   log('data:', data)
+    //   this.deltaStr = data
+    // },
+    init() {
       const Quill = require('quill')
       const Delta = Quill.import('delta')
 
@@ -103,8 +118,8 @@ export default {
       //   ]
       // }
 
-      if (this.richTextSrc) {
-        this.getContentFromUrl(this.richTextSrc).then(val => {
+      if (this.src) {
+        this.getContentFromUrl(this.src).then(val => {
           log('val from content', val)
           if (val) {
             this.deltaStr = val
@@ -114,7 +129,7 @@ export default {
             this.editor.setContents(startDelta)
 
             // for non editors
-            if (!this.editable) {
+            if (this.readOnly) {
               this.preview(this.editor.root.innerHTML)
             }
           } else {
@@ -122,18 +137,6 @@ export default {
           }
         })
       }
-    })
-  },
-  beforeDestroy() {
-    EventBus.$off('rich-text-preview')
-    EventBus.$off('rich-text-save')
-  },
-  methods: {
-    async setContentFromUrl(url) {
-      log('in setContentFromUrl')
-      const data = await this.$axios.$get(url)
-      log('data:', data)
-      this.deltaStr = data
     },
     getContentFromUrl(url) {
       log('in getContentFromUrl')
@@ -141,34 +144,34 @@ export default {
     },
     configureEditor(change) {
       this.editor.on('text-change', function(delta) {
-        log('on editor change', delta)
+        // log('on editor change', delta)
         change = change.compose(delta)
-        log('change', change)
-        log('toString', JSON.stringify(change))
+        // log('change', change)
+        // log('toString', JSON.stringify(change))
       })
     },
     preview(html) {
       log('previewing html', html)
       this.compiled = Vue.compile(`<div>${html}</div>`)
     },
-    save(pageOid, contents) {
-      log('Saving Rich Text')
-
-      uploadPageRichText(pageOid, contents)
-        .then(result => {
-          EventBus.$emit('story-rich-text-file-key', {
-            filenameKey: result.filenameKey,
-            richTextSrc: result.downloadUrl
-          })
-        })
-        .catch(error => {
-          log('There was an error uploading rich text ', error)
-          this.$toast.error(error.message)
-        })
-        .then(() => {
-          this.$toast.success('Story was save successfully')
-        })
-    }
+    // save(pageOid, contents) {
+    //   log('Saving Rich Text')
+    //
+    //   uploadPageRichText(pageOid, contents)
+    //     .then(result => {
+    //       EventBus.$emit('story-rich-text-file-key', {
+    //         filenameKey: result.filenameKey,
+    //         richTextSrc: result.downloadUrl
+    //       })
+    //     })
+    //     .catch(error => {
+    //       log('There was an error uploading rich text ', error)
+    //       this.$toast.error(error.message)
+    //     })
+    //     .then(() => {
+    //       this.$toast.success('Story was save successfully')
+    //     })
+    // }
   }
 }
 </script>

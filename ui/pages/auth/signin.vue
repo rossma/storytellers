@@ -35,9 +35,10 @@
           <v-divider class="mt-5" />
           <v-card-actions>
             <v-btn
-              color="pink darken-1"
+              color="primary"
               type="submit"
             >
+              <v-icon left>lock_open</v-icon>
               Sign In
             </v-btn>
           </v-card-actions>

@@ -40,16 +40,7 @@ export default {
 
         if (this.uid) {
           log('UID is set but User is not, going to initialise')
-          // TODO change this so that we call this.initAuthentication() / initUser
-
           this.initUserOnAuthStateChange()
-            .then(user => {
-              log('finished saving user to store', user)
-              log('user in store', this.user)
-            })
-            .catch(error => {
-              log('Error saving the user by uid', error)
-            })
         }
       }
     }

@@ -26,40 +26,26 @@ export const actions = {
     commit('resetState')
   },
 
-  initUserOnAuthStateChange({ dispatch, commit, state }) {
+  async initUserOnAuthStateChange({ dispatch, commit, state }) {
     log('initUserOnAuthStateChange')
 
-    let user = null
-    return new Promise(async resolve => {
-      if (state.unsubscribeAuthObserver) {
-        state.unsubscribeAuthObserver()
-      }
+    if (state.unsubscribeAuthObserver) {
+      state.unsubscribeAuthObserver()
+    }
 
-      // const unsubscribe = AUTH.onAuthStateChanged(user => {
-      const unsubscribe = await onAuthStateChanged(u => {
-        log('[AUTH ACTION] firebase user has changed', u)
-        if (u) {
-          dispatch('user/saveUserByUid', u.uid, { root: true })
-            .then(() => {
-              log('[AUTH ACTION] - finished saving user to store')
-              user = u
-              // resolve(user)
-            })
-            .catch(error => {
-              log('Error saving the user by uid', error)
-              // resolve(null)
-            })
-        }
-      })
-      if (unsubscribe) {
-        log(
-          '[AUTH ACTION] committing unsubscriber for auth observer',
-          unsubscribe
-        )
-        commit('setUnsubscribeAuthObserver', unsubscribe)
+    const unsubscribe = await onAuthStateChanged(async user => {
+      log('[AUTH ACTION] firebase user has changed', user)
+      if (user) {
+        await dispatch('user/saveUserByUid', user.uid, { root: true })
       }
-      resolve(user)
     })
+    if (unsubscribe) {
+      log(
+        '[AUTH ACTION] committing unsubscriber for auth observer',
+        unsubscribe
+      )
+      commit('setUnsubscribeAuthObserver', unsubscribe)
+    }
   },
 
   // fetchAuthUser ({ dispatch, commit }) {

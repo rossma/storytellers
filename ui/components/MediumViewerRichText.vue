@@ -5,15 +5,19 @@
   >
     <no-ssr>
       <rich-text-container
-        :editable="editable"
-        :rich-text-src="richTextSrc"
+        :read-only="readOnly"
+        :origin="origin"
+        :src="src"
+        @save="saveContent"
       />
     </no-ssr>
   </v-layout>
 </template>
 
 <script>
+import debug from 'debug'
 import RichTextContainer from './RichTextContainer'
+const log = debug('app:components/MediumViewerRichText')
 
 export default {
   name: 'MediumViewerRichText',
@@ -21,13 +25,28 @@ export default {
     RichTextContainer
   },
   props: {
-    editable: {
-      type: Boolean,
-      default: false
-    },
-    richTextSrc: {
+    origin: {
       type: String,
-      required: true
+      default: 'page'
+    },
+    readOnly: {
+      type: Boolean,
+      default: true
+    },
+    src: {
+      type: String,
+      default: ''
+    }
+  },
+  watch: {
+    src: function(newValue, oldValue) {
+      log('src has changed')
+      // this.mutableSrc = newValue
+    }
+  },
+  methods: {
+    saveContent(content) {
+      this.$emit('save', content)
     }
   }
 }

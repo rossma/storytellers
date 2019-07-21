@@ -9,10 +9,10 @@
     >
       <v-card>
         <v-toolbar
-          color="pink"
+          color="primary"
           dark
         >
-          <v-toolbar-title>Publish Page</v-toolbar-title>
+          <v-toolbar-title>{{ title }}</v-toolbar-title>
           <v-spacer />
           <v-btn
             icon
@@ -26,10 +26,11 @@
             <v-layout wrap>
               <v-flex>
                 <v-textarea
+                  v-if="!isPublished"
                   v-model="summary"
                   auto-grow
                   box
-                  color="pink"
+                  color="primary"
                   label="Summary"
                   maxlength="500"
                   rows="1"
@@ -42,7 +43,16 @@
           <v-spacer />
           <v-btn
             flat
-            @click="publish"
+            color="secondary"
+            @click="publish(true)"
+          >
+            Invite
+          </v-btn>
+          <v-btn
+            v-if="!isPublished"
+            flat
+            color="primary"
+            @click="publish(false)"
           >
             Publish
           </v-btn>
@@ -56,8 +66,7 @@ import debug from 'debug'
 import stringUtils from '~/utils/string'
 
 import { mapGetters } from 'vuex'
-import { findImageByOid } from '~/api/service/image'
-import { publishPage } from '~/api/service/page'
+import { publishPage, setPageAndPreviewInviteState, getRandomPreviewWallpaper } from '~/api/service/page'
 
 const log = debug('app:components/PagePublish')
 
@@ -79,71 +88,144 @@ export default {
     userDisplayName: {
       type: String,
       required: true
+    },
+    isPublished: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
       summary: '',
       summaryDialog: false,
-      form: false
+      isInvite: false
     }
   },
   computed: {
-    ...mapGetters('story', ['story'])
+    ...mapGetters('story', ['story']),
+    title: function() {
+      return this.isPublished ? 'Invite Collaborators' : 'Publish Story'
+    }
   },
   created: function() {},
   methods: {
-    findImageFilenameKey() {
-      if (this.page.image && this.page.image.filename) {
-        const filenameKey = this.page.image.filename.split('.').shift()
-        return findImageByOid(filenameKey)
+    // findImageFilenameKey() {
+    //   if (this.page.image && this.page.image.filename) {
+    //     const filenameKey = this.page.image.filename.split('.').shift()
+    //     return findImageByOid(filenameKey)
+    //   } else {
+    //     // todo ... image shold not be mandatory
+    //     return Promise.reject(new Error('Image reference can not be found'))
+    //   }
+    // },
+    publish(isInvite) {
+      if (this.isPublished) {
+        log('page already published just need to send invitation')
+        this.updatePageAndPreviewInviteState(
+          this.page.id,
+          this.page.previewOid,
+          true
+        )
       } else {
-        return Promise.reject(new Error('Image reference can not be found'))
+        let keywords = []
+        let authorTags = []
+
+        log('publish page:', this.summary)
+        keywords = stringUtils.findKeywords(this.summary)
+        authorTags = stringUtils.findAuthorTags(this.summary)
+
+        const preview = {
+          storyOid: this.story.id,
+          chapterOid: this.page.chapterOid,
+          pageOid: this.page.id,
+          title: this.story.title,
+          summary: this.summary,
+          uid: this.uid,
+          userDisplayName: this.userDisplayName,
+          // previewImageUrl: imageDoc.data().previewUrl,
+          // imageFilenameOid: imageDoc.id,
+          created: Date.now(),
+          keywords: keywords,
+          authorTags: authorTags,
+          invite: isInvite,
+          wallpaperUrl: getRandomPreviewWallpaper()
+        }
+        publishPage(preview)
+          .then(() => {
+            this.$emit('published', isInvite)
+            this.closeDialog()
+            this.$toast.success('Story published')
+          })
+          .catch(error => {
+            log('There was an error publishing page', error)
+            this.$toast.error(error.message)
+          })
+
+        //
+        // this.findImageFilenameKey()
+        //   .then(imageDoc => {
+        //     // todo imageDoc shouldn't be mandatory
+        //     if (imageDoc.exists) {
+        //       const preview = {
+        //         storyOid: this.story.id,
+        //         chapterOid: this.page.chapterOid,
+        //         pageOid: this.page.id,
+        //         title: this.story.title,
+        //         summary: this.summary,
+        //         uid: this.uid,
+        //         userDisplayName: this.userDisplayName,
+        //         previewImageUrl: imageDoc.data().previewUrl,
+        //         imageFilenameOid: imageDoc.id,
+        //         created: Date.now(),
+        //         keywords: keywords,
+        //         authorTags: authorTags,
+        //         invite: isInvite
+        //       }
+        //       return publishPage(preview)
+        //     } else {
+        //       // possible if the server function hasn't run yet
+        //       log('Image Document not found in DB at this time')
+        //       return Promise.reject(
+        //         new Error('There was an error finding image reference')
+        //       )
+        //     }
+        //   })
+        //   .then(() => {
+        //     this.$emit('published', isInvite)
+        //     this.closeDialog()
+        //     this.$toast.success('Story published')
+        //   })
+        //   .catch(error => {
+        //     log('There was an error publishing page', error)
+        //     this.$toast.error(error.message)
+        //   })
       }
     },
-    publish() {
-      let keywords = []
-      let authorTags = []
-
-      log('publish page:', this.summary)
-      keywords = stringUtils.findKeywords(this.summary)
-      authorTags = stringUtils.findAuthorTags(this.summary)
-
-      this.findImageFilenameKey()
-        .then(imageDoc => {
-          if (imageDoc.exists) {
-            const preview = {
-              storyOid: this.story.id,
-              chapterOid: this.page.chapterOid,
-              pageOid: this.page.id,
-              title: this.story.title,
-              summary: this.summary,
-              uid: this.uid,
-              userDisplayName: this.userDisplayName,
-              previewImageUrl: imageDoc.data().previewUrl,
-              imageFilenameOid: imageDoc.id,
-              created: Date.now(),
-              keywords: keywords,
-              authorTags: authorTags
-            }
-            return publishPage(preview)
-          } else {
-            // possible if the server function hasn't run yet
-            log('Image Document not found in DB at this time')
-            return Promise.reject(
-              new Error('There was an error finding image reference')
+    updatePageAndPreviewInviteState(pageOid, previewOid, isInvite) {
+      log(
+        'Updating page and preview invite state',
+        pageOid,
+        previewOid,
+        isInvite
+      )
+      if (previewOid) {
+        setPageAndPreviewInviteState(pageOid, previewOid, isInvite)
+          .then(() => {
+            this.$emit('published', isInvite)
+            this.closeDialog()
+            this.$toast.success('Invitation sent')
+          })
+          .catch(error => {
+            log(
+              'There was an error setting the page and preview to invite',
+              error
             )
-          }
-        })
-        .then(() => {
-          this.$emit('published')
-          this.closeDialog()
-          this.$toast.success('Story published')
-        })
-        .catch(error => {
-          log('There was an error publishing page', error)
-          this.$toast.error(error.message)
-        })
+            this.$toast.error(error.message)
+          })
+      } else {
+        log('No published page found for page:', pageOid)
+        this.$toast.error('There was an error, no publish page found')
+      }
     },
     closeDialog() {
       this.$emit('close')

@@ -9,7 +9,7 @@
     >
       <v-card>
         <v-toolbar 
-          color="pink" 
+          color="primary"
           dark
         >
           <v-toolbar-title>Comments</v-toolbar-title>
@@ -37,7 +37,7 @@
                   v-model="comment"
                   auto-grow
                   box
-                  color="pink"
+                  color="primary"
                   label="Comment"
                   rows="1"
                 />
@@ -51,6 +51,7 @@
             flat
             @click="addComment"
           >
+            <v-icon left>save</v-icon>
             Submit
           </v-btn>
         </v-card-actions>

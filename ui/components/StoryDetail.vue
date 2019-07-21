@@ -1,13 +1,21 @@
-<template>
+x`<template>
   <v-expansion-panel>
     <v-expansion-panel-content>
-      <div slot="header">
+      <div slot="header" class="header">
+        <v-icon
+          large
+          left
+        >
+          bookmark_border
+        </v-icon>
         <div><h2>{{ story.title }}</h2></div>
         <div
           v-show="author.displayName"
           @click="showUserProfile()"
         >
-          <h4>{{ author.displayName }}</h4>
+          <h4 class="primary--text">
+            {{ author.displayName }}
+          </h4>
         </div>
       </div>
       <story-summary
@@ -72,3 +80,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.header .v-icon {
+  float: left;
+}
+</style>
