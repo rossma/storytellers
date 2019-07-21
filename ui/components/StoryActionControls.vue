@@ -83,15 +83,14 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            color="indigo darken-1"
+            color="primary"
             @click="deleteCurrentPage"
           >
+            <v-icon left>done</v-icon>
             Yes
           </v-btn>
-          <v-btn
-            color="darken-1"
-            @click.native="deletePageDialog = false"
-          >
+          <v-btn @click.native="deletePageDialog = false">
+            <v-icon left>clear</v-icon>
             No
           </v-btn>
         </v-card-actions>

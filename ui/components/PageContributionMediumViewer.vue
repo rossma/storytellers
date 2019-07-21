@@ -10,6 +10,7 @@
       :is-book-enabled="!readOnly || !!bookSrc"
       :is-image-enabled="!readOnly || !!imageSrc"
       :is-rich-text-enabled="!readOnly || !!richTextSrc"
+      :can-delete="canDelete"
       @on-upload-preview="onUploadPreview"
       @save="saveMediaDialog"
       @close="close()"
@@ -34,6 +35,18 @@
             </v-btn>
           </v-item>
         </v-item-group>
+
+        <v-btn
+          v-if="canDelete"
+          dark
+          flat
+          @click="pageContributionDeleteDialog = true"
+        >
+          <v-icon left>
+            delete
+          </v-icon>
+          Delete
+        </v-btn>
       </template>
 
       <template #content-container="slotProps">
@@ -63,6 +76,12 @@
       @save="saveMedia"
       @close="pageContributionSaveDialog = false"
     />
+
+    <page-contribution-delete-dialog
+      :dialog="pageContributionDeleteDialog"
+      @delete="deleteMedia"
+      @close="pageContributionDeleteDialog = false"
+    />
   </div>
 </template>
 
@@ -75,11 +94,16 @@ import MediumViewerMixin from '../mixins/MediumViewerMixin'
 import BaseMediumViewer from '~/components/BaseMediumViewer'
 import MediumViewerBook from '~/components/MediumViewerBook'
 import MediumViewerImage from '~/components/MediumViewerImage'
+import PageContributionDeleteDialog from '~/components/PageContributionDeleteDialog'
 import PageContributionSaveDialog from '~/components/PageContributionSaveDialog'
 import { uploadImage } from '~/api/service/image'
 import { uploadBook } from '~/api/service/book'
 import { uploadJson } from '~/api/service/rich-text'
-import { addPage } from '~/api/service/page'
+import {
+  addPage,
+  deletePage,
+  getRandomPreviewWallpaper
+} from '~/api/service/page'
 import MediumViewerRichText from '~/components/MediumViewerRichText'
 
 const log = debug('app:components/PageContributionMediumViewer')
@@ -91,6 +115,7 @@ export default {
     MediumViewerBook,
     MediumViewerImage,
     MediumViewerRichText,
+    PageContributionDeleteDialog,
     PageContributionSaveDialog
   },
   mixins: [MediumViewerMixin],
@@ -136,6 +161,7 @@ export default {
       hasBookChanged: false,
       isReadOnly: true,
       pageContributionSaveDialog: false,
+      pageContributionDeleteDialog: false,
       savedPart: null
     }
   },
@@ -167,6 +193,9 @@ export default {
       } else {
         return ''
       }
+    },
+    canDelete() {
+      return this.contribution.id && this.user.uid === this.contribution.uid
     }
   },
   methods: {
@@ -192,93 +221,92 @@ export default {
       authorTags = stringUtils.findAuthorTags(summary)
 
       const pageCollaborationPart = {
-        storyOid: this.story.id,
-        parentPagesOid: this.pagesRef.id,
-        uid: this.user.uid,
+        invite: false,
+        public: true,
+        chapterOid: this.contribution.chapterOid,
+        storyOid: this.contribution.storyOid,
+        richText: {},
+        parentPagesOid: this.contribution.parentPagesOid,
+        // parentPagesRef: this.contribution.parentPagesRef,
         summary: summary,
         keywords: keywords,
         authorTags: authorTags,
-        invite: false
+        uid: this.user.uid,
+        wallpaperUrl: getRandomPreviewWallpaper()
       }
 
       if (this.isMediaBookType(this.mediaToSave)) {
-        this.saveBookFile(pageCollaborationPart).then(() => {
-          this.pageContributionSaveDialog = false
-          this.close()
-          this.$toast.success('Book updated')
-        })
+        this.saveBookFile(pageCollaborationPart)
+          .then(page => {
+            log('Page created:', page)
+            this.addPageToList(this.enhancePage(page))
+            this.$toast.success('Book updated')
+          })
+          .catch(error => {
+            log('Error saving book', error)
+            this.$toast.error('Error saving book')
+          })
       } else if (this.isMediaImageType(this.mediaToSave)) {
-        this.saveImageFile(pageCollaborationPart).then(() => {
-          this.pageContributionSaveDialog = false
-          this.close()
-          this.$toast.success('Image updated')
-        })
+        this.saveImageFile(pageCollaborationPart)
+          .then(page => {
+            log('Page created:', page)
+            this.addPageToList(this.enhancePage(page))
+            this.$toast.success('Image updated')
+          })
+          .catch(error => {
+            log('Error saving image', error)
+            this.$toast.error('Error saving image')
+          })
       } else if (this.isMediaRichType(this.mediaToSave)) {
         this.savedPart = pageCollaborationPart
         EventBus.$emit('rich-text-save')
       }
     },
-    saveImageFile(part) {
-      if (this.file) {
-        return uploadImage(this.file)
-          .then(result => {
-            log('uploaded image:', result)
-            log(`Creating page`)
-
-            const pageImageData = {
-              image: {
-                filename: result.filename,
-                ref: result.downloadUrl,
-                created: Date.now()
-              }
-            }
-
-            return addPage({
-              ...part,
-              ...pageImageData
-            })
-          })
-          .then(pagesRef => {
-            log('Page created:', pagesRef.id)
-          })
-          .catch(error => {
-            log('There was an error uploading collaboration image', error)
-            this.$toast.error(error.message)
-          })
-      } else {
-        return Promise.resolve()
-      }
-    },
     saveBookFile(part) {
       if (this.file) {
-        return uploadBook(this.file)
-          .then(result => {
-            log('uploaded book:', result)
-            log(`Creating book`)
+        return uploadBook(this.file).then(result => {
+          log('uploaded book:', result)
+          log(`Creating book`)
 
-            const pageBookData = {
-              book: {
-                filename: result.filename,
-                contentType: result.contentType,
-                ref: result.downloadUrl,
-                created: Date.now()
-              }
+          const pageBookData = {
+            book: {
+              filename: result.filename,
+              contentType: result.contentType,
+              ref: result.downloadUrl,
+              created: Date.now()
             }
+          }
 
-            return addPage({
-              ...part,
-              ...pageBookData
-            })
+          return addPage({
+            ...part,
+            ...pageBookData
           })
-          .then(pagesRef => {
-            log('Page created:', pagesRef.id)
-          })
-          .catch(error => {
-            log('There was an error uploading collaboration book', error)
-            this.$toast.error(error.message)
-          })
+        })
       } else {
-        return Promise.resolve()
+        return Promise.reject(new Error('File is not initialised'))
+      }
+    },
+    saveImageFile(part) {
+      if (this.file) {
+        return uploadImage(this.file).then(result => {
+          log('uploaded image:', result)
+          log(`Creating page`)
+
+          const pageImageData = {
+            image: {
+              filename: result.filename,
+              ref: result.downloadUrl,
+              created: Date.now()
+            }
+          }
+
+          return addPage({
+            ...part,
+            ...pageImageData
+          })
+        })
+      } else {
+        return Promise.reject(new Error('File is not initialised'))
       }
     },
     saveRichText(content) {
@@ -302,11 +330,9 @@ export default {
               ...pageRichTextData
             })
           })
-          .then(pagesRef => {
-            log('Page created:', pagesRef.id)
-          })
-          .then(() => {
-            this.pageContributionSaveDialog = false
+          .then(page => {
+            log('Page created:', page)
+            this.addPageToList(this.enhancePage(page))
             this.$toast.success('Story was saved successfully')
           })
           .catch(error => {
@@ -316,6 +342,8 @@ export default {
             )
             this.$toast.error(error.message)
           })
+      } else {
+        return Promise.reject(new Error('There is no content to save'))
       }
     },
     previewRichTextContent() {
@@ -332,6 +360,31 @@ export default {
       } else {
         return ''
       }
+    },
+    addPageToList(page) {
+      this.pageContributionSaveDialog = false
+      this.$emit('add', page)
+    },
+    deleteMedia() {
+      log('in delete page:', this.contribution.id)
+
+      deletePage(this.contribution.id)
+        .then(() => {
+          this.pageContributionDeleteDialog = false
+          this.deletePageFromList(this.contribution.id)
+        })
+        .catch(error => {
+          log('Error deleting page:', error)
+          this.$toast.success('Error deleting page')
+        })
+    },
+    deletePageFromList(pageOid) {
+      this.pageContributionSaveDialog = false
+      this.$emit('delete', pageOid)
+    },
+    enhancePage(page) {
+      page.userDisplayName = this.user.data.displayName
+      return page
     },
     close() {
       this.$emit('close')

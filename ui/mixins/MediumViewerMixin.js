@@ -17,7 +17,7 @@ export default {
   },
   created: function() {
     log('CREATED')
-    /* this will run on both client not server */
+    /* this will run on both client and server */
   },
   beforeMount: function() {
     log('BEFORE MOUNT')

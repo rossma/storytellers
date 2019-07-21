@@ -4,27 +4,22 @@ const common = require('./common')
  *  This will run when a preview record is created.
  */
 exports.handler = async (newImageDoc, context, database) => {
-  console.log(`In onCreateImage`)
+  console.log(`In onCreateImage - image id:${newImageDoc.id}`)
 
-  // access a particular field as you would any JS property
-  const filename = newImageDoc.data().filename
-  console.log(`Image file name:${filename}`)
+  const pagesDocs = await common.getPageFromImageOid(database, newImageDoc.id)
 
-  const pagesDoc = common.getPageFromImageFilename(database, filename)
-
-  if (pagesDoc && pagesDoc.exists) {
-    console.log('pages doc exists:', pagesDoc.id)
+  if (pagesDocs.size === 1) {
+    console.log('pages doc exists:', pagesDocs.docs[0].id)
     const payloadPart = {
       previewImageUrl: newImageDoc.data().previewUrl,
       imageFilenameOid: newImageDoc.id,
-      imageRef: newImageDoc.data().ref
+      imageRef: database.doc(`images/${newImageDoc.id}`)
     }
-    const previewsRef = await common.updatePreviewsByPageOid(
+    await common.updatePreviewsByPagesRef(
       database,
-      pagesDoc.data().ref,
+      database.doc(`pages/${pagesDocs.docs[0].id}`),
       payloadPart
     )
-    console.log(`Previews document created:[${previewsRef.id}]`)
   }
 
   return console.log('post image creation tasks complete')

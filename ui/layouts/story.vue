@@ -239,9 +239,9 @@ export default {
         invite: false,
         public: false
       })
-        .then(pageDocRef => {
-          log(`Page Document written with ID:${pageDocRef.id}`)
-          this.$router.push(`/story/${pageDocRef.id}`)
+        .then(page => {
+          log(`Page Document written with ID:${page.id}`)
+          this.$router.push(`/story/${page.id}`)
         })
         .catch(error => {
           log('Error adding page:', error)

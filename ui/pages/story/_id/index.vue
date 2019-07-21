@@ -169,14 +169,14 @@ export default {
                 findPageByOid(pageDoc.data().parentPagesOid)
                   .then(parentPageDoc => {
                     if (parentPageDoc.exists) {
-                      this.initPage(parentPageDoc.id, parentPageDoc.data())
+                      this.initPage(parentPageDoc.id, parentPageDoc.data(), pageOid)
                     } else {
                       this.$toast.error('Page does not exist')
                     }
                   })
                   .catch(error => log('err', error))
               } else {
-                this.initPage(pageDoc.id, pageDoc.data())
+                this.initPage(pageDoc.id, pageDoc.data(), pageOid)
               }
             } else {
               this.$toast.error('Page does not exist')
@@ -185,7 +185,7 @@ export default {
           .catch(error => log('err', error))
       }
     },
-    initPage(pageOid, pageData) {
+    initPage(pageOid, pageData, selectedPageOid) {
       log('in init page:', pageOid)
       this.page = {
         id: pageOid,
@@ -200,7 +200,8 @@ export default {
         richText: pageData.richText,
         storyOid: pageData.storyOid,
         uid: pageData.uid,
-        previewOid: pageData.previewRef ? pageData.previewRef.id : undefined
+        previewOid: pageData.previewRef ? pageData.previewRef.id : undefined,
+        selectedPageOid: selectedPageOid
       }
 
       log('this page:', this.page)

@@ -43,6 +43,7 @@
             flat
             @click="save"
           >
+            <v-icon left>save</v-icon>
             Submit
           </v-btn>
         </v-card-actions>

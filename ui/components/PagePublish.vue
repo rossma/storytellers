@@ -66,7 +66,7 @@ import debug from 'debug'
 import stringUtils from '~/utils/string'
 
 import { mapGetters } from 'vuex'
-import { publishPage, setPageAndPreviewInviteState } from '~/api/service/page'
+import { publishPage, setPageAndPreviewInviteState, getRandomPreviewWallpaper } from '~/api/service/page'
 
 const log = debug('app:components/PagePublish')
 
@@ -147,7 +147,8 @@ export default {
           created: Date.now(),
           keywords: keywords,
           authorTags: authorTags,
-          invite: isInvite
+          invite: isInvite,
+          wallpaperUrl: getRandomPreviewWallpaper()
         }
         publishPage(preview)
           .then(() => {

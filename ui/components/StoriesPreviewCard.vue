@@ -27,12 +27,24 @@
             v-if="preview.previewImageUrl"
             :src="preview.previewImageUrl"
           />
-          <div
-            v-else
-            class="v-responsive v-image no-image"
+<!--          <div-->
+<!--            v-else-->
+<!--            class="v-responsive v-image no-image"-->
+<!--          >-->
+<!--            {{ preview.summary }}-->
+<!--          </div>-->
+          <v-img
+            v-else-if="preview.wallpaperUrl"
+            :src="preview.wallpaperUrl"
           >
-            {{ preview.summary }}
-          </div>
+            <v-container fill-height fluid>
+              <v-layout fill-height>
+                <v-flex xs12 align-end flexbox>
+                  <span class="headline no-image-text">{{ preview.summary }}</span>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-img>
           <v-card-title primary-title>
             <div>
               <div class="headline truncate">
@@ -45,7 +57,7 @@
       </v-badge>
       <v-card-actions
         v-show="showActions"
-        class="primary"
+        :class="isChildPage ? 'secondary' : 'primary'"
       >
         <h3>
           <nuxt-link :to="'/user/' + preview.uid">
@@ -75,6 +87,11 @@ export default {
       default: false
     }
   },
+  computed: {
+    isChildPage() {
+      return this.preview.parentPagesRef && this.preview.parentPagesRef.id
+    }
+  },
   data() {
     return {
       showInviteBadge: this.preview.invite || false
@@ -82,6 +99,7 @@ export default {
   },
   methods: {
     showDetail(storyOid, pageOid) {
+      log('preview', this.preview)
       log(`storyOid:${storyOid} pageOid:${pageOid}`)
       if (pageOid) {
         this.$router.push(`/story/${pageOid}`)
@@ -125,7 +143,7 @@ export default {
   border: 1px solid darkgray;
   font-weight: bold;
   /*padding: 10px;*/
-  font-size: 3.75vw;
+  font-size: 2.75vw;
   word-break: break-all;
   text-align: center;
   text-justify: auto;
@@ -133,5 +151,9 @@ export default {
 
 .v-card__actions h3 a {
   color: white;
+}
+
+.no-image-text {
+  font-size: 2.75vw !important;
 }
 </style>

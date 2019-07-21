@@ -37,16 +37,21 @@ export function uploadJsonToStorage(json, path) {
   const fullPath = `${path}/${filename}.json`
   log(`Uploading file:[${fullPath}] to storage`)
 
-  const uploadTask = STORAGE_REF.child(path).putString(
+  const uploadTask = STORAGE_REF.child(fullPath).putString(
     Base64.encode(JSON.stringify(json)),
     'base64'
   )
 
-  return uploadTask.then(snapshot => {
-    log('Uploaded', snapshot.totalBytes, 'bytes.')
-    return {
-      downloadUrl: snapshot.ref.getDownloadURL(),
-      filename: filename
-    }
-  })
+  return uploadTask
+    .then(snapshot => {
+      log('Uploaded', snapshot.totalBytes, 'bytes.')
+
+      return snapshot.ref.getDownloadURL()
+    })
+    .then(downloadUrl => {
+      return Promise.resolve({
+        downloadUrl: downloadUrl,
+        filename: filename
+      })
+    })
 }

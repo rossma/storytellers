@@ -13,13 +13,15 @@ function findPreviews(previewsRef) {
         pageOid: m.data().pageOid,
         pagesRef: m.data().pagesRef,
         previewImageUrl: m.data().previewImageUrl,
+        wallpaperUrl: m.data().wallpaperUrl,
         storyOid: m.data().storyOid,
         summary: m.data().summary,
         title: m.data().title,
         uid: m.data().uid,
         userDisplayName: m.data().userDisplayName,
         usersRef: m.data().usersRef,
-        invite: m.data().invite
+        invite: m.data().invite,
+        parentPagesRef: m.data().parentPagesRef
       }
     })
   })

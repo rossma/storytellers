@@ -15,23 +15,38 @@ module.exports = {
     return storyDoc
   },
 
-  updatePreviewsByPageOid: function(database, pagesRef, payloadPart) {
-    console.log(
-      `Updating previews collection by page oid:[${pagesRef.data().id}]`
-    )
+  updatePage: function(database, pageOid, page) {
+    console.log(`Updating page:[${pageOid} with:[${JSON.stringify(page)}]`)
     return database
-      .collection('previews')
-      .where('pagesRef', '==', pagesRef)
-      .set(payloadPart, { merge: true })
+      .collection('pages')
+      .doc(pageOid)
+      .set(page, { merge: true })
   },
 
-  getPageFromImageFilename: async function(database, filename) {
+  updatePreviewsByPagesRef: function(database, pagesRef, payloadPart) {
+    console.log(`Updating previews collection`, pagesRef)
+    database
+      .collection('previews')
+      .where('pagesRef', '==', pagesRef)
+      .get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          console.log(`Updating preview doc:[${doc.id}]`)
+          doc.ref.update(payloadPart)
+        })
+      })
+      .catch(error => {
+        console.log('Error getting previews and updating them:', error)
+      })
+  },
+
+  getPageFromImageOid: async function(database, imageOid) {
     const pagesRef = database
       .collection('pages')
-      .where('image.filename', '==', filename)
+      .where('image.filename', '==', imageOid)
       .limit(1)
-    const pagesDoc = await pagesRef.get()
-    return pagesDoc
+    const pagesDocs = await pagesRef.get()
+    return pagesDocs
   },
 
   getImagePreviewUrl: async function(database, imageOid) {

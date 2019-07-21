@@ -52,7 +52,8 @@
     </v-card>
     <page-contribution-list
       v-if="page.invite"
-      :page-oid="page.id"
+      :page="page"
+      :initial-dialog-state="initialChildDialog"
       :user="user"
     />
     <page-medium-viewer
@@ -75,7 +76,6 @@
 </template>
 
 <script>
-
 import PageMediumViewer from '~/components/PageMediumViewer'
 import PageComments from '~/components/PageComments'
 import { updatePage } from '~/api/service/page'
@@ -113,7 +113,8 @@ export default {
       isCollaboration: false,
       selectedPageCollaboration: {
         image: null
-      }
+      },
+      initialChildDialog: this.page.id !== this.page.selectedPageOid
     }
   },
   computed: {

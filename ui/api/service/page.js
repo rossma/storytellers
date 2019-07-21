@@ -21,7 +21,8 @@ function findPages(pagesRef) {
         parentPagesOid: m.data().parentPagesOid,
         // parentPagesRef: m.data().parentPagesRef,
         parentPagesRef: `pages/${m.data().parentPagesOid}`,
-        summary: m.data().summary
+        summary: m.data().summary,
+        wallpaperUrl: m.data().wallpaperUrl
       }
       log('page:', page)
       return page
@@ -57,7 +58,12 @@ export function addPage(page) {
   if (page.parentPagesOid) {
     page.parentPagesRef = DB.doc(`pages/${page.parentPagesOid}`)
   }
-  return DB.collection('pages').add(page)
+  return DB.collection('pages')
+    .add(page)
+    .then(pagesRef => {
+      page.id = pagesRef.id
+      return Promise.resolve(page)
+    })
 }
 
 export function updatePage(pageOid, page) {
@@ -110,4 +116,23 @@ export function deletePage(pageOid) {
 
 export function getPagesRef(pageOid) {
   return DB.collection('pages').doc(pageOid)
+}
+
+export function getRandomPreviewWallpaper() {
+  const previewWallpaper = [
+    'https://firebasestorage.googleapis.com/v0/b/storytellers2-13997.appspot.com/o/images%2Fwallpaper%2Fwall1.jpg?alt=media&token=58416e24-16c8-4f82-bb00-da9db6eb350e',
+    'https://firebasestorage.googleapis.com/v0/b/storytellers2-13997.appspot.com/o/images%2Fwallpaper%2Fwall2.jpg?alt=media&token=2befc038-2dc5-4d07-bd60-c42630a32591',
+    'https://firebasestorage.googleapis.com/v0/b/storytellers2-13997.appspot.com/o/images%2Fwallpaper%2Fwall3.jpg?alt=media&token=b4fa4e6b-a602-40ab-87d2-cd7a0c981850',
+    'https://firebasestorage.googleapis.com/v0/b/storytellers2-13997.appspot.com/o/images%2Fwallpaper%2Fwall4.jpg?alt=media&token=3e7fbe9c-a3fd-4fc8-948b-7b35e17aee11',
+    'https://firebasestorage.googleapis.com/v0/b/storytellers2-13997.appspot.com/o/images%2Fwallpaper%2Fwall5.jpg?alt=media&token=477e54d0-5a60-48a8-afe4-1e9009ca336b',
+    'https://firebasestorage.googleapis.com/v0/b/storytellers2-13997.appspot.com/o/images%2Fwallpaper%2Fwall6.jpg?alt=media&token=bd69fcc6-d5a0-44c4-a420-1350eb503450',
+    'https://firebasestorage.googleapis.com/v0/b/storytellers2-13997.appspot.com/o/images%2Fwallpaper%2Fwall7.jpg?alt=media&token=3b110b67-1d23-4d5a-8494-461e93ee23f3',
+    'https://firebasestorage.googleapis.com/v0/b/storytellers2-13997.appspot.com/o/images%2Fwallpaper%2Fwall8.jpg?alt=media&token=7d730fd4-5eb0-41e1-abab-ea8863cc5462'
+  ]
+
+  return previewWallpaper[randomIntFromInterval(0, 7)]
+}
+
+function randomIntFromInterval(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min)
 }

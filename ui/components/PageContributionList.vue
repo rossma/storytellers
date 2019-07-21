@@ -18,7 +18,7 @@
             <v-btn
               icon
               v-on="on"
-              @click="openMediumViewer(false)"
+              @click="openMediumViewerNewPage()"
             >
               <v-icon>
                 add_circle_outline
@@ -58,7 +58,7 @@
               <v-btn
                 icon
                 color="secondary"
-                @click="openMediumViewer(false)"
+                @click="openMediumViewerNewPage()"
               >
                 <v-icon>
                   add_circle_outline
@@ -78,13 +78,14 @@
       :origin:="origin"
       :read-only="readOnly"
       :user="user"
+      @add="addContribution"
+      @delete="deleteContribution"
       @close="pageMediumDialog = false"
     />
   </v-layout>
 </template>
 
 <script>
-// import { EventBus } from '~/utils/event-bus.js'
 import { IMAGE_TYPE, RICH_TEXT_TYPE } from '~/utils/file'
 import debug from 'debug'
 import MediumViewerMixin from '../mixins/MediumViewerMixin'
@@ -103,13 +104,17 @@ export default {
   },
   mixins: [MediumViewerMixin],
   props: {
-    pageOid: {
-      type: String,
+    page: {
+      type: Object,
       required: true
     },
     user: {
       type: Object,
       required: true
+    },
+    initialDialogState: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -128,16 +133,17 @@ export default {
           filename: null
         },
         richText: {},
-        summary: null
+        summary: null,
+        userDisplayName: null
       },
-      pageMediumDialog: false,
+      pageMediumDialog: this.initialDialogState,
       readOnly: true,
       viewerKey: 0
     }
   },
   computed: {
     pagesRef: function() {
-      return getPagesRef(this.pageOid)
+      return getPagesRef(this.page.id)
     }
   },
   mounted: function() {
@@ -147,11 +153,11 @@ export default {
   },
   methods: {
     init() {
-      this.fetchCollaborations()
+      this.fetchCollaborations().then(() => this.loadSelectedChildPage())
     },
     fetchCollaborations() {
       log('fetching collaborations')
-      findPagesByParent(this.pagesRef).then(pages => {
+      return findPagesByParent(this.pagesRef).then(pages => {
         pages.forEach(page => {
           this.$set(this.collaborations, page.id, page)
           this.getUserDetails(page.uid).then(userDetails => {
@@ -163,6 +169,25 @@ export default {
           })
         })
       })
+    },
+    loadSelectedChildPage() {
+      log('in load selected child page', this.collaborations)
+
+      if (this.isPageInitFromChild()) {
+        log('child page selected')
+
+        this.openMediumViewerForPage(
+          this.collaborations[this.page.selectedPageOid]
+        )
+      } else {
+        this.pageMediumDialog = false
+      }
+    },
+    isPageInitFromChild() {
+      return (
+        this.page.id !== this.page.selectedPageOid &&
+        this.page.selectedPageOid in this.collaborations
+      )
     },
     async getUserDetails(userKey) {
       // look in client cache for user key if not found then query DB
@@ -179,22 +204,39 @@ export default {
       // force rerender
       this.viewerKey += 1
     },
-    openMediumViewer(readOnly) {
-      this.readOnly = readOnly
+    openMediumViewerNewPage() {
+      log(
+        'openMediumViewerNewPage.........................',
+        this.user.uid,
+        this.user.data.displayName,
+        this.user
+      )
+      this.readOnly = false
       this.activeMedium = 3
       this.pageMediumDialog = true
       this.selectedChildPage = {
         id: null,
-        uid: null,
+        chapterOid: this.page.chapterOid,
+        invite: false,
+        public: true,
+        storyOid: this.page.storyOid,
         book: {
-          filename: null
+          filename: null,
+          ref: null
         },
         image: {
-          filename: null
+          filename: null,
+          ref: null
         },
         richText: {},
-        summary: null
+        parentPagesOid: this.page.id,
+        // parentPagesRef: null, // todo?
+        summary: null,
+        uid: this.user.uid,
+        userDisplayName: this.user.displayName,
+        wallpaperUrl: this.page.wallpaperUrl
       }
+
       this.reRenderMediumViewer()
     },
     openMediumViewerForPage(page) {
@@ -251,6 +293,16 @@ export default {
         return page.richText.ref
       }
       return undefined
+    },
+    addContribution(page) {
+      log('Adding page to contribution', page)
+      this.$set(this.collaborations, page.id, page)
+      this.pageMediumDialog = false
+    },
+    deleteContribution(pageOid) {
+      log('Deleting page from contribution', pageOid)
+      this.$delete(this.collaborations, pageOid)
+      this.pageMediumDialog = false
     }
   }
 }

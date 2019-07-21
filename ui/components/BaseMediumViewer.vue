@@ -53,6 +53,7 @@
                 <span>Upload</span>
               </v-tooltip>
               <v-divider
+                v-if="!canDelete"
                 class="mx-2"
                 vertical
               />
@@ -64,7 +65,7 @@
                 <v-tooltip bottom>
                   <template #activator="{ on }">
                     <v-btn
-                      v-if="isRichTextEnabled"
+                      v-if="isRichTextEnabled && !canDelete"
                       :value="1"
                       flat
                       v-on="on"
@@ -77,7 +78,7 @@
                 <v-tooltip bottom>
                   <template #activator="{ on }">
                     <v-btn
-                      v-if="isBookEnabled"
+                      v-if="isBookEnabled && !canDelete"
                       :value="2"
                       flat
                       v-on="on"
@@ -90,7 +91,7 @@
                 <v-tooltip bottom>
                   <template #activator="{ on }">
                     <v-btn
-                      v-if="isImageEnabled"
+                      v-if="isImageEnabled && !canDelete"
                       :value="3"
                       flat
                       v-on="on"
@@ -150,6 +151,10 @@ export default {
     initialMedium: {
       type: Number,
       default: 3
+    },
+    canDelete: {
+      type: Boolean,
+      default: false
     },
     dialog: {
       type: Boolean,

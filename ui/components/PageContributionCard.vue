@@ -10,15 +10,21 @@
         @click.stop="showDetail()"
       >
         <v-img
-          v-if="childPage.previewImageUrl"
-          :src="childPage.previewImageUrl"
+          v-if="childPage.image && childPage.image.ref"
+          :src="childPage.image.ref"
         />
-        <div
-          v-else
-          class="v-responsive v-image no-image"
+        <v-img
+          v-else-if="childPage.wallpaperUrl"
+          :src="childPage.wallpaperUrl"
         >
-          {{ childPage.summary }}
-        </div>
+          <v-container fill-height fluid>
+            <v-layout fill-height>
+              <v-flex xs12 align-end flexbox>
+                <span class="headline no-image-text">{{ childPage.summary }}</span>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-img>
         <v-card-title primary-title>
           <div>
             <div class="headline truncate">
@@ -125,7 +131,7 @@ export default {
       log(
         `storyOid:${this.childPage.storyOid} pageOid:${this.childPage.pageOid}`
       )
-      log(`childPage:${this.childPage.book.ref}`)
+      log(`childPage:${this.childPage}`)
       this.$emit('open-viewer', this.childPage)
       // if (pageOid) {
       //   this.$router.push(`/story/${pageOid}`)
@@ -162,5 +168,9 @@ export default {
 
 .headline a {
   color: var(--v-secondary-base);
+}
+
+.no-image-text {
+  font-size: 2.75vw !important;
 }
 </style>

@@ -42,6 +42,7 @@
             color="red"
             @click.stop="deleteDialog = true"
           >
+            <v-icon left>delete</v-icon>
             delete
           </v-btn>
         </template>
@@ -55,6 +56,7 @@
             :disabled="!valid"
             @click="submit"
           >
+            <v-icon left>save</v-icon>
             save
           </v-btn>
         </template>

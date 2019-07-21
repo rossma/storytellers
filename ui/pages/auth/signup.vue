@@ -38,6 +38,7 @@
               color="primary"
               type="submit"
             >
+              <v-icon left>account_box</v-icon>
               Sign Up
             </v-btn>
           </v-card-actions>
