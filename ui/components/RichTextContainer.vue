@@ -186,6 +186,8 @@ export default {
 
 .editor-container {
   /*min-height: 80vh;*/
+  max-width: 60em;
+  margin-top: 10px;
 }
 
 .preview-container {
