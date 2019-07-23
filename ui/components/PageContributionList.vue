@@ -51,6 +51,7 @@
                 :child-page="collaboration"
                 :user="user"
                 @open-viewer="openMediumViewerForPage"
+                @open-comments="openCommentsDialog"
               />
             </v-flex>
             <v-flex v-if="!collaborations || collaborations.length === 0">
@@ -82,6 +83,18 @@
       @delete="deleteContribution"
       @close="pageMediumDialog = false"
     />
+    <page-comments
+      v-if="selectedChildPage.id"
+      :key="dialogKey"
+      :comments="selectedChildPage.comments"
+      :dialog="commentsDialog"
+      :page-id="selectedChildPage.id"
+      :theme="'secondary'"
+      :uid="user.uid"
+      :user-display-name="user.data.displayName ? user.data.displayName : 'Anon'"
+      @increment="newComment"
+      @close="commentsDialog = false"
+    />
   </v-layout>
 </template>
 
@@ -93,6 +106,7 @@ import { findPagesByParent, getPagesRef } from '~/api/service/page'
 import { findUserByOid } from '~/api/service/user'
 import PageContributionCard from '~/components/PageContributionCard'
 import PageContributionMediumViewer from '~/components/PageContributionMediumViewer'
+import PageComments from '~/components/PageComments'
 
 const log = debug('app:components/PageContributionList')
 
@@ -100,7 +114,8 @@ export default {
   name: 'PageContributionList',
   components: {
     PageContributionCard,
-    PageContributionMediumViewer
+    PageContributionMediumViewer,
+    PageComments
   },
   mixins: [MediumViewerMixin],
   props: {
@@ -134,11 +149,14 @@ export default {
         },
         richText: {},
         summary: null,
-        userDisplayName: null
+        userDisplayName: null,
+        comments: null
       },
       pageMediumDialog: this.initialDialogState,
       readOnly: true,
-      viewerKey: 0
+      dialogKey: 0,
+      viewerKey: 0,
+      commentsDialog: false
     }
   },
   computed: {
@@ -156,7 +174,6 @@ export default {
       this.fetchCollaborations().then(() => this.loadSelectedChildPage())
     },
     fetchCollaborations() {
-      log('fetching collaborations')
       return findPagesByParent(this.pagesRef).then(pages => {
         pages.forEach(page => {
           this.$set(this.collaborations, page.id, page)
@@ -204,13 +221,11 @@ export default {
       // force rerender
       this.viewerKey += 1
     },
+    reRenderCommentsDialog() {
+      // force rerender
+      this.dialogKey += 1
+    },
     openMediumViewerNewPage() {
-      log(
-        'openMediumViewerNewPage.........................',
-        this.user.uid,
-        this.user.data.displayName,
-        this.user
-      )
       this.readOnly = false
       this.activeMedium = 3
       this.pageMediumDialog = true
@@ -240,7 +255,7 @@ export default {
       this.reRenderMediumViewer()
     },
     openMediumViewerForPage(page) {
-      log('Open medium viewer for page', page.id, this.origin)
+      log('Open medium viewer for page', page.id)
       this.readOnly = true
       this.selectedChildPage = page
 
@@ -249,6 +264,12 @@ export default {
       this.activeMedium = this.getActiveMedium(page)
 
       this.pageMediumDialog = true
+    },
+    openCommentsDialog(page) {
+      log('Open comments for page', page.id)
+      this.reRenderCommentsDialog()
+      this.selectedChildPage = page
+      this.commentsDialog = true
     },
     getActiveMedium(page) {
       if (page.image && page.image.ref) {
@@ -303,6 +324,13 @@ export default {
       log('Deleting page from contribution', pageOid)
       this.$delete(this.collaborations, pageOid)
       this.pageMediumDialog = false
+    },
+    newComment(comment) {
+      if (this.selectedChildPage.comments) {
+        this.selectedChildPage.comments.push(comment)
+      } else {
+        this.selectedChildPage.comments = [comment]
+      }
     }
   }
 }

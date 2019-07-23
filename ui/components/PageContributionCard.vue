@@ -53,7 +53,7 @@
         {{ comments }}
         <v-btn
           icon
-          @click="commentsDialog = true"
+          @click="openCommentsDialog()"
         >
           <v-icon>comments</v-icon>
         </v-btn>
@@ -65,6 +65,7 @@
 <script>
 import debug from 'debug'
 const log = debug('app:components/PageContributionCard')
+import { updatePage } from '~/api/service/page'
 
 export default {
   name: 'PageContributionCard',
@@ -81,44 +82,41 @@ export default {
   computed: {
     liked: {
       get() {
-        return false
-        // log('in liked get', this.page.likes)
-        // if (this.page.likes) {
-        //   return this.page.likes.includes(this.user.uid)
-        // } else {
-        //   return false
-        // }
+        log('in liked get', this.childPage.likes)
+        if (this.childPage.likes) {
+          return this.childPage.likes.includes(this.user.uid)
+        } else {
+          return false
+        }
       },
       set(val) {
         log('in liked set')
-        // if (!this.page.likes) {
-        //   this.page.likes = []
-        // }
-        //
-        // if (val) {
-        //   if (!this.page.likes.includes(this.user.uid)) {
-        //     this.page.likes.push(this.user.uid)
-        //   }
-        // } else {
-        //   this.page.likes = this.page.likes.filter(el => el !== this.user.uid)
-        // }
+        if (!this.childPage.likes) {
+          this.childPage.likes = []
+        }
+
+        if (val) {
+          if (!this.childPage.likes.includes(this.user.uid)) {
+            this.childPage.likes.push(this.user.uid)
+          }
+        } else {
+          this.childPage.likes = this.childPage.likes.filter(el => el !== this.user.uid)
+        }
       }
     },
     comments: function() {
-      // if (this.page.comments) {
-      //   return this.page.comments.length
-      // } else {
-      //   return 0
-      // }
-      return 0
+      if (this.childPage.comments) {
+        return this.childPage.comments.length
+      } else {
+        return 0
+      }
     },
     likes: function() {
-      // if (this.page.likes) {
-      //   return this.page.likes.length
-      // } else {
-      //   return 0
-      // }
-      return 0
+      if (this.childPage.likes) {
+        return this.childPage.likes.length
+      } else {
+        return 0
+      }
     }
   },
   data() {
@@ -150,6 +148,15 @@ export default {
       //       this.$toast.error(error.message)
       //     })
       // }
+    },
+    like() {
+      log('in like', this.liked)
+      this.liked = !this.liked
+      log('updating page', this.childPage.id, this.childPage.likes)
+      updatePage(this.childPage.id, { likes: this.childPage.likes })
+    },
+    openCommentsDialog() {
+      this.$emit('open-comments', this.childPage)
     }
   }
 }
@@ -171,6 +178,8 @@ export default {
 }
 
 .no-image-text {
-  font-size: 2.75vw !important;
+  /*font-size: 2.75vw !important;*/
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 </style>

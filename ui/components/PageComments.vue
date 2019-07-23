@@ -9,7 +9,7 @@
     >
       <v-card>
         <v-toolbar 
-          color="primary"
+          :color="theme"
           dark
         >
           <v-toolbar-title>Comments</v-toolbar-title>
@@ -37,7 +37,7 @@
                   v-model="comment"
                   auto-grow
                   box
-                  color="primary"
+                  :color="theme"
                   label="Comment"
                   rows="1"
                 />
@@ -85,6 +85,10 @@ export default {
     pageId: {
       type: String,
       required: true
+    },
+    theme: {
+      type: String,
+      default: 'primary'
     },
     uid: {
       type: String,

@@ -22,6 +22,8 @@ function findPages(pagesRef) {
         // parentPagesRef: m.data().parentPagesRef,
         parentPagesRef: `pages/${m.data().parentPagesOid}`,
         summary: m.data().summary,
+        comments: m.data().comments,
+        likes: m.data().likes,
         wallpaperUrl: m.data().wallpaperUrl
       }
       log('page:', page)

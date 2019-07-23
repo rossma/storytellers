@@ -38,7 +38,8 @@
             :src="preview.wallpaperUrl"
           >
             <v-container fill-height fluid>
-              <v-layout fill-height>
+              <v-layout
+                fill-height>
                 <v-flex xs12 align-end flexbox>
                   <span class="headline no-image-text">{{ preview.summary }}</span>
                 </v-flex>
@@ -141,12 +142,12 @@ export default {
 
 .preview-detail-link .no-image {
   border: 1px solid darkgray;
-  font-weight: bold;
+  /*font-weight: bold;*/
   /*padding: 10px;*/
-  font-size: 2.75vw;
-  word-break: break-all;
-  text-align: center;
-  text-justify: auto;
+  /*font-size: 2.75vw;*/
+  /*word-break: break-all;*/
+  /*text-align: center;*/
+  /*text-justify: auto;*/
 }
 
 .v-card__actions h3 a {
@@ -154,6 +155,13 @@ export default {
 }
 
 .no-image-text {
-  font-size: 2.75vw !important;
+  /*font-size: 2.75vw !important;*/
+  /*font-weight: bold;*/
+  /*white-space: nowrap;*/
+  /*overflow: hidden;*/
+  /*text-overflow: ellipsis;*/
+  min-width: 0px;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 </style>
