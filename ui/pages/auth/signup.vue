@@ -34,6 +34,7 @@
           </v-card-text>
           <v-divider class="mt-5" />
           <v-card-actions>
+            <v-spacer/>
             <v-btn
               color="primary"
               type="submit"

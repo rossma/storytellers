@@ -169,7 +169,11 @@ export default {
                 findPageByOid(pageDoc.data().parentPagesOid)
                   .then(parentPageDoc => {
                     if (parentPageDoc.exists) {
-                      this.initPage(parentPageDoc.id, parentPageDoc.data(), pageOid)
+                      this.initPage(
+                        parentPageDoc.id,
+                        parentPageDoc.data(),
+                        pageOid
+                      )
                     } else {
                       this.$toast.error('Page does not exist')
                     }

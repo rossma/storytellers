@@ -28,7 +28,7 @@
                 v-on="on"
               />
             </template>
-            <span>Cover</span>
+            <span class="hidden-sm-and-down">Cover</span>
           </v-tooltip>
         </v-item>
         <v-item v-if="isMediaRichType(slotProps.activeMedium)">
@@ -40,7 +40,7 @@
             <v-icon left>
               {{ isRichTextPreview ? 'create' : 'pageview' }}
             </v-icon>
-            {{ isRichTextPreview ? 'Editor' : 'Preview' }}
+            <span class="hidden-sm-and-down">{{ isRichTextPreview ? 'Editor' : 'Preview' }}</span>
           </v-btn>
         </v-item>
       </v-item-group>
@@ -162,8 +162,7 @@ export default {
     onUploadPreview(file) {
       log('in onUploadPreview')
       this.file = file
-      EventBus.$emit('upload-preview-updated', {
-        origin: this.origin,
+      EventBus.$emit(`upload-preview-updated-${this.origin}`, {
         file: file
       })
       if (this.isImage(file.type)) {
@@ -273,8 +272,7 @@ export default {
     previewRichTextContent() {
       log('In preview Rich Text')
       this.isRichTextPreview = !this.isRichTextPreview
-      EventBus.$emit('rich-text-preview', {
-        origin: this.origin,
+      EventBus.$emit(`rich-text-preview-${this.origin}`, {
         isPreview: this.isRichTextPreview
       })
     },

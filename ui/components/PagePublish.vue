@@ -5,11 +5,12 @@
   >
     <v-dialog
       v-model="dialog"
+      persistent
       width="600px"
     >
       <v-card>
         <v-toolbar
-          color="primary"
+          :color="theme"
           dark
         >
           <v-toolbar-title>{{ title }}</v-toolbar-title>
@@ -105,6 +106,9 @@ export default {
     ...mapGetters('story', ['story']),
     title: function() {
       return this.isPublished ? 'Invite Collaborators' : 'Publish Story'
+    },
+    theme: function() {
+      return this.isPublished ? 'secondary' : 'primary'
     }
   },
   created: function() {},

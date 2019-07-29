@@ -4,7 +4,8 @@
     justify-center
   >
     <v-dialog 
-      v-model="dialog" 
+      v-model="dialog"
+      persistent
       width="600px"
     >
       <v-card>

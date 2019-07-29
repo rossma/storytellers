@@ -1,6 +1,6 @@
 <script>
-// import debug from 'debug'
-// const log = debug('app:components/PdfPage')
+import debug from 'debug'
+const log = debug('app:components/PdfPage')
 
 export default {
   props: {
@@ -25,10 +25,11 @@ export default {
         height: actualSizeHeight
       } = this.actualSizeViewport
       const pixelRatio = window.devicePixelRatio || 1
+      // const pixelRatio = 1
       const [pixelWidth, pixelHeight] = [actualSizeWidth, actualSizeHeight].map(
         dim => Math.ceil(dim / pixelRatio)
       )
-      // log(`width: ${pixelWidth}px; height: ${pixelHeight}px;`)
+      log(`window.devicePixelRatio: ${window.devicePixelRatio} piixel ratio: ${pixelRatio} actualSizeWidth: ${actualSizeWidth}px actualSizeHeight: ${actualSizeHeight}px width: ${pixelWidth}px; height: ${pixelHeight}px;`)
       return `width: ${pixelWidth}px; height: ${pixelHeight}px;`
     },
 

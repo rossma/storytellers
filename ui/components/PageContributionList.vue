@@ -70,19 +70,23 @@
         </v-container>
       </v-card>
     </v-flex>
-    <page-contribution-medium-viewer
-      :activeMedium=activeMedium
-      :key="viewerKey"
-      :dialog="pageMediumDialog"
-      :contribution="selectedChildPage"
-      :pages-ref="pagesRef"
-      :origin:="origin"
-      :read-only="readOnly"
-      :user="user"
-      @add="addContribution"
-      @delete="deleteContribution"
-      @close="pageMediumDialog = false"
-    />
+    <portal to="contribution-medium-viewer-dialog">
+      <page-contribution-medium-viewer
+        v-if="pageMediumDialog"
+        :key="viewerKey"
+        :activeMedium=activeMedium
+        :dialog="pageMediumDialog"
+        :contribution="selectedChildPage"
+        :pages-ref="pagesRef"
+        :origin:="origin"
+        :read-only="readOnly"
+        :user="user"
+        @add="addContribution"
+        @delete="deleteContribution"
+        @close="closeMediumDialog"
+      />
+    </portal>
+
     <page-comments
       v-if="selectedChildPage.id"
       :key="dialogKey"
@@ -100,6 +104,7 @@
 
 <script>
 import { IMAGE_TYPE, RICH_TEXT_TYPE } from '~/utils/file'
+// import { EventBus } from '~/utils/event-bus.js'
 import debug from 'debug'
 import MediumViewerMixin from '../mixins/MediumViewerMixin'
 import { findPagesByParent, getPagesRef } from '~/api/service/page'
@@ -220,6 +225,13 @@ export default {
     reRenderMediumViewer() {
       // force rerender
       this.viewerKey += 1
+
+      // have to set the root el to have overflow hidden to hide vertical scrollbar on modal open
+      document.documentElement.classList.add('overflow-y-hidden')
+    },
+    closeMediumDialog() {
+      document.documentElement.classList.remove('overflow-y-hidden')
+      this.pageMediumDialog = false
     },
     reRenderCommentsDialog() {
       // force rerender

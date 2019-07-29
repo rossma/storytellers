@@ -1,136 +1,139 @@
 <template>
   <v-dialog
     v-model="dialog"
+    lazy
     hide-overlay
+    persistent
     fullscreen
+    content-class="mydialog"
     transition="dialog-bottom-transition"
   >
-    <v-layout
-      dark
-      column
-      fill-height
-    >
-      <v-card class="dialog-container">
-        <v-toolbar
+    <v-card class="dialog-container">
+      <v-toolbar
+        dark
+        :color="theme"
+        class="dialog-toolbar"
+      >
+        <v-btn
+          icon
           dark
-          :color="theme"
+          @click.native="closeDialog()"
         >
-          <v-btn
-            icon
-            dark
-            @click.native="closeDialog()"
-          >
-            <v-icon>close</v-icon>
-          </v-btn>
-          <v-toolbar-title>{{ title }}</v-toolbar-title>
-          <v-spacer />
-          <v-toolbar-items class="medium-viewer-toolbar">
-            <slot
-              name="toolbar-custom-items"
-              :activeMedium="activeMedium"
+          <v-icon>close</v-icon>
+        </v-btn>
+        <v-toolbar-title>{{ title }}</v-toolbar-title>
+        <v-spacer />
+        <v-toolbar-items class="medium-viewer-toolbar">
+          <slot
+            name="toolbar-custom-items"
+            :activeMedium="activeMedium"
+          />
+          <slot name="toolbar-medium-type-actions">
+            <v-divider
+              v-if="!readOnly && (isMediaImageType(activeMedium) || isMediaBookType(activeMedium))"
+              class="mx-2"
+              vertical
             />
-            <slot name="toolbar-medium-type-actions">
-              <v-divider
-                v-if="!readOnly && (isMediaImageType(activeMedium) || isMediaBookType(activeMedium))"
-                class="mx-2"
-                vertical
-              />
-              <v-tooltip
-                v-if="!readOnly && (isMediaImageType(activeMedium) || isMediaBookType(activeMedium))"
-                bottom
-              >
+            <v-tooltip
+              v-if="!readOnly && (isMediaImageType(activeMedium) || isMediaBookType(activeMedium))"
+              bottom
+            >
+              <template #activator="{ on }">
+                <span
+                  class="toolbar-upload"
+                  v-on="on"
+                >
+                  <upload-button
+                    :selected-callback="previewMediaFile"
+                    icon="cloud_upload"
+                  />
+                </span>
+              </template>
+              <span>Upload</span>
+            </v-tooltip>
+            <v-divider
+              v-if="!canDelete"
+              class="mx-2"
+              vertical
+            />
+            <v-btn-toggle
+              v-model="activeMedium"
+              class="transparent"
+              mandatory
+            >
+              <v-tooltip bottom>
                 <template #activator="{ on }">
-                  <span
-                    class="toolbar-upload"
+                  <v-btn
+                    v-if="isRichTextEnabled && !canDelete"
+                    :value="1"
+                    flat
                     v-on="on"
                   >
-                    <upload-button
-                      :selected-callback="previewMediaFile"
-                      icon="cloud_upload"
-                    />
-                  </span>
+                    <v-icon>text_format</v-icon>
+                  </v-btn>
                 </template>
-                <span>Upload</span>
+                <span>Rich Text</span>
               </v-tooltip>
-              <v-divider
-                v-if="!canDelete"
-                class="mx-2"
-                vertical
-              />
-              <v-btn-toggle
-                v-model="activeMedium"
-                class="transparent"
-                mandatory
-              >
-                <v-tooltip bottom>
-                  <template #activator="{ on }">
-                    <v-btn
-                      v-if="isRichTextEnabled && !canDelete"
-                      :value="1"
-                      flat
-                      v-on="on"
-                    >
-                      <v-icon>text_format</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Rich Text</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template #activator="{ on }">
-                    <v-btn
-                      v-if="isBookEnabled && !canDelete"
-                      :value="2"
-                      flat
-                      v-on="on"
-                    >
-                      <v-icon>book</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Words</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template #activator="{ on }">
-                    <v-btn
-                      v-if="isImageEnabled && !canDelete"
-                      :value="3"
-                      flat
-                      v-on="on"
-                    >
-                      <v-icon>brush</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Pictures</span>
-                </v-tooltip>
-              </v-btn-toggle>
-            </slot>
-            <slot name="toolbar-save-btns">
-              <v-btn
-                v-if="!readOnly"
-                dark
-                flat
-                @click="saveMediaFile"
-              >
-                <v-icon left>
-                  save
-                </v-icon>
-                Save
-              </v-btn>
-            </slot>
-          </v-toolbar-items>
-        </v-toolbar>
-        <v-layout
-          justify-center
-          dark
-          fill-height
-        >
+              <v-tooltip bottom>
+                <template #activator="{ on }">
+                  <v-btn
+                    v-if="isBookEnabled && !canDelete"
+                    :value="2"
+                    flat
+                    v-on="on"
+                  >
+                    <v-icon>book</v-icon>
+                  </v-btn>
+                </template>
+                <span>Words</span>
+              </v-tooltip>
+              <v-tooltip bottom>
+                <template #activator="{ on }">
+                  <v-btn
+                    v-if="isImageEnabled && !canDelete"
+                    :value="3"
+                    flat
+                    v-on="on"
+                  >
+                    <v-icon>brush</v-icon>
+                  </v-btn>
+                </template>
+                <span>Pictures</span>
+              </v-tooltip>
+            </v-btn-toggle>
+          </slot>
+          <slot name="toolbar-save-btns">
+            <v-btn
+              v-if="!readOnly"
+              dark
+              flat
+              @click="saveMediaFile"
+            >
+              <v-icon left>
+                save
+              </v-icon>
+              <span class="hidden-sm-and-down">Save</span>
+            </v-btn>
+          </slot>
+        </v-toolbar-items>
+      </v-toolbar>
+      <v-layout
+        justify-start
+        align-center
+        columnpage-m
+        dark
+        fill-height
+        class="dialog-content"
+      >
+<!--        <v-flex xs12 fill-height>-->
           <slot
             name="content-container"
             :activeMedium="activeMedium"
           />
-        </v-layout>
-        <!--</v-responsive>-->
-      </v-card>
-    </v-layout>
+<!--        </v-flex>-->
+      </v-layout>
+      <!--</v-responsive>-->
+    </v-card>
   </v-dialog>
 </template>
 
@@ -189,11 +192,6 @@ export default {
       required: true
     }
   },
-  watch: {
-    initialMedium: function(newValue, oldValue) {
-      this.activeMedium = newValue
-    }
-  },
   data() {
     return {
       activeMedium: 3,
@@ -201,6 +199,11 @@ export default {
       // hasImageChanged: false,
       // hasBookChanged: false,
       // richTextPreview: false
+    }
+  },
+  watch: {
+    initialMedium: function(newValue, oldValue) {
+      this.activeMedium = newValue
     }
   },
   beforeMount: function() {
@@ -266,14 +269,30 @@ export default {
   align-items: center;
 }
 
-.dialog-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
+/*.dialog {*/
+  /*height: 100%;*/
+  /*display: flex;*/
+  /*flex-direction: column;*/
+/*}*/
 
 span.v-tooltip {
   align-items: center;
   align-self: center;
+}
+
+.dialog-toolbar {
+  z-index: 10;
+}
+
+.dialog-content {
+  /*border: 2px solid cyan;*/
+  display: block;
+  position: absolute;
+  top: 0;
+  padding-top: 65px;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+  overflow:hidden;
 }
 </style>

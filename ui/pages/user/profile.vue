@@ -88,7 +88,9 @@
                   :disabled="!valid"
                   @click="submit"
                 >
-                  submit
+                  <v-icon left>
+                    check
+                  </v-icon>submit
                 </v-btn>
               </v-flex>
             </v-layout>
