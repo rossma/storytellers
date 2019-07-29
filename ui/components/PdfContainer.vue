@@ -1,6 +1,8 @@
 <template>
 <!--  <v-card flat>-->
-    <v-responsive :aspect-ratio="16/9">
+    <v-responsive
+      class="pdf-document"
+      :aspect-ratio="16/9">
 <!--      <v-card-text>-->
         <!--pages: {{ pages.length }}-->
 <!--        <div class="pdf-document">-->
@@ -143,6 +145,6 @@ export default {
 
 <style scoped>
 .pdf-document {
-  /*border: 3px solid red;*/
+  overflow: initial;
 }
 </style>
