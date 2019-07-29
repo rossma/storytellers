@@ -1,8 +1,4 @@
 <template>
-  <v-layout
-    justify-center
-    class="medium-viewer-rich-container"
-  >
     <no-ssr>
       <rich-text-container
         :read-only="readOnly"
@@ -11,7 +7,6 @@
         @save="saveContent"
       />
     </no-ssr>
-  </v-layout>
 </template>
 
 <script>

@@ -1,9 +1,14 @@
 <template>
-  <v-card flat>
+<!--  <v-card flat>-->
     <v-responsive :aspect-ratio="16/9">
-      <v-card-text>
+<!--      <v-card-text>-->
         <!--pages: {{ pages.length }}-->
-        <div class="pdf-document">
+<!--        <div class="pdf-document">-->
+<!--        <v-layout-->
+<!--          justify-start-->
+<!--          align-center-->
+<!--          row-->
+<!--          class="pdf-document">-->
           <pdf-page
             v-for="page in pages"
             :key="page.pageNumber"
@@ -11,10 +16,11 @@
             @errored="onPageErrored"
             @rendered="onPageRendered"
           />
-        </div>
-      </v-card-text>
+<!--        </v-layout>-->
+<!--        </div>-->
+<!--      </v-card-text>-->
     </v-responsive>
-  </v-card>
+<!--  </v-card>-->
 </template>
 
 <script>
@@ -77,17 +83,16 @@ export default {
         this.init(this.src)
       }
 
-      EventBus.$on('upload-preview-updated', ({ origin, file }) => {
-        log('in update pdf', this.origin, origin, FileUtils.isPdf(file.type))
-        if (this.origin === origin && FileUtils.isPdf(file.type)) {
+      EventBus.$on(`upload-preview-updated-${this.origin}`, ({ file }) => {
+        log('in update pdf', this.origin, FileUtils.isPdf(file.type))
+        if (FileUtils.isPdf(file.type)) {
           this.update(file)
         }
       })
-
     })
   },
   beforeDestroy() {
-    EventBus.$off('upload-preview-updated')
+    EventBus.$off(`upload-preview-updated-${this.origin}`)
   },
   methods: {
     init(src) {
@@ -138,10 +143,6 @@ export default {
 
 <style scoped>
 .pdf-document {
-  /*position: fixed;*/
-  position: relative;
-  /*overflow: scroll;*/
-  width: 100%;
-  height: 90%;
+  /*border: 3px solid red;*/
 }
 </style>

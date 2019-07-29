@@ -3,6 +3,7 @@
     justify-center
     class="medium-viewer-book-container"
   >
+<!--    <v-flex xs12>-->
     <pdf-container
       v-show="isPdf(mutableFileType)"
       :origin="origin"
@@ -13,15 +14,14 @@
       :origin="origin"
       :src="src"
       :fileType="mutableFileType"/>
-    <v-flex v-if="!isPdf(mutableFileType) && !isEpub(mutableFileType)">
-      <v-card flat>
+      <v-card v-if="!isPdf(mutableFileType) && !isEpub(mutableFileType)" flat>
         <v-responsive :aspect-ratio="16/9">
           <v-card-title primary-title>
             There aren't any uploaded books yet
           </v-card-title>
         </v-responsive>
       </v-card>
-    </v-flex>
+<!--    </v-flex>-->
   </v-layout>
 </template>
 
@@ -70,22 +70,23 @@ export default {
     this.$nextTick(() => {
       log('in medium viewer book mounted', this.src)
 
-      EventBus.$on('upload-preview-updated', ({ origin, file }) => {
-        log('in update book', this.origin, origin, this.isBook(file.type))
-        if (this.origin === origin && this.isBook(file.type)) {
+      EventBus.$on(`upload-preview-updated-${this.origin}`, ({ file }) => {
+        log('in update book', this.origin, this.isBook(file.type))
+        if (this.isBook(file.type)) {
           this.mutableFileType = file.type
         }
       })
     })
   },
   beforeDestroy() {
-    EventBus.$off('upload-preview-updated')
+    EventBus.$off(`upload-preview-updated-${this.origin}`)
   }
 }
 </script>
 <style>
 .medium-viewer-book-container {
-  display: block;
+  overflow-y: scroll;
+  height: 100vh;
 }
 
 .medium-viewer-book-container img {

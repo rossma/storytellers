@@ -99,6 +99,8 @@
     <v-content>
       <nuxt />
     </v-content>
+    <portal-target name="medium-viewer-dialog" />
+    <portal-target name="contribution-medium-viewer-dialog" />
     <the-page-footer />
   </v-app>
 </template>

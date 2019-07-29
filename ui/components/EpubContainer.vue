@@ -83,16 +83,16 @@ export default {
         this.init(this.src)
       }
 
-      EventBus.$on('upload-preview-updated', ({ origin, file }) => {
-        log('in update ebook', this.origin, origin, FileUtils.isEpub(file.type))
-        if (this.origin === origin && FileUtils.isEpub(file.type)) {
+      EventBus.$on(`upload-preview-updated-${this.origin}`, ({ file }) => {
+        log('in update ebook', this.origin, FileUtils.isEpub(file.type))
+        if (FileUtils.isEpub(file.type)) {
           this.update(file)
         }
       })
     })
   },
   beforeDestroy() {
-    EventBus.$off('upload-preview-updated')
+    EventBus.$off(`upload-preview-updated-${this.origin}`)
     this.destroyBook()
   },
   methods: {

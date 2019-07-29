@@ -1,75 +1,73 @@
 <template>
-  <div>
-    <base-medium-viewer
-      :dialog="dialog"
-      :read-only="readOnly"
-      :title="story.title"
-      :theme="'secondary'"
-      :user="user"
-      :initial-medium="activeMedium"
-      :is-book-enabled="!readOnly || !!bookSrc"
-      :is-image-enabled="!readOnly || !!imageSrc"
-      :is-rich-text-enabled="!readOnly || !!richTextSrc"
-      :can-delete="canDelete"
-      @on-upload-preview="onUploadPreview"
-      @save="saveMediaDialog"
-      @close="close()"
-    >
-      <template #toolbar-custom-items="slotProps">
-        <v-divider
-          v-if="!readOnly && isMediaRichType(slotProps.activeMedium)"
-          class="mx-2"
-          vertical
-        />
-        <v-item-group v-if="!readOnly">
-          <v-item v-if="isMediaRichType(slotProps.activeMedium)">
-            <v-btn
-              flat
-              class="toolbar-custom-btn"
-              @click="previewRichTextContent"
-            >
-              <v-icon left>
-                {{ isRichTextPreview ? 'create' : 'pageview' }}
-              </v-icon>
-              {{ isRichTextPreview ? 'Editor' : 'Preview' }}
-            </v-btn>
-          </v-item>
-        </v-item-group>
+  <base-medium-viewer
+    :dialog="dialog"
+    :read-only="readOnly"
+    :title="story.title"
+    :theme="'secondary'"
+    :user="user"
+    :initial-medium="activeMedium"
+    :is-book-enabled="!readOnly || !!bookSrc"
+    :is-image-enabled="!readOnly || !!imageSrc"
+    :is-rich-text-enabled="!readOnly || !!richTextSrc"
+    :can-delete="canDelete"
+    @on-upload-preview="onUploadPreview"
+    @save="saveMediaDialog"
+    @close="close()"
+  >
+    <template #toolbar-custom-items="slotProps">
+      <v-divider
+        v-if="!readOnly && isMediaRichType(slotProps.activeMedium)"
+        class="mx-2"
+        vertical
+      />
+      <v-item-group v-if="!readOnly">
+        <v-item v-if="isMediaRichType(slotProps.activeMedium)">
+          <v-btn
+            flat
+            class="toolbar-custom-btn"
+            @click="previewRichTextContent"
+          >
+            <v-icon left>
+              {{ isRichTextPreview ? 'create' : 'pageview' }}
+            </v-icon>
+            <span class="hidden-sm-and-down">{{ isRichTextPreview ? 'Editor' : 'Preview' }}</span>
+          </v-btn>
+        </v-item>
+      </v-item-group>
 
-        <v-btn
-          v-if="canDelete"
-          dark
-          flat
-          @click="pageContributionDeleteDialog = true"
-        >
-          <v-icon left>
-            delete
-          </v-icon>
-          Delete
-        </v-btn>
-      </template>
+      <v-btn
+        v-if="canDelete"
+        dark
+        flat
+        @click="pageContributionDeleteDialog = true"
+      >
+        <v-icon left>
+          delete
+        </v-icon>
+        <span class="hidden-sm-and-down">Delete</span>
+      </v-btn>
+    </template>
 
-      <template #content-container="slotProps">
-        <medium-viewer-image
-          v-show="isMediaImageType(slotProps.activeMedium)"
-          :src="imageSrc"
-          :origin="origin"
-        />
-        <medium-viewer-book
-          v-show="isMediaBookType(slotProps.activeMedium)"
-          :src="bookSrc"
-          :file-type="bookType"
-          :origin="origin"
-        />
-        <medium-viewer-rich-text
-          v-show="isMediaRichType(slotProps.activeMedium)"
-          :read-only="readOnly"
-          :src="richTextSrc"
-          :origin="origin"
-          @save="saveRichText"
-        />
-      </template>
-    </base-medium-viewer>
+    <template #content-container="slotProps">
+      <medium-viewer-image
+        v-show="isMediaImageType(slotProps.activeMedium)"
+        :src="imageSrc"
+        :origin="origin"
+      />
+      <medium-viewer-book
+        v-show="isMediaBookType(slotProps.activeMedium)"
+        :src="bookSrc"
+        :file-type="bookType"
+        :origin="origin"
+      />
+      <medium-viewer-rich-text
+        v-show="isMediaRichType(slotProps.activeMedium)"
+        :read-only="readOnly"
+        :src="richTextSrc"
+        :origin="origin"
+        @save="saveRichText"
+      />
+    </template>
 
     <page-contribution-save-dialog
       :dialog="pageContributionSaveDialog"
@@ -82,7 +80,7 @@
       @delete="deleteMedia"
       @close="pageContributionDeleteDialog = false"
     />
-  </div>
+  </base-medium-viewer>
 </template>
 
 <script>
@@ -94,6 +92,7 @@ import MediumViewerMixin from '../mixins/MediumViewerMixin'
 import BaseMediumViewer from '~/components/BaseMediumViewer'
 import MediumViewerBook from '~/components/MediumViewerBook'
 import MediumViewerImage from '~/components/MediumViewerImage'
+import MediumViewerRichText from '~/components/MediumViewerRichText'
 import PageContributionDeleteDialog from '~/components/PageContributionDeleteDialog'
 import PageContributionSaveDialog from '~/components/PageContributionSaveDialog'
 import { uploadImage } from '~/api/service/image'
@@ -104,7 +103,6 @@ import {
   deletePage,
   getRandomPreviewWallpaper
 } from '~/api/service/page'
-import MediumViewerRichText from '~/components/MediumViewerRichText'
 
 const log = debug('app:components/PageContributionMediumViewer')
 
@@ -198,12 +196,16 @@ export default {
       return this.contribution.id && this.user.uid === this.contribution.uid
     }
   },
+  mounted: function() {
+    this.$nextTick(() => {
+      document.documentElement.classList.add('overflow-y-hidden')
+    })
+  },
   methods: {
     onUploadPreview(file) {
       log('in onUploadPreview', this.pagesRef.id)
       this.file = file
-      EventBus.$emit('upload-preview-updated', {
-        origin: this.origin,
+      EventBus.$emit(`upload-preview-updated-${this.origin}`, {
         file: file
       })
     },
@@ -349,8 +351,7 @@ export default {
     previewRichTextContent() {
       log('In preview Rich Text')
       this.isRichTextPreview = !this.isRichTextPreview
-      EventBus.$emit('rich-text-preview', {
-        origin: this.origin,
+      EventBus.$emit(`rich-text-preview-${this.origin}`, {
         isPreview: this.isRichTextPreview
       })
     },

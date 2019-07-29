@@ -5,13 +5,11 @@
       <v-img
         v-show="pageImageSrc()"
         :src="pageImageSrc()"
-        title="Upload"
         @click.stop="openPageMediumDialog()"
       />
       <v-img
         v-show="!pageImageSrc()"
         src="/img/missing-image.png"
-        title="Upload"
         @click.stop="openPageMediumDialog()"
       />
       <!--<img-->
@@ -56,13 +54,15 @@
       :initial-dialog-state="initialChildDialog"
       :user="user"
     />
-    <page-medium-viewer
-      :dialog="pageMediumDialog"
-      :page="page"
-      :story-cover="storyCover"
-      :user="user"
-      @close="pageMediumDialog = false"
-    />
+    <portal to="medium-viewer-dialog">
+      <page-medium-viewer
+        :dialog="pageMediumDialog"
+        :page="page"
+        :story-cover="storyCover"
+        :user="user"
+        @close="pageMediumDialog = false"
+      />
+    </portal>
     <page-comments
       :comments="page.comments"
       :dialog="commentsDialog"
@@ -76,10 +76,10 @@
 </template>
 
 <script>
+import debug from 'debug'
+import { updatePage } from '~/api/service/page'
 import PageMediumViewer from '~/components/PageMediumViewer'
 import PageComments from '~/components/PageComments'
-import { updatePage } from '~/api/service/page'
-import debug from 'debug'
 import PageContributionList from './PageContributionList'
 const log = debug('app:components/PageDetail')
 
@@ -193,8 +193,8 @@ export default {
   max-height: 500px;
 }
 
-body {
-  overflow: auto;
-  background: #eee;
-}
+/*body {*/
+/*  overflow: auto;*/
+/*  background: #eee;*/
+/*}*/
 </style>

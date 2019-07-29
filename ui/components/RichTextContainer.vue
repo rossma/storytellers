@@ -1,7 +1,20 @@
 <template>
+
+<!--  <v-layout-->
+<!--    class="editor-container"-->
+<!--  >-->
   <v-layout
+    fluid
+    justify-center
     class="editor-container"
   >
+<!--    <v-layout-->
+<!--    justify-center-->
+<!--    class="medium-viewer-rich-container"-->
+<!--  >-->
+<!--      <v-flex xs12>-->
+
+<!--  <div class="editor-container">-->
     <quill-editor
       v-show="!readOnly && !isPreview"
       ref="textEditor"
@@ -14,7 +27,9 @@
       v-show="readOnly || isPreview"
       class="preview-container"
     />
+<!--      </v-flex>-->
   </v-layout>
+<!--  </div>-->
 </template>
 
 <script>
@@ -74,13 +89,11 @@ export default {
       log('next tick', this.src)
 
       // register events
-      EventBus.$on('rich-text-preview', ({ origin, isPreview }) => {
-
-        if (this.origin === origin) {
-          this.isPreview = isPreview
-          if (this.isPreview) {
-            this.preview(this.editor.root.innerHTML)
-          }
+      EventBus.$on(`rich-text-preview-${this.origin}`, ({ isPreview }) => {
+        log('in rich-text-preview', this.origin)
+        this.isPreview = isPreview
+        if (this.isPreview) {
+          this.preview(this.editor.root.innerHTML)
         }
       })
 
@@ -89,11 +102,10 @@ export default {
       })
 
       this.init()
-
     })
   },
   beforeDestroy() {
-    EventBus.$off('rich-text-preview')
+    EventBus.$off(`rich-text-preview-${this.origin}`)
     EventBus.$off('rich-text-save')
   },
   methods: {
@@ -153,7 +165,7 @@ export default {
     preview(html) {
       log('previewing html', html)
       this.compiled = Vue.compile(`<div>${html}</div>`)
-    },
+    }
     // save(pageOid, contents) {
     //   log('Saving Rich Text')
     //
@@ -177,25 +189,34 @@ export default {
 </script>
 
 <style scoped>
+.editor-container {
+  margin-top: 0px;
+  /*border: 5px solid purple;*/
+  height: 100%;
+}
+
 .quill-editor {
   background-color: white;
   color: black;
-  width: 100%;
-  /*height: 100%;*/
+  /*border: 20px solid red;*/
+  height: 100%;
+  width: 60em;
 }
 
-.editor-container {
-  /*min-height: 80vh;*/
-  max-width: 60em;
-  margin-top: 10px;
+.ql-editor {
+  background-color: white;
 }
 
 .preview-container {
-  padding: 10px;
-  width: 100%;
+  margin-top: 0px;
+  height: 100%;
+  padding: 20px 50px 20px 50px;
   background-color: #ffffff;
   color: #000000;
-  height: auto;
-  overflow: auto;
+  width: 60em;
+}
+
+.preview-container p {
+  margin-bottom: 0px;
 }
 </style>

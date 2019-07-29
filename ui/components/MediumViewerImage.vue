@@ -2,6 +2,7 @@
   <v-layout
     justify-center
     class="medium-viewer-image-container"
+    tabindex="-1"
   >
     <img
       v-show="mutableSrc"
@@ -53,9 +54,9 @@ export default {
 
       this.mutableSrc = this.src
 
-      EventBus.$on('upload-preview-updated', ({ origin, file }) => {
-        log('in preview upload', this.origin, origin, this.isImage(file.type))
-        if (this.origin === origin && this.isImage(file.type)) {
+      EventBus.$on(`upload-preview-updated-${this.origin}`, ({ file }) => {
+        log('in preview upload', this.origin, this.isImage(file.type))
+        if (this.isImage(file.type)) {
           log('origins are the same and is an image')
           this.init(file)
         }
@@ -63,7 +64,7 @@ export default {
     })
   },
   beforeDestroy() {
-    EventBus.$off('upload-preview-updated')
+    EventBus.$off(`upload-preview-updated-${this.origin}`)
   },
   methods: {
     init(file) {
@@ -81,6 +82,8 @@ export default {
 <style scoped>
 .medium-viewer-image-container {
   display: block;
+  overflow-y: scroll;
+  height: 100vh;
 }
 
 .medium-viewer-image-container img {
