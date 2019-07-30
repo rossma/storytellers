@@ -29,7 +29,7 @@ export default {
       const [pixelWidth, pixelHeight] = [actualSizeWidth, actualSizeHeight].map(
         dim => Math.ceil(dim / pixelRatio)
       )
-      log(`window.devicePixelRatio: ${window.devicePixelRatio} piixel ratio: ${pixelRatio} actualSizeWidth: ${actualSizeWidth}px actualSizeHeight: ${actualSizeHeight}px width: ${pixelWidth}px; height: ${pixelHeight}px;`)
+      log(`window.devicePixelRatio: ${window.devicePixelRatio} pixel ratio: ${pixelRatio} actualSizeWidth: ${actualSizeWidth}px actualSizeHeight: ${actualSizeHeight}px width: ${pixelWidth}px; height: ${pixelHeight}px;`)
       return `width: ${pixelWidth}px; height: ${pixelHeight}px;`
     },
 
@@ -37,7 +37,8 @@ export default {
       let { width, height } = this.viewport
       ;[width, height] = [width, height].map(dim => Math.ceil(dim))
 
-      const style = this.canvasStyle
+      // const style = this.canvasStyle
+      const style = '' // removed style attribute for now...
 
       return {
         width,
@@ -113,5 +114,6 @@ export default {
 .pdf-page {
   display: block;
   margin: 0 auto 0.5em;
+  max-width: 100%;
 }
 </style>

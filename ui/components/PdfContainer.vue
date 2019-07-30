@@ -1,16 +1,10 @@
 <template>
-<!--  <v-card flat>-->
-    <v-responsive
-      class="pdf-document"
-      :aspect-ratio="16/9">
-<!--      <v-card-text>-->
+  <v-card>
+    <v-responsive :aspect-ratio="16/9">
+      <v-card-text
+        class="pdf-document-text">
         <!--pages: {{ pages.length }}-->
-<!--        <div class="pdf-document">-->
-<!--        <v-layout-->
-<!--          justify-start-->
-<!--          align-center-->
-<!--          row-->
-<!--          class="pdf-document">-->
+        <div class="pdf-document">
           <pdf-page
             v-for="page in pages"
             :key="page.pageNumber"
@@ -18,11 +12,10 @@
             @errored="onPageErrored"
             @rendered="onPageRendered"
           />
-<!--        </v-layout>-->
-<!--        </div>-->
-<!--      </v-card-text>-->
+        </div>
+      </v-card-text>
     </v-responsive>
-<!--  </v-card>-->
+  </v-card>
 </template>
 
 <script>
@@ -144,7 +137,11 @@ export default {
 
 
 <style scoped>
+.pdf-document-text {
+  padding: 0px;
+}
+
 .pdf-document {
-  overflow: initial;
+  /*position: relative;*/
 }
 </style>

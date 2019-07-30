@@ -41,10 +41,10 @@
         flat
         @click="pageContributionDeleteDialog = true"
       >
-        <v-icon left>
+        <v-icon>
           delete
         </v-icon>
-        <span class="hidden-sm-and-down">Delete</span>
+        <span class="pl-2 hidden-sm-and-down">Delete</span>
       </v-btn>
     </template>
 
