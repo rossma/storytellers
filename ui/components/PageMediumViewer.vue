@@ -17,14 +17,20 @@
         class="mx-2"
         vertical
       />
-      <v-item-group v-if="!readOnly">
-        <v-item v-if="isMediaImageType(slotProps.activeMedium)">
+      <v-item-group v-if="!readOnly" align-center>
+        <v-item v-if="isMediaImageType(slotProps.activeMedium)" align-center>
           <v-tooltip bottom>
             <template #activator="{ on }">
               <v-checkbox
                 v-model="isCover"
                 :label="`Cover`"
-                class="toolbar-checkbox"
+                class="toolbar-checkbox hidden-sm-and-down"
+                v-on="on"
+              />
+              <v-checkbox
+                v-model="isCover"
+                align-center
+                class="toolbar-checkbox hidden-md-and-up"
                 v-on="on"
               />
             </template>
@@ -37,10 +43,10 @@
             class="toolbar-custom-btn"
             @click="previewRichTextContent"
           >
-            <v-icon left>
-              {{ isRichTextPreview ? 'create' : 'pageview' }}
+            <v-icon>
+              {{ isRichTextPreview ? 'create' : 'notes' }}
             </v-icon>
-            <span class="hidden-sm-and-down">{{ isRichTextPreview ? 'Editor' : 'Preview' }}</span>
+            <span class="pl-2 hidden-sm-and-down">{{ isRichTextPreview ? 'Editor' : 'Preview' }}</span>
           </v-btn>
         </v-item>
       </v-item-group>

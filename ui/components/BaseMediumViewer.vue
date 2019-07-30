@@ -21,7 +21,7 @@
         >
           <v-icon>close</v-icon>
         </v-btn>
-        <v-toolbar-title>{{ title }}</v-toolbar-title>
+        <v-toolbar-title class="hidden-sm-and-down">{{ title }}</v-toolbar-title>
         <v-spacer />
         <v-toolbar-items class="medium-viewer-toolbar">
           <slot
@@ -109,10 +109,10 @@
               flat
               @click="saveMediaFile"
             >
-              <v-icon left>
+              <v-icon>
                 save
               </v-icon>
-              <span class="hidden-sm-and-down">Save</span>
+              <span class="pl-2 hidden-sm-and-down">Save</span>
             </v-btn>
           </slot>
         </v-toolbar-items>
@@ -257,7 +257,7 @@ export default {
 }
 
 .toolbar-checkbox {
-  margin-top: 15px !important;
+  margin-top: 13px !important;
 }
 
 .toolbar-custom-btn {
@@ -268,12 +268,6 @@ export default {
   align-self: center;
   align-items: center;
 }
-
-/*.dialog {*/
-  /*height: 100%;*/
-  /*display: flex;*/
-  /*flex-direction: column;*/
-/*}*/
 
 span.v-tooltip {
   align-items: center;

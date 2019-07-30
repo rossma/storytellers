@@ -7,6 +7,13 @@
       disable-route-watcher
       dark
     >
+      <div class="ml-3 mt-2 mb-2">
+        <nuxt-link to="/">
+          <v-icon>home</v-icon>
+            <span class="pl-4 home hidden-sm-and-down">Home</span>
+        </nuxt-link>
+      </div>
+      <v-divider light />
       <v-avatar
         v-if="photoUrl"
       >
@@ -70,7 +77,7 @@
       <v-toolbar-side-icon
         @click.stop="drawer = !drawer"
       />
-      <v-toolbar-title class="home-title">
+      <v-toolbar-title class="home-title hidden-sm-and-down">
         <nuxt-link to="/">
           Storytellers
         </nuxt-link>
@@ -78,8 +85,8 @@
       <v-spacer />
       <v-layout
         row 
-        align-center 
-        style="max-width: 300px;padding-right:10px;"
+        align-center
+        class="pr-2 search"
       >
         <v-text-field
           v-model="query"
@@ -190,5 +197,14 @@ export default {
 .v-avatar {
   margin-top: 15px;
   margin-left: 15px;
+}
+
+.home {
+  text-decoration: none;
+  font-weight: bold;
+  color: white;
+}
+
+.search {
 }
 </style>
