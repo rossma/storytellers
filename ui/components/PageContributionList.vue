@@ -339,6 +339,7 @@ export default {
     },
     newComment(comment) {
       if (this.selectedChildPage.comments) {
+        log('new comment:', comment)
         this.selectedChildPage.comments.push(comment)
       } else {
         this.selectedChildPage.comments = [comment]

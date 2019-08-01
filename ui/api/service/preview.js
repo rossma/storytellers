@@ -30,15 +30,19 @@ function findPreviews(previewsRef) {
 export function findPreviewsByFilter(filterBy) {
   log(`Finding previews by filter:[${JSON.stringify(filterBy)}]`)
   let previewsRef = DB.collection('previews').orderBy('created', 'desc')
+  // todo ... can we search on multiple authors?
   if (filterBy.byAuthorUid) {
     previewsRef = previewsRef.where('uid', '==', filterBy.byAuthorUid)
   }
-  if (filterBy.byKeywords) {
+  if (filterBy.byKeywords && filterBy.byKeywords.length > 0) {
+    // todo .. can't have multiple where clause with array-contains. Need a way to query all keywords by OR....
+    // filterBy.byKeywords.forEach(keyword => {
     previewsRef = previewsRef.where(
       'keywords',
       'array-contains',
-      filterBy.byKeywords
+      filterBy.byKeywords[0].toLowerCase()
     )
+    // })
   }
   return findPreviews(previewsRef)
 }

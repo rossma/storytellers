@@ -41,7 +41,8 @@ export default {
       type: Object,
       default: function() {
         return {
-          byAuthorUid: null
+          byAuthorUid: null,
+          byKeywords: []
         }
       }
     },
@@ -131,7 +132,7 @@ export default {
         .then(previewsSnapshot => {
           this.previews = previewsSnapshot
           if (!this.previews || this.previews.length === 0) {
-            this.$toast.info('Sorry, there are no results based om you search')
+            this.$toast.info('Sorry, there are no results based on your search')
           }
         })
         .catch(error => {

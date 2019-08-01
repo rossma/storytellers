@@ -149,7 +149,7 @@ export default {
           // previewImageUrl: imageDoc.data().previewUrl,
           // imageFilenameOid: imageDoc.id,
           created: Date.now(),
-          keywords: keywords,
+          keywords: keywords.map(keyword => keyword.toLowerCase()),
           authorTags: authorTags,
           invite: isInvite,
           wallpaperUrl: getRandomPreviewWallpaper()

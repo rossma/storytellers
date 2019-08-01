@@ -231,7 +231,7 @@ export default {
         parentPagesOid: this.contribution.parentPagesOid,
         // parentPagesRef: this.contribution.parentPagesRef,
         summary: summary,
-        keywords: keywords,
+        keywords: keywords.map(keyword => keyword.toLowerCase()),
         authorTags: authorTags,
         uid: this.user.uid,
         wallpaperUrl: getRandomPreviewWallpaper()

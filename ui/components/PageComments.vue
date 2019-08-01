@@ -3,13 +3,13 @@
     row 
     justify-center
   >
-    <v-dialog 
+    <v-dialog
       v-model="dialog"
       persistent
       width="600px"
     >
       <v-card>
-        <v-toolbar 
+        <v-toolbar
           :color="theme"
           dark
         >
@@ -123,8 +123,8 @@ export default {
         })
         updatePage(this.pageId, { comments: clonedeep(this.mutableComments) })
           .then(() => {
+            this.$emit('increment', this.comment)
             this.comment = undefined
-            this.$emit('increment', this.mutableComments)
           })
           .catch(err => {
             log('Error adding comment', err)
