@@ -1,3 +1,4 @@
+const redirectSSL = require('redirect-ssl')
 const express = require('express')
 const bodyParser = require('body-parser')
 const consola = require('consola')
@@ -14,6 +15,8 @@ const session = require('express-session')
 const config = require('../nuxt.config.js')
 const auth = require('./auth')(app)
 config.dev = !(process.env.NODE_ENV === 'production')
+
+app.use(redirectSSL)
 
 // Sessions to create `req.session`
 app.use(
@@ -49,7 +52,7 @@ async function start() {
   app.listen(port, host)
 
   consola.ready({
-    message: `Server listening on http://${host}:${port}`,
+    message: `Server listening on https://${host}:${port}`,
     badge: true
   })
 }

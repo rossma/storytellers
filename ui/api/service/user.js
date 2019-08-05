@@ -22,3 +22,4 @@ export function addUser(user) {
     .doc(user.uid)
     .set(user)
 }
+

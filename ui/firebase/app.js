@@ -30,6 +30,10 @@ export const STORAGE_REF = firebaseApp.storage().ref()
 
 export const AUTH = firebaseApp.auth()
 
+export const GOOGLE_PROVIDER = new firebase.auth.GoogleAuthProvider()
+
+export const FACEBOOK_PROVIDER = new firebase.auth.FacebookAuthProvider()
+
 export function onAuthStateChanged(nextOrObserver) {
   log(`[FIREBASE APP] - checking if onAuthStateChanged: ${nextOrObserver}`)
   return firebaseApp.auth().onAuthStateChanged(nextOrObserver)

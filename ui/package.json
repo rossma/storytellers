@@ -50,6 +50,7 @@
     "pdfjs-dist": "^2.0.943",
     "portal-vue": "^2.1.5",
     "quill-image-resize-module": "^3.0.0",
+    "redirect-ssl": "^1.4.0",
     "standard": "^12.0.1",
     "tls": "0.0.1",
     "uuid": "3.3.2",

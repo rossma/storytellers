@@ -11,7 +11,7 @@
               <h2>User Profile</h2>
             </div>
             <v-layout
-              row
+              rowfind
               wrap
               text-xs-center
             >
