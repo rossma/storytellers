@@ -83,6 +83,7 @@ export const actions = {
     log('login', uid)
     try {
       const token = await AUTH.currentUser.getIdToken(true)
+      log('token', token)
 
       const { status } = await this.$axios.$post('/login', {
         user: state.user,

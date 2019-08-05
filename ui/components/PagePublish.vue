@@ -67,7 +67,12 @@ import debug from 'debug'
 import stringUtils from '~/utils/string'
 
 import { mapGetters } from 'vuex'
-import { publishPage, setPageAndPreviewInviteState, getRandomPreviewWallpaper } from '~/api/service/page'
+import {
+  publishPage,
+  setPageAndPreviewInviteState,
+  getRandomPreviewWallpaper
+} from '~/api/service/page'
+import { findImageByOid } from '~/api/service/image'
 
 const log = debug('app:components/PagePublish')
 
@@ -113,15 +118,14 @@ export default {
   },
   created: function() {},
   methods: {
-    // findImageFilenameKey() {
-    //   if (this.page.image && this.page.image.filename) {
-    //     const filenameKey = this.page.image.filename.split('.').shift()
-    //     return findImageByOid(filenameKey)
-    //   } else {
-    //     // todo ... image shold not be mandatory
-    //     return Promise.reject(new Error('Image reference can not be found'))
-    //   }
-    // },
+    findImageFilenameKey() {
+      if (this.page.image && this.page.image.filename) {
+        const filenameKey = this.page.image.filename.split('.').shift()
+        return findImageByOid(filenameKey)
+      } else {
+        return Promise.resolve()
+      }
+    },
     publish(isInvite) {
       if (this.isPublished) {
         log('page already published just need to send invitation')
@@ -138,71 +142,43 @@ export default {
         keywords = stringUtils.findKeywords(this.summary)
         authorTags = stringUtils.findAuthorTags(this.summary)
 
-        const preview = {
-          storyOid: this.story.id,
-          chapterOid: this.page.chapterOid,
-          pageOid: this.page.id,
-          title: this.story.title,
-          summary: this.summary,
-          uid: this.uid,
-          userDisplayName: this.userDisplayName,
-          // previewImageUrl: imageDoc.data().previewUrl,
-          // imageFilenameOid: imageDoc.id,
-          created: Date.now(),
-          keywords: keywords.map(keyword => keyword.toLowerCase()),
-          authorTags: authorTags,
-          invite: isInvite,
-          wallpaperUrl: getRandomPreviewWallpaper()
-        }
-        publishPage(preview)
-          .then(() => {
-            this.$emit('published', isInvite)
-            this.closeDialog()
-            this.$toast.success('Story published')
-          })
-          .catch(error => {
-            log('There was an error publishing page', error)
-            this.$toast.error(error.message)
-          })
+        this.findImageFilenameKey().then(imageSnapshot => {
+          let imageId, imageUrl
 
-        //
-        // this.findImageFilenameKey()
-        //   .then(imageDoc => {
-        //     // todo imageDoc shouldn't be mandatory
-        //     if (imageDoc.exists) {
-        //       const preview = {
-        //         storyOid: this.story.id,
-        //         chapterOid: this.page.chapterOid,
-        //         pageOid: this.page.id,
-        //         title: this.story.title,
-        //         summary: this.summary,
-        //         uid: this.uid,
-        //         userDisplayName: this.userDisplayName,
-        //         previewImageUrl: imageDoc.data().previewUrl,
-        //         imageFilenameOid: imageDoc.id,
-        //         created: Date.now(),
-        //         keywords: keywords,
-        //         authorTags: authorTags,
-        //         invite: isInvite
-        //       }
-        //       return publishPage(preview)
-        //     } else {
-        //       // possible if the server function hasn't run yet
-        //       log('Image Document not found in DB at this time')
-        //       return Promise.reject(
-        //         new Error('There was an error finding image reference')
-        //       )
-        //     }
-        //   })
-        //   .then(() => {
-        //     this.$emit('published', isInvite)
-        //     this.closeDialog()
-        //     this.$toast.success('Story published')
-        //   })
-        //   .catch(error => {
-        //     log('There was an error publishing page', error)
-        //     this.$toast.error(error.message)
-        //   })
+          if (imageSnapshot && imageSnapshot.exists) {
+            imageId = imageSnapshot.id
+            imageUrl = imageSnapshot.data().previewUrl
+          }
+
+          const preview = {
+            storyOid: this.story.id,
+            chapterOid: this.page.chapterOid,
+            pageOid: this.page.id,
+            title: this.story.title,
+            summary: this.summary,
+            uid: this.uid,
+            userDisplayName: this.userDisplayName,
+            previewImageUrl: imageUrl,
+            imageFilenameOid: imageId,
+            created: Date.now(),
+            keywords: keywords.map(keyword => keyword.toLowerCase()),
+            authorTags: authorTags,
+            invite: isInvite,
+            wallpaperUrl: getRandomPreviewWallpaper()
+          }
+
+          log('publishing page with preveiw:', preview)
+          publishPage(preview)
+            .then(() => {
+              this.$emit('published', isInvite)
+              this.closeDialog()
+              this.$toast.success('Story published')
+            })
+            .catch(error => {
+              log('There was an error publishing page', error)
+              this.$toast.error(error.message)
+            })
+        })
       }
     },
     updatePageAndPreviewInviteState(pageOid, previewOid, isInvite) {

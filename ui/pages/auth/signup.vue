@@ -1,52 +1,66 @@
 <template>
-  <v-layout
-    column
-    align-center
-    justify-center
+  <v-container
+    grid-list-md
   >
-    <span>
-      Already a user?
-      <nuxt-link
-        to="/auth/signin"
-        class="signin-link"
-      >Sign in</nuxt-link></span>
-    <v-flex
-      xs12
-      sm10
-      md8
-      lg6
+    <v-layout
+      align-center
+      column
+      wrap
     >
-      <v-card>
-        <form @submit.prevent="signUp">
-          <v-card-text ref="form">
-            <v-text-field
-              v-model="email"
-              label="email"
-            />
-            <v-text-field
-              v-model="password"
-              :append-icon="showPassword ? 'visibility' : 'visibility_off'"
-              :type="showPassword ? 'text' : 'password'"
-              name="password-in-txt"
-              label="password"
-              @click:append="showPassword = !showPassword"
-            />
-          </v-card-text>
-          <v-divider class="mt-5" />
-          <v-card-actions>
-            <v-spacer/>
-            <v-btn
-              color="primary"
-              type="submit"
-            >
-              <v-icon left>account_box</v-icon>
-              Sign Up
-            </v-btn>
-          </v-card-actions>
-        </form>
-      </v-card>
-    </v-flex>
-  </v-layout>
+      <v-flex
+        xs12
+        sm10
+        md8
+        mb-1
+      >
+        Already a user?
+        <nuxt-link
+          to="/auth/signin"
+          class="signin-link"
+        >
+          Sign in
+        </nuxt-link></span>
+      </v-flex>
+      <v-flex
+        xs12
+        sm10
+        md8
+        lg6
+      >
+        <v-card>
+          <form @submit.prevent="signUp">
+            <v-card-text ref="form">
+              <v-text-field
+                v-model="email"
+                label="email"
+              />
+              <v-text-field
+                v-model="password"
+                :append-icon="showPassword ? 'visibility' : 'visibility_off'"
+                :type="showPassword ? 'text' : 'password'"
+                name="password-in-txt"
+                label="password"
+                @click:append="showPassword = !showPassword"
+              />
+            </v-card-text>
+            <v-divider class="mt-5" />
+            <v-card-actions>
+              <v-spacer />
+              <v-btn
+                color="pri  mary"
+                type="submit"
+              >
+                <v-icon left>
+                  account_box
+                </v-icon>
+                Sign Up
+              </v-btn>
+            </v-card-actions>
+          </form>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
