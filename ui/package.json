@@ -46,7 +46,7 @@
     "net": "^1.0.2",
     "node-fetch": "^2.4.1",
     "node-pre-gyp": "^0.11.0",
-    "nuxt": "2.6.1",
+    "nuxt": "2.8.1",
     "pdfjs-dist": "^2.0.943",
     "portal-vue": "^2.1.5",
     "quill-image-resize-module": "^3.0.0",
