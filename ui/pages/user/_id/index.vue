@@ -1,27 +1,34 @@
 <template>
   <v-container grid-list-xl>
-    <v-layout>
+    <v-layout wrap justify-center>
       <v-flex xs12>
-        <h2 class="pb-4">User Profile</h2>
-        <v-card
-          flat
-        >
+        <v-toolbar color="primary">
+          <v-icon
+            large
+            float-left
+            class="btn-look"
+          >
+            mdi-face-profile
+          </v-icon>
+          <v-toolbar-title>User Profile</v-toolbar-title>
+        </v-toolbar>
+        <v-card flat>
           <v-layout
             wrap
           >
             <v-flex xs1 mt-1 ml-4>
               <v-avatar
-                v-show="!profileUser.photoUrl"
+                v-show="profileUser.photoUrl"
+                :size="avatarSize"
                 class="pink jbtn-file"
-                size="48"
               >
-                <v-icon>
+                <v-icon large>
                   mdi-account-circle
                 </v-icon>
               </v-avatar>
               <v-avatar
-                v-show="profileUser.photoUrl"
-                size="70"
+                v-show="!profileUser.photoUrl"
+                :size="avatarSize"
               >
                 <img
                   :src="profileUser.photoUrl"
@@ -84,6 +91,17 @@ export default {
     }
   },
   computed: {
+    avatarSize() {
+      log('$vuetify.breakpoint', this.$vuetify.breakpoint)
+      if (
+        this.$vuetify.breakpoint.name === 'xs' ||
+        this.$vuetify.breakpoint.name === 'sm'
+      ) {
+        return '48'
+      } else {
+        return '62'
+      }
+    },
     previewAuthorFilter() {
       return {
         byAuthorUid: this.$route.params.id

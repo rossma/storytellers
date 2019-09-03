@@ -8,7 +8,16 @@
         >
           <v-expansion-panel>
             <v-expansion-panel-header>
-              <h2>User Profile</h2>
+              <v-col
+                class="expansion-header-icon">
+                <v-icon
+                  large
+                  float-left
+                >
+                  mdi-face-profile
+                </v-icon>
+              </v-col>
+              <v-col><h2>User Profile</h2></v-col>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-layout
@@ -25,6 +34,7 @@
                           v-show="!formUser.photoUrl"
                           class="pink jbtn-file"
                           v-on="on"
+                          :size="avatarSize"
                         >
                           <v-icon>
                             mdi-account-circle
@@ -38,6 +48,7 @@
                           v-show="formUser.photoUrl"
                           class="jbtn-file"
                           v-on="on"
+                          :size="avatarSize"
                         >
                           <img
                             :src="formUser.photoUrl"
@@ -154,6 +165,16 @@ export default {
     }
   },
   computed: {
+    avatarSize() {
+      if (
+        this.$vuetify.breakpoint.name === 'xs' ||
+        this.$vuetify.breakpoint.name === 'sm'
+      ) {
+        return '48'
+      } else {
+        return '62'
+      }
+    },
     computedUser: {
       get: function() {
         return this.user.data

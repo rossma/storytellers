@@ -1,14 +1,18 @@
 <template>
   <v-container grid-list-xl>
-    <v-layout>
-      <v-flex>
-        <v-card>
-          <v-card-title
-            primary
-            class="title"
+    <v-layout justify-center>
+      <v-flex xs12>
+        <v-toolbar color="primary">
+          <v-icon
+            large
+            float-left
+            class="btn-look"
           >
-            Create Story
-          </v-card-title>
+            mdi-typewriter
+          </v-icon>
+          <v-toolbar-title>Create Story</v-toolbar-title>
+        </v-toolbar>
+        <v-card>
           <v-card-text>
             <story-summary :editable="true" />
           </v-card-text>

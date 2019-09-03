@@ -3,12 +3,12 @@ x`<template>
     <v-expansion-panel>
       <v-expansion-panel-header class="header">
         <v-col
-          class="banner-icon">
+          class="expansion-header-icon">
           <v-icon
             large
             float-left
           >
-            mdi-bookmark-outline
+            mdi-typewriter
           </v-icon>
         </v-col>
         <v-col><h2>{{ story.title }}</h2></v-col>
@@ -88,7 +88,4 @@ export default {
 </script>
 
 <style>
-.banner-icon {
-  max-width: 60px;
-}
 </style>
