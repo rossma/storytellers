@@ -1,7 +1,6 @@
 <template>
   <v-app dark>
-    <v-toolbar
-      dark
+    <v-app-bar
       fixed
       app
     >
@@ -11,14 +10,9 @@
         </nuxt-link>
       </v-toolbar-title>
       <v-spacer />
-    </v-toolbar>
+    </v-app-bar>
     <v-content>
-      <v-container
-        fluid
-        fill-height
-      >
-        <nuxt />
-      </v-container>
+      <nuxt />
     </v-content>
     <the-page-footer />
   </v-app>
@@ -34,3 +28,8 @@ export default {
   middleware: 'anonymous'
 }
 </script>
+<style>
+.auth-container {
+  max-width: 300px;
+}
+</style>

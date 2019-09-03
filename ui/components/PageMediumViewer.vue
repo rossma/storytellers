@@ -37,19 +37,19 @@
             <span class="hidden-sm-and-down">Cover</span>
           </v-tooltip>
         </v-item>
-        <v-item v-if="isMediaRichType(slotProps.activeMedium)">
-          <v-btn
-            flat
-            class="toolbar-custom-btn"
-            @click="previewRichTextContent"
-          >
-            <v-icon>
-              {{ isRichTextPreview ? 'create' : 'notes' }}
-            </v-icon>
-            <span class="pl-2 hidden-sm-and-down">{{ isRichTextPreview ? 'Editor' : 'Preview' }}</span>
-          </v-btn>
-        </v-item>
+        <v-item v-if="isMediaRichType(slotProps.activeMedium)" />
       </v-item-group>
+      <v-btn
+        v-if="isMediaRichType(slotProps.activeMedium)"
+        text
+        class="toolbar-custom-btn"
+        @click="previewRichTextContent"
+      >
+        <v-icon>
+          {{ isRichTextPreview ? 'mdi-pencil-outline' : 'mdi-note-text' }}
+        </v-icon>
+        <span class="pl-2 hidden-sm-and-down">{{ isRichTextPreview ? 'Editor' : 'Preview' }}</span>
+      </v-btn>
     </template>
 
     <template #content-container="slotProps">
@@ -60,7 +60,7 @@
       <medium-viewer-book
         v-show="isMediaBookType(slotProps.activeMedium)"
         :src="bookSrc"
-        :fileType="bookType"
+        :file-type="bookType"
       />
       <medium-viewer-rich-text
         v-show="isMediaRichType(slotProps.activeMedium)"

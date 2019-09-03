@@ -29,7 +29,11 @@ export default {
       const [pixelWidth, pixelHeight] = [actualSizeWidth, actualSizeHeight].map(
         dim => Math.ceil(dim / pixelRatio)
       )
-      log(`window.devicePixelRatio: ${window.devicePixelRatio} pixel ratio: ${pixelRatio} actualSizeWidth: ${actualSizeWidth}px actualSizeHeight: ${actualSizeHeight}px width: ${pixelWidth}px; height: ${pixelHeight}px;`)
+      log(
+        `window.devicePixelRatio: ${
+          window.devicePixelRatio
+        } pixel ratio: ${pixelRatio} actualSizeWidth: ${actualSizeWidth}px actualSizeHeight: ${actualSizeHeight}px width: ${pixelWidth}px; height: ${pixelHeight}px;`
+      )
       return `width: ${pixelWidth}px; height: ${pixelHeight}px;`
     },
 

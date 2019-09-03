@@ -1,20 +1,19 @@
 <template>
-
-<!--  <v-layout-->
-<!--    class="editor-container"-->
-<!--  >-->
+  <!--  <v-layout-->
+  <!--    class="editor-container"-->
+  <!--  >-->
   <v-layout
     fluid
     justify-center
     class="editor-container"
   >
-<!--    <v-layout-->
-<!--    justify-center-->
-<!--    class="medium-viewer-rich-container"-->
-<!--  >-->
-<!--      <v-flex xs12>-->
+    <!--    <v-layout-->
+    <!--    justify-center-->
+    <!--    class="medium-viewer-rich-container"-->
+    <!--  >-->
+    <!--      <v-flex xs12>-->
 
-<!--  <div class="editor-container">-->
+    <!--  <div class="editor-container">-->
     <quill-editor
       v-show="!readOnly && !isPreview"
       ref="textEditor"
@@ -27,7 +26,7 @@
       v-show="readOnly || isPreview"
       class="preview-container"
     />
-<!--      </v-flex>-->
+    <!--      </v-flex>-->
   </v-layout>
 <!--  </div>-->
 </template>

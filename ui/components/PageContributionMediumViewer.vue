@@ -20,29 +20,24 @@
         class="mx-2"
         vertical
       />
-      <v-item-group v-if="!readOnly">
-        <v-item v-if="isMediaRichType(slotProps.activeMedium)">
-          <v-btn
-            flat
-            class="toolbar-custom-btn"
-            @click="previewRichTextContent"
-          >
-            <v-icon left>
-              {{ isRichTextPreview ? 'create' : 'pageview' }}
-            </v-icon>
-            <span class="hidden-sm-and-down">{{ isRichTextPreview ? 'Editor' : 'Preview' }}</span>
-          </v-btn>
-        </v-item>
-      </v-item-group>
-
+      <v-btn
+        v-if="!readOnly && isMediaRichType(slotProps.activeMedium)"
+        text
+        class="toolbar-custom-btn"
+        @click="previewRichTextContent"
+      >
+        <v-icon float-left>
+          {{ isRichTextPreview ? 'mdi-pencil-outline' : 'mdi-note-text' }}
+        </v-icon>
+        <span class="hidden-sm-and-down">{{ isRichTextPreview ? 'Editor' : 'Preview' }}</span>
+      </v-btn>
       <v-btn
         v-if="canDelete"
-        dark
-        flat
+        text
         @click="pageContributionDeleteDialog = true"
       >
         <v-icon>
-          delete
+          mdi-delete
         </v-icon>
         <span class="pl-2 hidden-sm-and-down">Delete</span>
       </v-btn>

@@ -5,13 +5,19 @@
       fixed
       app
       disable-route-watcher
-      dark
     >
-      <div class="ml-3 mt-2 mb-2">
-        <nuxt-link to="/">
-          <v-icon>home</v-icon>
-            <span class="pl-4 home hidden-sm-and-down">Home</span>
-        </nuxt-link>
+      <div class="ml-4 mt-2 mb-2">
+        <v-tooltip v-model="show" bottom>
+          <template #activator="{ on }">
+            <nuxt-link to="/">
+              <span v-on="on">
+                <v-icon>mdi-home</v-icon>
+                <span class="pl-4 home hidden-sm-and-down">Home</span>
+              </span>
+            </nuxt-link>
+          </template>
+          <span>Home</span>
+        </v-tooltip>
       </div>
       <v-divider light />
       <v-avatar
@@ -26,55 +32,51 @@
         v-else
         color="primary"
       >
-        <v-icon dark>
-          account_circle
+        <v-icon>
+          mdi-account-circle
         </v-icon>
       </v-avatar>
-
       <v-list>
         <v-list-group
-          :prepend-icon="'account_circle'"
+          :prepend-icon="'mdi-account-circle'"
           no-action
+          class="nav-account"
         >
           <template #activator>
-            <v-list-tile>
-              <v-list-tile-content>
-                <v-list-tile-title>{{ username }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+            <v-list-item-title>{{ username }}</v-list-item-title>
           </template>
-          <v-list-tile
+
+          <v-list-item
             to="/user/profile"
             @click="updateSidebar({ visible: false })"
           >
-            <v-list-tile-content>
-              <v-list-tile-title>Account</v-list-tile-title>
-            </v-list-tile-content>
+            <v-list-item-content>
+              <v-list-item-title>Account</v-list-item-title>
+            </v-list-item-content>
 
-            <v-list-tile-action>
-              <v-icon>account_circle</v-icon>
-            </v-list-tile-action>
-          </v-list-tile>
+            <v-list-item-action>
+              <v-icon>mdi-account-circle</v-icon>
+            </v-list-item-action>
+          </v-list-item>
 
-          <v-list-tile @click="signout">
-            <v-list-tile-content>
-              <v-list-tile-title>Log out</v-list-tile-title>
-            </v-list-tile-content>
+          <v-list-item @click="signout">
+            <v-list-item-content>
+              <v-list-item-title>Log out</v-list-item-title>
+            </v-list-item-content>
 
-            <v-list-tile-action>
-              <v-icon>exit_to_app</v-icon>
-            </v-list-tile-action>
-          </v-list-tile>
+            <v-list-item-action>
+              <v-icon>mdi-logout</v-icon>
+            </v-list-item-action>
+          </v-list-item>
         </v-list-group>
       </v-list>
       <slot name="nav-drawer" />
     </v-navigation-drawer>
-    <v-toolbar
-      dark
+    <v-app-bar
       app
       fixed
     >
-      <v-toolbar-side-icon
+      <v-app-bar-nav-icon
         @click.stop="drawer = !drawer"
       />
       <v-toolbar-title class="home-title hidden-sm-and-down">
@@ -84,36 +86,34 @@
       </v-toolbar-title>
       <v-spacer />
       <v-layout
-        row 
         align-center
         class="pr-2 search"
       >
         <v-text-field
           v-model="query"
           label="Search..."
-          append-icon="search"
+          append-icon="mdi-magnify"
           color="primary"
           hide-details
           @click:append="search"
           @keyup.enter="search"
         />
       </v-layout>
-      <v-tooltip left>
+      <v-tooltip float-left>
         <template #activator="{ on }">
           <v-btn
             fab
-            dark
             small
-            v-on="on"
-            color="pink darken-2"
+            color="primary"
             to="/story/create"
+            v-on="on"
           >
-            <v-icon>create</v-icon>
+            <v-icon>mdi-feather</v-icon>
           </v-btn>
         </template>
         <span>Create Story</span>
       </v-tooltip>
-    </v-toolbar>
+    </v-app-bar>
   </div>
 </template>
 
@@ -206,5 +206,11 @@ export default {
 }
 
 .search {
+}
+
+.nav-account.primary--text {
+  color: white !important;
+  /*color: var(--v-accent-lighten2) !important;*/
+  /*color: var(--v-primary-base);*/
 }
 </style>

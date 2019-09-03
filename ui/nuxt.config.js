@@ -1,8 +1,9 @@
 import webpack from 'webpack'
+import colors from 'vuetify/es5/util/colors'
 // const webpack = require('webpack')
 
-const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
-const pkg = require('./package')
+// const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
+// const pkg = require('./package')
 
 // const bodyParser = require('body-parser')
 // const session = require('express-session')
@@ -21,43 +22,36 @@ module.exports = {
   ** Headers of the page
   */
   head: {
-    title: pkg.name,
+    titleTemplate: '%s - ' + process.env.npm_package_name,
+    title: process.env.npm_package_name || '',
     meta: [
       { charset: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       {
-        name: 'viewport',
-        content:
-          'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui'
-      },
-      { hid: 'description', name: 'description', content: pkg.description }
-    ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      {
-        rel: 'stylesheet',
-        href:
-          'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
+        hid: 'description',
+        name: 'description',
+        content: process.env.npm_package_description || ''
       }
-    ]
+    ],
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },
-
   /*
   ** Customize the progress-bar color
-  */
+   */
   loading: { color: '#fff' },
-
   /*
   ** Global CSS
   */
-  css: ['~/assets/style/app.styl'],
-
+  css: ['~/assets/style/app.scss'],
   /*
   ** Plugins to load before mounting the App
   */
-  plugins: [
-    { ssr: false, src: '~/plugins/vue-quill-editor.client.js' },
-    '~/plugins/vuetify'
-  ],
+  plugins: [{ ssr: false, src: '~/plugins/vue-quill-editor.client.js' }],
+
+  /*
+  ** Nuxt.js dev-modules
+  */
+  devModules: ['@nuxtjs/vuetify'],
 
   /*
   ** Nuxt.js modules
@@ -78,6 +72,32 @@ module.exports = {
     '@nuxtjs/toast',
     'portal-vue/nuxt'
   ],
+  /*
+  ** vuetify module configuration
+  ** https://github.com/nuxt-community/vuetify-module
+  */
+  vuetify: {
+    customVariables: ['~/assets/style/variables.scss'],
+    theme: {
+      dark: true,
+      themes: {
+        dark: {
+          primary: colors.pink.darken2,
+          accent: colors.grey.darken3,
+          secondary: colors.amber.darken3,
+          tertiary: colors.indigo.darken3,
+          negative: colors.deepOrange.darken3,
+          info: colors.teal.lighten1,
+          warning: colors.amber.base,
+          error: colors.deepOrange.accent4,
+          success: colors.green.accent3
+        }
+      },
+      options: {
+        customProperties: true
+      }
+    }
+  },
   /*
   ** Axios module configuration
   */
@@ -112,18 +132,18 @@ module.exports = {
   ** Build configuration
   */
   build: {
-    transpile: ['vuetify/lib'],
+    // transpile: ['vuetify/lib'],
     plugins: [
-      new VuetifyLoaderPlugin(),
+      // new VuetifyLoaderPlugin(),
       new webpack.ProvidePlugin({
         'window.Quill': 'quill/dist/quill.js',
         Quill: 'quill/dist/quill.js'
       })
     ],
     loaders: {
-      stylus: {
-        import: ['~assets/style/variables.styl']
-      }
+      // stylus: {
+      //   import: ['~assets/style/variables.styl']
+      // }
     },
     /*
     ** You can extend webpack config here

@@ -154,7 +154,6 @@ export default {
         //   log('In resize')
         //   log('Resized to:', width, height)
         // })
-
       }
     },
     update(file) {

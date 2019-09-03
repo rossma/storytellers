@@ -2,7 +2,6 @@
   <v-container grid-list-xl>
     <v-layout
       v-if="user.uid && story.id"
-      row
       wrap
     >
       <v-flex xs12>

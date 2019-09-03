@@ -3,25 +3,27 @@
     justify-center
     class="medium-viewer-book-container"
   >
-<!--    <v-flex xs12>-->
+    <!--    <v-flex xs12>-->
     <pdf-container
       v-show="isPdf(mutableFileType)"
       :origin="origin"
       :src="src"
-      :fileType="mutableFileType"/>
+      :file-type="mutableFileType"
+    />
     <epub-container
       v-show="isEpub(mutableFileType)"
       :origin="origin"
       :src="src"
-      :fileType="mutableFileType"/>
-      <v-card v-if="!isPdf(mutableFileType) && !isEpub(mutableFileType)" flat>
-        <v-responsive :aspect-ratio="16/9">
-          <v-card-title primary-title>
-            There aren't any uploaded books yet
-          </v-card-title>
-        </v-responsive>
-      </v-card>
-<!--    </v-flex>-->
+      :file-type="mutableFileType"
+    />
+    <v-card v-if="!isPdf(mutableFileType) && !isEpub(mutableFileType)" flat>
+      <v-responsive :aspect-ratio="16/9">
+        <v-card-title>
+          There aren't any uploaded books yet
+        </v-card-title>
+      </v-responsive>
+    </v-card>
+    <!--    </v-flex>-->
   </v-layout>
 </template>
 
@@ -55,15 +57,15 @@ export default {
       default: ''
     }
   },
+  data() {
+    return {
+      mutableFileType: this.fileType
+    }
+  },
   watch: {
     src: function(newValue, oldValue) {
       log('src has changed')
       // this.mutableSrc = newValue
-    }
-  },
-  data() {
-    return {
-      mutableFileType: this.fileType
     }
   },
   mounted: function() {

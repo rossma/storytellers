@@ -1,6 +1,5 @@
 <template>
   <v-layout
-    row
     justify-center
   >
     <v-dialog
@@ -11,7 +10,6 @@
       <v-card>
         <v-toolbar
           :color="theme"
-          dark
         >
           <v-toolbar-title>{{ title }}</v-toolbar-title>
           <v-spacer />
@@ -19,7 +17,7 @@
             icon
             @click="closeDialog()"
           >
-            <v-icon>close</v-icon>
+            <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
         <v-card-text>
@@ -30,7 +28,7 @@
                   v-if="!isPublished"
                   v-model="summary"
                   auto-grow
-                  box
+                  filled
                   color="primary"
                   label="Summary"
                   maxlength="500"
@@ -43,7 +41,6 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            flat
             color="secondary"
             @click="publish(true)"
           >
@@ -51,7 +48,6 @@
           </v-btn>
           <v-btn
             v-if="!isPublished"
-            flat
             color="primary"
             @click="publish(false)"
           >

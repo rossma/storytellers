@@ -13,58 +13,54 @@
         <v-btn
           v-if="canPublish() || canDeletePage() || canInvite()"
           v-model="dial.fab"
-          color="indigo darken-2"
-          dark
+          color="tertiary"
           fab
           hover
         >
-          <v-icon>launch</v-icon>
+          <v-icon>mdi-launch</v-icon>
         </v-btn>
       </template>
-      <v-tooltip left>
+      <v-tooltip float-left>
         <template #activator="{ on }">
           <v-btn
             v-if="canPublish()"
             primary
             fab
-            dark
             small
             v-on="on"
             @click="publishDialog = true"
           >
-            <v-icon>publish</v-icon>
+            <v-icon>mdi-publish</v-icon>
           </v-btn>
         </template>
         <span>Publish Page</span>
       </v-tooltip>
-      <v-tooltip left>
+      <v-tooltip float-left>
         <template #activator="{ on }">
           <v-btn
             v-if="canInvite()"
             color="secondary"
             fab
-            dark
             small
             v-on="on"
             @click="publishDialog = true"
           >
-            <v-icon>group_add</v-icon>
+            <v-icon>mdi-account-multiple-plus</v-icon>
           </v-btn>
         </template>
         <span>Invite Collaboration</span>
       </v-tooltip>
-      <v-tooltip left>
+      <v-tooltip float-left>
         <template #activator="{ on }">
           <v-btn
             v-if="canDeletePage()"
-            color="red"
+            color="negative"
             fab
-            dark
             small
             v-on="on"
             @click.stop="deletePageDialog = true"
           >
-            <v-icon>delete</v-icon>
+            <v-icon>mdi-delete</v-icon>
           </v-btn>
         </template>
         <span>Delete Page</span>
@@ -86,11 +82,15 @@
             color="primary"
             @click="deleteCurrentPage"
           >
-            <v-icon left>done</v-icon>
+            <v-icon float-left>
+              mdi-check
+            </v-icon>
             Yes
           </v-btn>
           <v-btn @click.native="deletePageDialog = false">
-            <v-icon left>clear</v-icon>
+            <v-icon float-left>
+              mdi-close
+            </v-icon>
             No
           </v-btn>
         </v-card-actions>

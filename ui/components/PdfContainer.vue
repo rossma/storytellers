@@ -2,7 +2,8 @@
   <v-card>
     <v-responsive :aspect-ratio="16/9">
       <v-card-text
-        class="pdf-document-text">
+        class="pdf-document-text"
+      >
         <!--pages: {{ pages.length }}-->
         <div class="pdf-document">
           <pdf-page

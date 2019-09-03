@@ -3,7 +3,7 @@
     <v-form
       ref="form"
       v-model="valid"
-      class="text-xs-right"
+      class="text-right"
       lazy-validation
     >
       <v-card flat>
@@ -12,7 +12,7 @@
             v-if="editable"
             fluid
           >
-            <v-layout row>
+            <v-layout>
               <v-flex xs12>
                 <v-text-field
                   v-model="mutableStory.title"
@@ -23,8 +23,7 @@
                   v-model="mutableStory.summary"
                   name="summary"
                   label="Summary"
-                  outline
-                  dark
+                  outlined
                 />
               </v-flex>
             </v-layout>
@@ -38,11 +37,14 @@
         <template #activator="{ on }">
           <v-btn
             v-if="storyExists && editable"
+            color="negative"
+            class="mr-1"
             v-on="on"
-            color="red"
             @click.stop="deleteDialog = true"
           >
-            <v-icon left>delete</v-icon>
+            <v-icon float-left>
+              mdi-delete
+            </v-icon>
             delete
           </v-btn>
         </template>
@@ -52,11 +54,14 @@
         <template #activator="{ on }">
           <v-btn
             v-if="editable"
-            v-on="on"
             :disabled="!valid"
+            v-on="on"
+            class="primary"
             @click="submit"
           >
-            <v-icon left>save</v-icon>
+            <v-icon float-left>
+              mdi-content-save-outline
+            </v-icon>
             save
           </v-btn>
         </template>

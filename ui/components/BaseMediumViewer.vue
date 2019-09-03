@@ -1,7 +1,6 @@
 <template>
   <v-dialog
     v-model="dialog"
-    lazy
     hide-overlay
     persistent
     fullscreen
@@ -10,18 +9,19 @@
   >
     <v-card class="dialog-container">
       <v-toolbar
-        dark
         :color="theme"
+        dense
         class="dialog-toolbar"
       >
         <v-btn
           icon
-          dark
           @click.native="closeDialog()"
         >
-          <v-icon>close</v-icon>
+          <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title class="hidden-sm-and-down">{{ title }}</v-toolbar-title>
+        <v-toolbar-title class="hidden-sm-and-down">
+          {{ title }}
+        </v-toolbar-title>
         <v-spacer />
         <v-toolbar-items class="medium-viewer-toolbar">
           <slot
@@ -45,7 +45,7 @@
                 >
                   <upload-button
                     :selected-callback="previewMediaFile"
-                    icon="cloud_upload"
+                    icon="mdi-cloud-upload-outline"
                   />
                 </span>
               </template>
@@ -66,10 +66,10 @@
                   <v-btn
                     v-if="isRichTextEnabled && !canDelete"
                     :value="1"
-                    flat
+                    text
                     v-on="on"
                   >
-                    <v-icon>text_format</v-icon>
+                    <v-icon>mdi-card-text-outline</v-icon>
                   </v-btn>
                 </template>
                 <span>Rich Text</span>
@@ -79,10 +79,10 @@
                   <v-btn
                     v-if="isBookEnabled && !canDelete"
                     :value="2"
-                    flat
+                    text
                     v-on="on"
                   >
-                    <v-icon>book</v-icon>
+                    <v-icon>mdi-book-outline</v-icon>
                   </v-btn>
                 </template>
                 <span>Words</span>
@@ -92,10 +92,10 @@
                   <v-btn
                     v-if="isImageEnabled && !canDelete"
                     :value="3"
-                    flat
+                    text
                     v-on="on"
                   >
-                    <v-icon>brush</v-icon>
+                    <v-icon>mdi-brush</v-icon>
                   </v-btn>
                 </template>
                 <span>Pictures</span>
@@ -105,12 +105,11 @@
           <slot name="toolbar-save-btns">
             <v-btn
               v-if="!readOnly"
-              dark
-              flat
+              text
               @click="saveMediaFile"
             >
               <v-icon>
-                save
+                mdi-content-save-outline
               </v-icon>
               <span class="pl-2 hidden-sm-and-down">Save</span>
             </v-btn>
@@ -121,16 +120,15 @@
         justify-start
         align-center
         columnpage-m
-        dark
         fill-height
         class="dialog-content"
       >
-<!--        <v-flex xs12 fill-height>-->
-          <slot
-            name="content-container"
-            :activeMedium="activeMedium"
-          />
-<!--        </v-flex>-->
+        <!--        <v-flex xs12 fill-height>-->
+        <slot
+          name="content-container"
+          :activeMedium="activeMedium"
+        />
+        <!--        </v-flex>-->
       </v-layout>
       <!--</v-responsive>-->
     </v-card>
@@ -261,7 +259,7 @@ export default {
 }
 
 .toolbar-custom-btn {
-  margin-top: 20px !important;
+  /*margin-top: 6px !important;*/
 }
 
 .toolbar-upload {
@@ -283,10 +281,10 @@ span.v-tooltip {
   display: block;
   position: absolute;
   top: 0;
-  padding-top: 65px;
+  padding-top: 49px;
   height: 100%;
   width: 100%;
   z-index: 1;
-  overflow:hidden;
+  overflow: hidden;
 }
 </style>

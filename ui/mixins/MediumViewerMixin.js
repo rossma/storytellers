@@ -50,6 +50,6 @@ export default {
     },
     isPdf(type) {
       return FileUtils.isPdf(type)
-    },
+    }
   }
 }

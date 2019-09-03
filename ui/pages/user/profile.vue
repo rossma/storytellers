@@ -2,117 +2,116 @@
   <v-container grid-list-xl>
     <v-layout v-if="user.uid">
       <v-flex xs12>
-        <v-expansion-panel
+        <v-expansion-panels
           v-model="panel"
-          expand
+          multiple
         >
-          <v-expansion-panel-content>
-            <div slot="header">
+          <v-expansion-panel>
+            <v-expansion-panel-header>
               <h2>User Profile</h2>
-            </div>
-            <v-layout
-              rowfind
-              wrap
-              text-xs-center
-            >
-              <v-flex xs2>
-                <v-card
-                  dark
-                  flat
-                >
-                  <v-tooltip top>
-                    <template #activator="{ on }">
-                      <v-avatar
-                        v-show="!formUser.photoUrl"
-                        class="pink jbtn-file"
-                        v-on="on"
-                      >
-                        <v-icon dark>
-                          account_circle
-                        </v-icon>
-                        <input
-                          type="file"
-                          @change="profileImageSelected"
-                        >
-                      </v-avatar>
-                      <v-avatar
-                        v-show="formUser.photoUrl"
-                        class="jbtn-file"
-                        v-on="on"
-                      >
-                        <img
-                          :src="formUser.photoUrl"
-                          alt="no photo"
-                        >
-                        <input
-                          type="file"
-                          @change="profileImageSelected"
-                        >
-                      </v-avatar>
-                    </template>
-                    <span>Upload Profile</span>
-                  </v-tooltip>
-                </v-card>
-              </v-flex>
-              <v-flex xs10>
-                <v-card flat>
-                  <v-form
-                    ref="form"
-                    v-model="valid"
-                    lazy-validation
-                  >
-                    <v-text-field
-                      v-model="computedUser.email"
-                      label="Email"
-                      readonly
-                      disabled
-                    />
-                    <v-text-field
-                      v-model="formUser.displayName"
-                      :rules="nameRules"
-                      label="Display Name"
-                      required
-                    />
-                    <v-text-field
-                      v-model="formUser.bio"
-                      label="Bio"
-                    />
-                  </v-form>
-                </v-card>
-              </v-flex>
-              <v-flex
-                xs12
-                text-xs-right
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-layout
+                wrap
+                text-center
               >
-                <v-btn
-                  :disabled="!valid"
-                  @click="submit"
+                <v-flex xs2>
+                  <v-card
+                    flat
+                  >
+                    <v-tooltip top>
+                      <template #activator="{ on }">
+                        <v-avatar
+                          v-show="!formUser.photoUrl"
+                          class="pink jbtn-file"
+                          v-on="on"
+                        >
+                          <v-icon>
+                            mdi-account-circle
+                          </v-icon>
+                          <input
+                            type="file"
+                            @change="profileImageSelected"
+                          >
+                        </v-avatar>
+                        <v-avatar
+                          v-show="formUser.photoUrl"
+                          class="jbtn-file"
+                          v-on="on"
+                        >
+                          <img
+                            :src="formUser.photoUrl"
+                            alt="no photo"
+                          >
+                          <input
+                            type="file"
+                            @change="profileImageSelected"
+                          >
+                        </v-avatar>
+                      </template>
+                      <span>Upload Profile</span>
+                    </v-tooltip>
+                  </v-card>
+                </v-flex>
+                <v-flex xs10>
+                  <v-card flat>
+                    <v-form
+                      ref="form"
+                      v-model="valid"
+                      lazy-validation
+                    >
+                      <v-text-field
+                        v-model="computedUser.email"
+                        label="Email"
+                        readonly
+                        disabled
+                      />
+                      <v-text-field
+                        v-model="formUser.displayName"
+                        :rules="nameRules"
+                        label="Display Name"
+                        required
+                      />
+                      <v-text-field
+                        v-model="formUser.bio"
+                        label="Bio"
+                      />
+                    </v-form>
+                  </v-card>
+                </v-flex>
+                <v-flex
+                  xs12
+                  text-right
                 >
-                  <v-icon left>
-                    check
-                  </v-icon>submit
-                </v-btn>
-              </v-flex>
-            </v-layout>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
+                  <v-btn
+                    :disabled="!valid"
+                    color="primary"
+                    @click="submit"
+                  >
+                    <v-icon float-left>
+                      mdi-check
+                    </v-icon>submit
+                  </v-btn>
+                </v-flex>
+              </v-layout>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
       </v-flex>
     </v-layout>
-    <v-layout row wrap justify-center>
+    <v-layout wrap justify-center>
       <v-flex xs12>
-        <v-toolbar color="info" dark>
-          <v-toolbar-side-icon>
-            <v-icon
-              large
-              left
-              class="toolbar-icon"
-            >
-              portrait
-            </v-icon>
-          </v-toolbar-side-icon>
+        <v-toolbar color="info">
+          <v-icon
+            large
+            float-left
+            class="btn-look"
+          >
+            mdi-account-box-outline
+          </v-icon>
           <v-toolbar-title>My Stories</v-toolbar-title>
         </v-toolbar>
-        <v-card dark>
+        <v-card>
           <stories-preview-list
             :filter-by="previewAuthorFilter"
             :is-private-user-profile="true"
@@ -143,7 +142,7 @@ export default {
   layout: 'default-protected',
   data() {
     return {
-      panel: [true],
+      panel: [0],
       valid: true,
       nameRules: [v => !!v || 'Name is required'],
       formUser: {

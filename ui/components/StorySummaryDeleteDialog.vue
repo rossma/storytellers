@@ -12,17 +12,20 @@
       <v-card-actions>
         <v-spacer />
         <v-btn
-          color="blue darken-1"
+          color="primary"
           @click="deleteStory"
         >
-          <v-icon left>done</v-icon>
+          <v-icon float-left>
+            mdi-check
+          </v-icon>
           Yes
         </v-btn>
         <v-btn
-          color="darken-1"
           @click.native="closeDialog()"
         >
-          <v-icon left>clear</v-icon>
+          <v-icon float-left>
+            mdi-close
+          </v-icon>
           No
         </v-btn>
       </v-card-actions>

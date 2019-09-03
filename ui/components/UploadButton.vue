@@ -52,5 +52,6 @@ input[type='file'] {
 .custom-file-upload {
   /*display: inline-block;*/
   cursor: pointer;
+  background-color: transparent!important;
 }
 </style>

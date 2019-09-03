@@ -25,16 +25,16 @@
             </v-layout>
           </v-container>
         </v-img>
-        <v-card-title primary-title>
-          <div>
-            <div class="headline truncate">
-              <nuxt-link :to="'/user/' + childPage.uid">
-                {{ childPage.userDisplayName }}
-              </nuxt-link>
-            </div>
-            <span class="grey--text truncate">{{ childPage.summary }}</span>
-          </div>
+        <v-card-title
+          class="headline"
+        >
+          <nuxt-link :to="'/user/' + childPage.uid">
+            {{ childPage.userDisplayName }}
+          </nuxt-link>
         </v-card-title>
+        <v-card-text class="grey--text truncate">
+          {{ childPage.summary }}
+        </v-card-text>
       </div>
       <v-card-actions
         v-show="showActions"
@@ -47,7 +47,7 @@
           @click="like()"
         >
           <v-icon :color="liked ? 'red' : 'white' ">
-            favorite
+            mdi-heart
           </v-icon>
         </v-btn>
         {{ comments }}
@@ -55,7 +55,7 @@
           icon
           @click="openCommentsDialog()"
         >
-          <v-icon>comments</v-icon>
+          <v-icon>mdi-comment-outline</v-icon>
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -64,8 +64,8 @@
 
 <script>
 import debug from 'debug'
-const log = debug('app:components/PageContributionCard')
 import { updatePage } from '~/api/service/page'
+const log = debug('app:components/PageContributionCard')
 
 export default {
   name: 'PageContributionCard',
@@ -77,6 +77,11 @@ export default {
     user: {
       type: Object,
       required: true
+    }
+  },
+  data() {
+    return {
+      showActions: true
     }
   },
   computed: {
@@ -100,7 +105,9 @@ export default {
             this.childPage.likes.push(this.user.uid)
           }
         } else {
-          this.childPage.likes = this.childPage.likes.filter(el => el !== this.user.uid)
+          this.childPage.likes = this.childPage.likes.filter(
+            el => el !== this.user.uid
+          )
         }
       }
     },
@@ -117,11 +124,6 @@ export default {
       } else {
         return 0
       }
-    }
-  },
-  data() {
-    return {
-      showActions: true
     }
   },
   methods: {
@@ -171,6 +173,9 @@ export default {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
+  /*width: -webkit-fill-available;*/
+  /*width: -moz-available;*/
+  width: stretch;
 }
 
 .headline a {
