@@ -1,6 +1,5 @@
 <template>
   <v-layout 
-    row 
     justify-center
   >
     <v-dialog
@@ -11,7 +10,6 @@
       <v-card>
         <v-toolbar
           :color="theme"
-          dark
         >
           <v-toolbar-title>Comments</v-toolbar-title>
           <v-spacer />
@@ -19,7 +17,7 @@
             icon
             @click="closeDialog()"
           >
-            <v-icon>close</v-icon>
+            <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
         <v-card-text>
@@ -37,7 +35,7 @@
                 <v-textarea
                   v-model="comment"
                   auto-grow
-                  box
+                  filled
                   :color="theme"
                   label="Comment"
                   rows="1"
@@ -49,10 +47,12 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            flat
+            :class="theme"
             @click="addComment"
           >
-            <v-icon left>save</v-icon>
+            <v-icon float-left>
+              mdi-content-save-outline
+            </v-icon>
             Submit
           </v-btn>
         </v-card-actions>

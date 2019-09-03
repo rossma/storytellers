@@ -1,0 +1,18 @@
+a {
+  //font-family: helvetica;
+  text-decoration: none;
+}
+
+a:hover {
+  //text-decoration: underline;
+}
+
+.home-title a {
+  text-decoration: none;
+  color: white !important;
+}
+
+.v-toolbar__content > .btn-look:first-child + .v-toolbar__title,
+.v-toolbar__extension > .btn-look:first-child + .v-toolbar__title {
+  padding-left: 20px;
+}

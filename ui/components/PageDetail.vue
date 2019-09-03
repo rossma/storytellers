@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card flat>
-      <!--<v-card-text class="text-xs-center">-->
+      <!--<v-card-text class="text-center">-->
       <v-img
         v-show="pageImageSrc()"
         :src="pageImageSrc()"
@@ -35,7 +35,7 @@
           @click="like()"
         >
           <v-icon :color="liked ? 'red' : 'white' ">
-            favorite
+            mdi-heart
           </v-icon>
         </v-btn>
         {{ comments }} comments
@@ -43,7 +43,7 @@
           icon
           @click="commentsDialog = true"
         >
-          <v-icon>comments</v-icon>
+          <v-icon>mdi-comment-outline</v-icon>
         </v-btn>
       </v-card-actions>
       <!--</v-card-text>-->

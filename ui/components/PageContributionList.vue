@@ -1,16 +1,14 @@
 <template>
-  <v-layout row wrap justify-center>
+  <v-layout wrap justify-center>
     <v-flex xs12>
-      <v-toolbar color="secondary" dark>
-        <v-toolbar-side-icon>
-          <v-icon
-            large
-            left
-            class="toolbar-icon"
-          >
-            group
-          </v-icon>
-        </v-toolbar-side-icon>
+      <v-toolbar color="secondary">
+        <v-icon
+          large
+          float-left
+          class="btn-look"
+        >
+          mdi-account-group
+        </v-icon>
         <v-toolbar-title>Collaborations</v-toolbar-title>
         <v-spacer />
         <v-tooltip top>
@@ -21,7 +19,7 @@
               @click="openMediumViewerNewPage()"
             >
               <v-icon>
-                add_circle_outline
+                mdi-plus-circle-outline
               </v-icon>
             </v-btn>
           </template>
@@ -35,7 +33,6 @@
           grid-list-md
         >
           <v-layout
-            row
             wrap
           >
             <v-flex
@@ -62,7 +59,7 @@
                 @click="openMediumViewerNewPage()"
               >
                 <v-icon>
-                  add_circle_outline
+                  mdi-plus-circle-outline
                 </v-icon>
               </v-btn>
             </v-flex>
@@ -74,7 +71,7 @@
       <page-contribution-medium-viewer
         v-if="pageMediumDialog"
         :key="viewerKey"
-        :activeMedium=activeMedium
+        :active-medium="activeMedium"
         :dialog="pageMediumDialog"
         :contribution="selectedChildPage"
         :pages-ref="pagesRef"
@@ -350,7 +347,4 @@ export default {
 </script>
 
 <style>
-.toolbar-icon {
-  padding-left: 10px;
-}
 </style>

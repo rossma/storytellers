@@ -3,22 +3,21 @@
   <v-app
     toolbar
     footer
-    dark
   >
     <the-navigation-toolbar>
       <template #nav-drawer>
         <v-divider light />
         <v-list dense>
-          <v-list-tile>
-            <v-list-tile-content>
-              <v-list-tile-title
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title
                 v-if="story"
                 class="title"
               >
                 {{ story.title }}
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
         </v-list>
         <v-divider light />
         <v-list
@@ -31,40 +30,36 @@
                 v-for="(chapter, chapterIdx) in filteredChapters"
                 :key="chapter.id"
                 :value="chapter.active"
+                class="chapter-group-expand"
               >
                 <template #activator>
-                  <v-list-tile class="chapter-tile">
-                    <v-list-tile-content @click="enableChapterInput($event)">
-                      <v-list-tile-title>
-                        <v-text-field
-                          :value="chapterDisplayName(chapter, chapterIdx)"
-                          :readonly="!isEditable"
-                          name="chapterNameTxt"
-                          label="Chapter"
-                          class="chapter-name-in-txt"
-                          hide-details
-                          single-line
-                          @blur="saveChapterName($event, chapter)"
-                        />
-                      </v-list-tile-title>
-                    </v-list-tile-content>
-                  </v-list-tile>
+                  <v-text-field
+                    :value="chapterDisplayName(chapter, chapterIdx)"
+                    :readonly="!isEditable"
+                    name="chapterNameTxt"
+                    label="Chapter"
+                    class="chapter-name-in-txt"
+                    hide-details
+                    single-line
+                    @click="enableChapterInput($event)"
+                    @blur="saveChapterName($event, chapter)"
+                  />
                 </template>
-                <v-list-tile
+
+                <v-list-item
                   v-for="(page, pageIdx) in chapterPages(chapter.id)"
                   :key="page.id"
                   :class="[page.active ? 'active-page': '', 'link-to-page']"
                   @click="$router.push(`/story/${page.id}`)"
                 >
-                  <v-list-tile-content>
-                    <v-list-tile-title class="grey--text">
+                  <v-list-item-content>
+                    <v-list-item-title class="grey--text">
                       {{ chapter.chapter }}-{{ ++pageIdx }}
-                    </v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
                 <v-layout
                   v-if="isEditable"
-                  row
                   align-center
                 >
                   <v-flex
@@ -72,7 +67,7 @@
                     xs12
                     @click="addNewPage(chapter.id)"
                   >
-                    <v-icon>add</v-icon>
+                    <v-icon>mdi-plus</v-icon>
                     <span class="ml-2">Page</span>
                   </v-flex>
                 </v-layout>
@@ -81,7 +76,6 @@
           </template>
           <v-layout
             v-if="isEditable"
-            row
             align-center
           >
             <v-flex
@@ -89,7 +83,7 @@
               xs12
               @click="addNewChapter()"
             >
-              <v-icon>add</v-icon>
+              <v-icon>mdi-plus</v-icon>
               <span class="ml-2">Chapter</span>
             </v-flex>
           </v-layout>
@@ -263,8 +257,12 @@ export default {
   margin-top: 0px;
 }
 
-.chapter-name-in-txt .input-group__input {
-  border-bottom: none;
+.chapter-name-in-txt>.v-input__control>.v-input__slot:before {
+  border-style: none;
+}
+
+.chapter-name-in-txt>.v-input__control>.v-input__slot:after {
+  border-style: none;
 }
 
 .chapter-name-in-txt input {
@@ -275,9 +273,9 @@ export default {
   color: white !important;
 }
 
-.chapter-name-in-txt .input-group__details {
-  display: none;
-}
+/*.chapter-name-in-txt .input-group__details {*/
+/*  display: none;*/
+/*}*/
 
 .active-page {
   background-color: dimgrey;
@@ -322,5 +320,9 @@ export default {
 
 li.chapter-tile a.list__tile.list__tile--link {
   padding-left: 10px;
+}
+
+.chapter-group-expand.primary--text {
+  color: white !important;
 }
 </style>

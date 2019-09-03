@@ -1,6 +1,5 @@
 <template>
   <v-layout 
-    row 
     justify-center
   >
     <v-dialog 
@@ -11,7 +10,6 @@
       <v-card>
         <v-toolbar 
           color="secondary"
-          dark
         >
           <v-toolbar-title>Save and Publish Page Collaboration</v-toolbar-title>
           <v-spacer />
@@ -19,7 +17,7 @@
             icon
             @click="closeDialog()"
           >
-            <v-icon>close</v-icon>
+            <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
         <v-card-text>
@@ -29,7 +27,7 @@
                 <v-textarea
                   v-model="summary"
                   auto-grow
-                  box
+                  filled
                   color="secondary"
                   label="Summary"
                   rows="4"
@@ -41,10 +39,12 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            flat
+            color="primary"
             @click="save"
           >
-            <v-icon left>save</v-icon>
+            <v-icon float-left>
+              mdi-content-save-outline
+            </v-icon>
             Submit
           </v-btn>
         </v-card-actions>

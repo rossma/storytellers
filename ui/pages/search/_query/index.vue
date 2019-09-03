@@ -22,7 +22,9 @@ export default {
   },
   created: function() {
     log('in created, search query:', this.$route.params.query)
-    this.filterBy.byKeywords = this.$route.params.query ? this.$route.params.query.split(/[ ,]+/).filter(Boolean) : this.$route.params.querydex
+    this.filterBy.byKeywords = this.$route.params.query
+      ? this.$route.params.query.split(/[ ,]+/).filter(Boolean)
+      : this.$route.params.querydex
   },
   mounted: function() {
     this.$nextTick(() => {

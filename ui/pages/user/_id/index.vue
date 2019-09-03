@@ -2,68 +2,60 @@
   <v-container grid-list-xl>
     <v-layout>
       <v-flex xs12>
-        <div slot="header">
-          <h2>User Profile</h2>
-        </div>
+        <h2 class="pb-4">User Profile</h2>
         <v-card
-          dark
           flat
         >
-          <v-card-title primary-title>
-            <v-layout 
-              row 
-              wrap
-            >
-              <v-flex xs2>
-                <v-avatar
-                  v-show="!profileUser.photoUrl"
-                  class="pink jbtn-file"
-                  size="48"
+          <v-layout
+            wrap
+          >
+            <v-flex xs1 mt-1 ml-4>
+              <v-avatar
+                v-show="!profileUser.photoUrl"
+                class="pink jbtn-file"
+                size="48"
+              >
+                <v-icon>
+                  mdi-account-circle
+                </v-icon>
+              </v-avatar>
+              <v-avatar
+                v-show="profileUser.photoUrl"
+                size="70"
+              >
+                <img
+                  :src="profileUser.photoUrl"
+                  alt="no photo"
                 >
-                  <v-icon dark>
-                    account_circle
-                  </v-icon>
-                </v-avatar>
-                <v-avatar
-                  v-show="profileUser.photoUrl"
-                  size="70"
-                >
-                  <img
-                    :src="profileUser.photoUrl"
-                    alt="no photo"
-                  >
-                </v-avatar>
-              </v-flex>
-              <v-flex xs10>
-                <h3 class="headline mb-0">
-                  {{ profileUser.displayName }}
-                </h3>
-                <div>{{ profileUser.bio }}</div>
-              </v-flex>
-            </v-layout>
-          </v-card-title>
+              </v-avatar>
+            </v-flex>
+            <v-flex xs10 mt-1 ml-4>
+              <h3 class="headline mb-0">
+                {{ profileUser.displayName }}
+              </h3>
+              <div>{{ profileUser.bio }}</div>
+            </v-flex>
+          </v-layout>
         </v-card>
       </v-flex>
     </v-layout>
-    <v-layout row wrap justify-center>
+    <v-layout wrap justify-center>
       <v-flex xs12>
-        <v-toolbar color="info" dark>
-          <v-toolbar-side-icon>
-            <v-icon
-              large
-              left
-              class="toolbar-icon"
-            >
-              portrait
-            </v-icon>
-          </v-toolbar-side-icon>
+        <v-toolbar color="info">
+          <v-icon
+            large
+            float-left
+            class="btn-look"
+          >
+            mdi-account-outline
+          </v-icon>
           <v-toolbar-title>{{ profileUser.displayName }}'s Published Pages</v-toolbar-title>
         </v-toolbar>
-        <v-card dark>
+        <v-card>
           <stories-preview-list
             :filter-by="previewAuthorFilter"
             :is-public-user-profile="true"
-            />
+          />
         </v-card>
       </v-flex>
     </v-layout>

@@ -1,65 +1,61 @@
 <template>
   <v-container
-    grid-list-md
+    justify-space-around
+    class="auth-container"
   >
-    <v-layout
-      align-center
-      column
-      wrap
+    <v-row
+      justify="end"
+      class="mt-4 mb-6"
+      no-gutters
     >
-      <v-flex
-        xs12
-        sm10
-        md8
-        mb-1
-      >
+      <v-col class="text-center">
         Already a user?
         <nuxt-link
           to="/auth/signin"
           class="signin-link"
         >
           Sign in
-        </nuxt-link></span>
-      </v-flex>
-      <v-flex
-        xs12
-        sm10
-        md8
-        lg6
-      >
+        </nuxt-link>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col class="text-center">
         <v-card>
-          <form @submit.prevent="signUp">
-            <v-card-text ref="form">
+          <v-form
+            ref="form"
+            @submit.prevent="signUp"
+          >
+            <v-card-text>
               <v-text-field
                 v-model="email"
                 label="email"
               />
               <v-text-field
                 v-model="password"
-                :append-icon="showPassword ? 'visibility' : 'visibility_off'"
+                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="showPassword ? 'text' : 'password'"
                 name="password-in-txt"
                 label="password"
                 @click:append="showPassword = !showPassword"
               />
             </v-card-text>
-            <v-divider class="mt-5" />
+            <v-divider class="mt-12" />
             <v-card-actions>
               <v-spacer />
               <v-btn
-                color="pri  mary"
+                color="primary"
                 type="submit"
               >
-                <v-icon left>
-                  account_box
+                <v-icon float-left>
+                  mdi-account-box-outline
                 </v-icon>
                 Sign Up
               </v-btn>
             </v-card-actions>
-          </form>
+          </v-form>
         </v-card>
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

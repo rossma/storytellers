@@ -1,31 +1,37 @@
 x`<template>
-  <v-expansion-panel>
-    <v-expansion-panel-content>
-      <div slot="header" class="header">
-        <v-icon
-          large
-          left
-        >
-          bookmark_border
-        </v-icon>
-        <div><h2>{{ story.title }}</h2></div>
-        <div
+  <v-expansion-panels>
+    <v-expansion-panel>
+      <v-expansion-panel-header class="header">
+        <v-col
+          class="banner-icon">
+          <v-icon
+            large
+            float-left
+          >
+            mdi-bookmark-outline
+          </v-icon>
+        </v-col>
+        <v-col><h2>{{ story.title }}</h2></v-col>
+        <v-col
           v-show="author.displayName"
           @click="showUserProfile()"
+          class="text-right"
         >
           <h4 class="primary--text">
             {{ author.displayName }}
           </h4>
-        </div>
-      </div>
-      <story-summary
-        :story="story"
-        :editable="editable"
-        :story-exists="true"
-        style="padding-bottom:10px;"
-      />
-    </v-expansion-panel-content>
-  </v-expansion-panel>
+        </v-col>
+      </v-expansion-panel-header>
+      <v-expansion-panel-content>
+        <story-summary
+          :story="story"
+          :editable="editable"
+          :story-exists="true"
+          style="padding-bottom:10px;"
+        />
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+  </v-expansion-panels>
 </template>
 
 <script>
@@ -82,7 +88,7 @@ export default {
 </script>
 
 <style>
-.header .v-icon {
-  float: left;
+.banner-icon {
+  max-width: 60px;
 }
 </style>

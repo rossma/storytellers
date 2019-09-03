@@ -1,12 +1,12 @@
 <template>
-    <no-ssr>
-      <rich-text-container
-        :read-only="readOnly"
-        :origin="origin"
-        :src="src"
-        @save="saveContent"
-      />
-    </no-ssr>
+  <no-ssr>
+    <rich-text-container
+      :read-only="readOnly"
+      :origin="origin"
+      :src="src"
+      @save="saveContent"
+    />
+  </no-ssr>
 </template>
 
 <script>

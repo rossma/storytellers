@@ -1,49 +1,52 @@
 <template>
   <v-container
-    grid-list-md
+    justify-space-around
+    class="auth-container"
   >
-    <v-layout
-      align-center
-      column
-      wrap
+    <v-row
+      justify="end"
+      class="mt-2 mb-6"
+      no-gutters
     >
-      <v-flex
-        xs12
-        mb-1
-      >
+      <v-col class="text-center">
         <v-tooltip top>
           <template #activator="{ on }">
             <v-btn
-              outline
-              color="red"
+              large
+              class="mt-1"
+              color="negative"
               v-on="on"
               @click="googleSignIn"
             >
-              <v-icon>lock_open</v-icon>
+              <v-icon>mdi-google</v-icon>
             </v-btn>
           </template>
           <span>Sign in with Google?</span>
         </v-tooltip>
+      </v-col>
+      <v-col class="text-center">
         <v-tooltip top>
           <template #activator="{ on }">
             <v-btn
-              outline
+              large
+              class="mt-1"
               color="blue"
               v-on="on"
               @click="facebookSignIn"
             >
-              <v-icon>lock_open</v-icon>
+              <v-icon>mdi-facebook</v-icon>
             </v-btn>
           </template>
           <span>Sign in with Facebook?</span>
         </v-tooltip>
-      </v-flex>
-      <v-flex
-        xs12
-        sm10
-        md8
-        mb-1
-      >
+      </v-col>
+    </v-row>
+    <v-divider class="mb-4" />
+    <v-row
+      class="mb-1"
+      no-gutters
+    >
+      <v-col class="text-center">
         Not already a user?
         <nuxt-link
           to="/auth/signup"
@@ -51,46 +54,46 @@
         >
           Sign up
         </nuxt-link>
-      </v-flex>
-      <v-flex
-        xs12
-        sm10
-        md8
-        lg6
-      >
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col class="text-center">
         <v-card>
-          <form @submit.prevent="submit">
-            <v-card-text ref="form">
+          <v-form
+            ref="form"
+            @submit.prevent="submit"
+          >
+            <v-card-text>
               <v-text-field
                 v-model="email"
                 label="email"
               />
               <v-text-field
                 v-model="password"
-                :append-icon="showPassword ? 'visibility' : 'visibility_off'"
+                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="showPassword ? 'text' : 'password'"
                 name="password-in-txt"
                 label="password"
                 @click:append="showPassword = !showPassword"
               />
             </v-card-text>
-            <v-divider class="mt-5" />
+            <v-divider class="mt-12" />
             <v-card-actions>
               <v-spacer />
               <v-btn
                 color="primary"
                 type="submit"
               >
-                <v-icon left>
-                  lock_open
+                <v-icon float-left>
+                  mdi-lock-open-outline
                 </v-icon>
                 Sign In
               </v-btn>
             </v-card-actions>
-          </form>
+          </v-form>
         </v-card>
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

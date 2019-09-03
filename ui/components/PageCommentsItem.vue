@@ -1,18 +1,18 @@
 <template>
   <div>
-    <v-list-tile
+    <v-list-item
       :key="index"
       avatar
       ripple
       class="comment-pamel"
     >
-      <v-list-tile-content>
-        <v-list-tile-title class="comment-title">
+      <v-list-item-content>
+        <v-list-item-title class="comment-title">
           {{ comment.userDisplayName }}
-        </v-list-tile-title>
-        <v-list-tile-sub-title>{{ comment.comment }}</v-list-tile-sub-title>
-      </v-list-tile-content>
-      <v-list-tile-action>
+        </v-list-item-title>
+        <v-list-item-subtitle>{{ comment.comment }}</v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-action>
         <v-btn
           icon
           @click="like()"
@@ -21,11 +21,11 @@
             :color="liked ? 'red' : 'grey lighten-1'"
             small
           >
-            favorite
+            mdi-heart
           </v-icon>
         </v-btn>
-      </v-list-tile-action>
-    </v-list-tile>
+      </v-list-item-action>
+    </v-list-item>
     <v-divider />
   </div>
 </template>

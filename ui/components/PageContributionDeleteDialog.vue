@@ -7,7 +7,6 @@
     <v-card>
       <v-toolbar
         color="secondary"
-        dark
       >
         <v-toolbar-title>Delete Page Collaboration</v-toolbar-title>
         <v-spacer />
@@ -15,7 +14,7 @@
           icon
           @click="closeDialog()"
         >
-          <v-icon>close</v-icon>
+          <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-toolbar>
       <v-card-text>Are you sure you want to delete this page?</v-card-text>
@@ -25,11 +24,15 @@
           color="primary"
           @click="deleteCurrentPage"
         >
-          <v-icon left>done</v-icon>
+          <v-icon float-left>
+            mdi-check
+          </v-icon>
           Yes
         </v-btn>
         <v-btn @click.native="closeDialog">
-          <v-icon left>clear</v-icon>
+          <v-icon float-left>
+            mdi-close
+          </v-icon>
           No
         </v-btn>
       </v-card-actions>
@@ -37,7 +40,6 @@
   </v-dialog>
 </template>
 <script>
-
 export default {
   name: 'PageContributionDeleteDialog',
   props: {

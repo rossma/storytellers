@@ -43,10 +43,11 @@
     "fs": "0.0.1-security",
     "js-base64": "^2.5.1",
     "lodash": "^4.17.15",
+    "lodash.clonedeep": "^4.5.0",
     "net": "^1.0.2",
     "node-fetch": "^2.4.1",
     "node-pre-gyp": "^0.11.0",
-    "nuxt": "2.6.1",
+    "nuxt": "2.8.1",
     "pdfjs-dist": "^2.0.943",
     "portal-vue": "^2.1.5",
     "quill-image-resize-module": "^3.0.0",
@@ -54,14 +55,15 @@
     "standard": "^12.0.1",
     "tls": "0.0.1",
     "uuid": "3.3.2",
-    "vue-quill-editor": "^3.0.6",
-    "vuetify": "1.5.13",
-    "vuetify-loader": "^1.2.2"
+    "vue-quill-editor": "^3.0.6"
   },
   "devDependencies": {
+    "@mdi/font": "^3.8.95",
     "@nuxtjs/eslint-config": "0.0.1",
+    "@nuxtjs/vuetify": "^1.1.2",
     "babel-eslint": "10.0.1",
     "css-loader": "^2.1.1",
+    "deepmerge": "^4.0.0",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.2.0",
     "eslint-config-standard": "^12.0.0",
@@ -75,10 +77,9 @@
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^5.2.2",
+    "eslint-plugin-vuetify": "^1.0.0-beta.3",
+    "fibers": "^4.0.1",
     "nodemon": "1.18.10",
-    "prettier": "1.14.3",
-    "style-loader": "^0.23.1",
-    "stylus": "^0.54.5",
-    "stylus-loader": "^3.0.2"
+    "prettier": "1.14.3"
   }
 }

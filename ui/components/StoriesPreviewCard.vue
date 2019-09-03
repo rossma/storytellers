@@ -8,15 +8,14 @@
       <v-badge
         v-model="showInviteBadge"
         color="secondary"
-        left
+        float-left
         overlap
       >
         <template #badge>
           <v-icon
-            dark
             small
           >
-            group
+            mdi-account-group
           </v-icon>
         </template>
         <div
@@ -27,33 +26,32 @@
             v-if="preview.previewImageUrl"
             :src="preview.previewImageUrl"
           />
-<!--          <div-->
-<!--            v-else-->
-<!--            class="v-responsive v-image no-image"-->
-<!--          >-->
-<!--            {{ preview.summary }}-->
-<!--          </div>-->
+          <!--          <div-->
+          <!--            v-else-->
+          <!--            class="v-responsive v-image no-image"-->
+          <!--          >-->
+          <!--            {{ preview.summary }}-->
+          <!--          </div>-->
           <v-img
             v-else-if="preview.wallpaperUrl"
             :src="preview.wallpaperUrl"
           >
             <v-container fill-height fluid>
               <v-layout
-                fill-height>
+                fill-height
+              >
                 <v-flex xs12 align-end flexbox>
                   <span class="headline no-image-text">{{ preview.summary }}</span>
                 </v-flex>
               </v-layout>
             </v-container>
           </v-img>
-          <v-card-title primary-title>
-            <div>
-              <div class="headline truncate">
-                {{ preview.title }}
-              </div>
-              <span class="grey--text truncate">{{ preview.summary }}</span>
-            </div>
+          <v-card-title>
+            {{ preview.title }}
           </v-card-title>
+          <v-card-text class="grey--text truncate">
+            {{ preview.summary }}
+          </v-card-text>
         </div>
       </v-badge>
       <v-card-actions
@@ -88,14 +86,14 @@ export default {
       default: false
     }
   },
-  computed: {
-    isChildPage() {
-      return this.preview.parentPagesRef && this.preview.parentPagesRef.id
-    }
-  },
   data() {
     return {
       showInviteBadge: this.preview.invite || false
+    }
+  },
+  computed: {
+    isChildPage() {
+      return this.preview.parentPagesRef && this.preview.parentPagesRef.id
     }
   },
   methods: {
@@ -133,6 +131,9 @@ export default {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
+  /*width: -webkit-fill-available;*/
+  /*width: -moz-available;*/
+  width: stretch;
 }
 
 .preview-detail-link .v-image,

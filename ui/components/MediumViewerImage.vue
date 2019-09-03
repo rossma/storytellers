@@ -38,14 +38,14 @@ export default {
       default: ''
     }
   },
-  watch: {
-    src: function(newValue, oldValue) {
-      this.mutableSrc = newValue
-    }
-  },
   data() {
     return {
       mutableSrc: null
+    }
+  },
+  watch: {
+    src: function(newValue, oldValue) {
+      this.mutableSrc = newValue
     }
   },
   mounted: function() {
