@@ -30,6 +30,6 @@ export default {
 </script>
 <style>
 .auth-container {
-  max-width: 300px;
+  max-width: 300px!important;
 }
 </style>

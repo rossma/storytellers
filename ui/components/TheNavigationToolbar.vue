@@ -7,7 +7,7 @@
       disable-route-watcher
     >
       <div class="ml-4 mt-2 mb-2">
-        <v-tooltip v-model="show" bottom>
+        <v-tooltip bottom>
           <template #activator="{ on }">
             <nuxt-link to="/">
               <span v-on="on">

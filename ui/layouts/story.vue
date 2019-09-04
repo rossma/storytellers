@@ -273,10 +273,6 @@ export default {
   color: white !important;
 }
 
-/*.chapter-name-in-txt .input-group__details {*/
-/*  display: none;*/
-/*}*/
-
 .active-page {
   background-color: dimgrey;
 }

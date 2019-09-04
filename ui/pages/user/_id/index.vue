@@ -18,7 +18,7 @@
           >
             <v-flex xs1 mt-1 ml-4>
               <v-avatar
-                v-show="profileUser.photoUrl"
+                v-show="!profileUser.photoUrl"
                 :size="avatarSize"
                 class="pink jbtn-file"
               >
@@ -27,7 +27,7 @@
                 </v-icon>
               </v-avatar>
               <v-avatar
-                v-show="!profileUser.photoUrl"
+                v-show="profileUser.photoUrl"
                 :size="avatarSize"
               >
                 <img
