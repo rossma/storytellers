@@ -9,11 +9,18 @@
       :src="mutableSrc"
       class="card-img-top"
     >
-    <img
-      v-show="!mutableSrc"
-      class="card-img-top"
-      src="/img/missing-image.png"
-    >
+<!--    <img-->
+<!--      v-show="!mutableSrc"-->
+<!--      class="card-img-top"-->
+<!--      src="/img/missing-image.png"-->
+<!--    >-->
+    <v-card v-show="!mutableSrc" flat>
+      <v-responsive :aspect-ratio="16/9">
+        <v-card-title style="flex-direction: column">
+          There aren't any uploaded images yet
+        </v-card-title>
+      </v-responsive>
+    </v-card>
   </v-layout>
 </template>
 

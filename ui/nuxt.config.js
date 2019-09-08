@@ -51,7 +51,7 @@ module.exports = {
   /*
   ** Nuxt.js dev-modules
   */
-  devModules: ['@nuxtjs/vuetify'],
+  buildModules: ['@nuxtjs/vuetify'],
 
   /*
   ** Nuxt.js modules
@@ -72,6 +72,7 @@ module.exports = {
     '@nuxtjs/toast',
     'portal-vue/nuxt'
   ],
+
   /*
   ** vuetify module configuration
   ** https://github.com/nuxt-community/vuetify-module

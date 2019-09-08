@@ -1,29 +1,113 @@
 <template>
   <div>
+    <v-card
+      v-if="!contentExists"
+      flat
+    >
+      <v-toolbar
+        color="indigo"
+        dark
+      >
+        <v-toolbar-title>Content Creation</v-toolbar-title>
+      </v-toolbar>
+      <v-card-title>
+        <v-layout wrap>
+          <v-flex x4 mt-1 ml-4 text-center>
+            <v-tooltip bottom>
+              <template #activator="{ on }">
+                <v-btn
+                  large
+                  text
+                  v-on="on"
+                  @click.stop="openPageMediumDialog(1)"
+                >
+                  <v-icon large>
+                    mdi-card-text-outline
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>Rich Text</span>
+            </v-tooltip>
+          </v-flex>
+          <v-flex x4 mt-1 ml-4 text-center>
+            <v-tooltip bottom>
+              <template #activator="{ on }">
+                <v-btn
+                  large
+                  text
+                  v-on="on"
+                  @click.stop="openPageMediumDialog(2)"
+                >
+                  <v-icon large>
+                    mdi-book-outline
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>Words</span>
+            </v-tooltip>
+          </v-flex>
+          <v-flex x4 mt-1 ml-4 text-center>
+            <v-tooltip bottom>
+              <template #activator="{ on }">
+                <v-btn
+                  large
+                  text
+                  v-on="on"
+                  @click.stop="openPageMediumDialog(3)"
+                >
+                  <v-icon large>
+                    mdi-brush
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>Pictures</span>
+            </v-tooltip>
+          </v-flex>
+        </v-layout>
+        <v-layout wrap>
+          <v-flex x12 mt-1 ml-4 text-center>
+            No content created for this page, start by uploading or creating one using the controls above
+          </v-flex>
+        </v-layout>
+      </v-card-title>
+      <!--      <v-card-text>-->
+      <!--      </v-card-text>-->
+    </v-card>
+    <v-card
+      v-else
+      flat
+    >
+      <v-card-text>
+        <page-detail-rich-text
+          v-if="pageRichTextSrc"
+          :page="page"
+          :user="user"
+        />
+        <page-detail-book
+          v-if="pageBookSrc"
+          :page="page"
+          :user="user"
+        />
+        <page-detail-image
+          v-if="pageImageSrc"
+          :page="page"
+          :user="user"
+        />
+      </v-card-text>
+    </v-card>
+    <br>
     <v-card flat>
       <!--<v-card-text class="text-center">-->
       <v-img
-        v-show="pageImageSrc()"
-        :src="pageImageSrc()"
-        @click.stop="openPageMediumDialog()"
+        v-show="pageImageSrc"
+        :src="pageImageSrc"
+        @click.stop="openPageMediumDialog(3)"
       />
       <v-img
-        v-show="!pageImageSrc()"
+        v-show="!pageImageSrc"
         src="/img/missing-image.png"
-        @click.stop="openPageMediumDialog()"
+        @click.stop="openPageMediumDialog(3)"
       />
-      <!--<img-->
-      <!--v-show="pageImageSrc()"-->
-      <!--:src="pageImageSrc()"-->
-      <!--class="card-img-top img-fluid thumb"-->
-      <!--title="Upload"-->
-      <!--@click.stop="openMediumDialog()">-->
-      <!--<img-->
-      <!--v-show="!pageImageSrc()"-->
-      <!--class="card-img-top img-fluid thumb"-->
-      <!--src="/img/missing-image.png"-->
-      <!--title="Upload"-->
-      <!--@click.stop="openMediumDialog()">-->
       <v-card-actions
         v-if="page.public"
         class="black"
@@ -58,6 +142,7 @@
       <page-medium-viewer
         :dialog="pageMediumDialog"
         :page="page"
+        :selected-medium="selectedMedium"
         :story-cover="storyCover"
         :user="user"
         @close="pageMediumDialog = false"
@@ -81,6 +166,9 @@ import { updatePage } from '~/api/service/page'
 import PageMediumViewer from '~/components/PageMediumViewer'
 import PageComments from '~/components/PageComments'
 import PageContributionList from './PageContributionList'
+import PageDetailRichText from './PageDetailRichText'
+import PageDetailBook from './PageDetailBook'
+import PageDetailImage from './PageDetailImage'
 const log = debug('app:components/PageDetail')
 
 export default {
@@ -88,7 +176,10 @@ export default {
   components: {
     PageContributionList,
     PageMediumViewer,
-    PageComments
+    PageComments,
+    PageDetailRichText,
+    PageDetailBook,
+    PageDetailImage
   },
   props: {
     page: {
@@ -110,6 +201,7 @@ export default {
     return {
       commentsDialog: false,
       pageMediumDialog: false,
+      selectedMedium: 3,
       isCollaboration: false,
       selectedPageCollaboration: {
         image: null
@@ -118,6 +210,27 @@ export default {
     }
   },
   computed: {
+    contentExists: function() {
+      return this.pageRichTextSrc || this.pageBookSrc || this.pageImageSrc
+    },
+    pageRichTextSrc: function() {
+      if (this.page.richText && this.page.richText.ref) {
+        return this.page.richText.ref
+      }
+      return ''
+    },
+    pageBookSrc: function() {
+      if (this.page.book && this.page.book.ref) {
+        return this.page.book.ref
+      }
+      return ''
+    },
+    pageImageSrc: function() {
+      if (this.page.image && this.page.image.ref) {
+        return this.page.image.ref
+      }
+      return ''
+    },
     // currentImageOid: function() {
     //   return this.page.image && this.page.image.filename
     // },
@@ -174,13 +287,8 @@ export default {
         this.page.comments = [comment]
       }
     },
-    pageImageSrc() {
-      if (this.page.image && this.page.image.ref) {
-        return this.page.image.ref
-      }
-      return ''
-    },
-    openPageMediumDialog() {
+    openPageMediumDialog(mediumType) {
+      this.selectedMedium = mediumType
       this.pageMediumDialog = true
     }
   }
@@ -192,9 +300,4 @@ export default {
   cursor: pointer;
   max-height: 500px;
 }
-
-/*body {*/
-/*  overflow: auto;*/
-/*  background: #eee;*/
-/*}*/
 </style>
