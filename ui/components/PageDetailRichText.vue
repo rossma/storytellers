@@ -56,13 +56,10 @@ export default {
       type: Object,
       required: true
     },
-<<<<<<< ab20bd13b64902e69dc524031552abc721b77c9c
     src: {
       type: String,
       required: true
     },
-=======
->>>>>>> upgraded libraries and added new components for refactoring story content uploads
     user: {
       type: Object,
       required: true
@@ -70,7 +67,6 @@ export default {
   },
   data() {
     return {
-<<<<<<< ab20bd13b64902e69dc524031552abc721b77c9c
       dialog: false,
       editorContent: '',
       editorOption: {},
@@ -124,22 +120,11 @@ export default {
       log('in getContentFromUrl')
       return this.$axios.$get(url)
     }
-=======
-
-    }
-  },
-  computed: {
-
-  },
-  methods: {
-
->>>>>>> upgraded libraries and added new components for refactoring story content uploads
   }
 }
 </script>
 
 <style>
-<<<<<<< ab20bd13b64902e69dc524031552abc721b77c9c
 .rich-text-thumbnail-container {
   background-color: #e2e2e2;
   cursor: pointer;
@@ -168,10 +153,5 @@ export default {
 
 .rich-text-document p {
   margin-bottom: 4px;
-=======
-.v-image {
-  /*cursor: pointer;*/
-  /*max-height: 500px;*/
->>>>>>> upgraded libraries and added new components for refactoring story content uploads
 }
 </style>

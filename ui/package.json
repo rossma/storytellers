@@ -13,7 +13,6 @@
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon -r esm server/index.js --watch server",
-    "dev2": "cross-env NODE_ENV=development nodemon server/index.js --watch server",
     "build": "nuxt build",
     "start": "cross-env NODE_ENV=production node -r esm server/index.js",
     "generate": "nuxt generate",
