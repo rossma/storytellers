@@ -11,6 +11,10 @@ export default {
     scale: {
       type: Number,
       required: true
+    },
+    canvasHeight: {
+      type: Number,
+      default: 0
     }
   },
 
@@ -40,6 +44,8 @@ export default {
     canvasAttrs() {
       let { width, height } = this.viewport
       ;[width, height] = [width, height].map(dim => Math.ceil(dim))
+
+      if (this.canvasHeight > 0) height = this.canvasHeight
 
       // const style = this.canvasStyle
       const style = '' // removed style attribute for now...

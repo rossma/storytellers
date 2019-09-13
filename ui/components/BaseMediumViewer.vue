@@ -64,7 +64,7 @@
               <v-tooltip bottom>
                 <template #activator="{ on }">
                   <v-btn
-                    v-if="isRichTextEnabled && !canDelete"
+                    v-if="showRichTextToolbarBtn"
                     :value="1"
                     text
                     v-on="on"
@@ -77,7 +77,7 @@
               <v-tooltip bottom>
                 <template #activator="{ on }">
                   <v-btn
-                    v-if="isBookEnabled && !canDelete"
+                    v-if="showBookToolbarBtn"
                     :value="2"
                     text
                     v-on="on"
@@ -90,7 +90,7 @@
               <v-tooltip bottom>
                 <template #activator="{ on }">
                   <v-btn
-                    v-if="isImageEnabled && !canDelete"
+                    v-if="showImageToolbarBtn"
                     :value="3"
                     text
                     v-on="on"
@@ -163,15 +163,15 @@ export default {
     },
     isBookEnabled: {
       type: Boolean,
-      default: true
+      default: false
     },
     isImageEnabled: {
       type: Boolean,
-      default: true
+      default: false
     },
     isRichTextEnabled: {
       type: Boolean,
-      default: true
+      default: false
     },
     readOnly: {
       type: Boolean,
@@ -197,6 +197,34 @@ export default {
       // hasImageChanged: false,
       // hasBookChanged: false,
       // richTextPreview: false
+    }
+  },
+  computed: {
+    enabledMediumTypeCount: function() {
+      let count = 0
+      if (this.isRichTextEnabled) count++
+      if (this.isBookEnabled) count++
+      if (this.isImageEnabled) count++
+      return count
+    },
+    showRichTextToolbarBtn: function() {
+      return (
+        this.enabledMediumTypeCount > 1 &&
+        this.isRichTextEnabled &&
+        !this.canDelete
+      )
+    },
+    showBookToolbarBtn: function() {
+      return (
+        this.enabledMediumTypeCount > 1 && this.isBookEnabled && !this.canDelete
+      )
+    },
+    showImageToolbarBtn: function() {
+      return (
+        this.enabledMediumTypeCount > 1 &&
+        this.isImageEnabled &&
+        !this.canDelete
+      )
     }
   },
   watch: {
@@ -287,5 +315,4 @@ span.v-tooltip {
   z-index: 1;
   overflow: hidden;
 }
-
 </style>

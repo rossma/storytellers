@@ -29,7 +29,7 @@
           </v-icon>
           Yes
         </v-btn>
-        <v-btn @click.native="closeDialog">
+        <v-btn @click.native="closeDialog()">
           <v-icon float-left>
             mdi-close
           </v-icon>

@@ -63,7 +63,7 @@ export default {
         placeholder: 'Once upon a time...',
         theme: 'snow',
         modules: {
-          imageResize: true
+          // imageResize: true
         }
       },
       isPreview: false

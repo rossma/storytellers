@@ -4,12 +4,13 @@
     :read-only="readOnly"
     :title="story.title"
     :user="user"
-    :is-book-enabled="!readOnly || !!bookSrc"
-    :is-image-enabled="!readOnly || !!imageSrc"
-    :is-rich-text-enabled="!readOnly || !!richTextSrc"
+    :initial-medium="selectedMedium"
+    :is-book-enabled="isBookEnabled"
+    :is-image-enabled="isImageEnabled"
+    :is-rich-text-enabled="isRichTextEnabled"
     @on-upload-preview="onUploadPreview"
     @save="saveMedia"
-    @close="$emit('close')"
+    @close="closeDialog()"
   >
     <template #toolbar-custom-items="slotProps">
       <v-divider
@@ -106,6 +107,10 @@ export default {
       type: Object,
       required: true
     },
+    selectedMedium: {
+      type: Number,
+      required: true
+    },
     storyCover: {
       type: Object,
       default: () => {
@@ -133,6 +138,18 @@ export default {
   },
   computed: {
     ...mapGetters('story', ['story']),
+    isBookEnabled: function() {
+      return this.isMediaBookType(this.selectedMedium)
+      // && (!this.readOnly || !!this.bookSrc)
+    },
+    isImageEnabled: function() {
+      return this.isMediaImageType(this.selectedMedium)
+      // && (!this.readOnly || !!this.imageSrc)
+    },
+    isRichTextEnabled: function() {
+      return this.isMediaRichType(this.selectedMedium)
+      // && (!this.readOnly || !!this.richTextSrc)
+    },
     imageSrc: function() {
       if (this.page.image && this.page.image.ref) {
         return this.page.image.ref
@@ -165,6 +182,9 @@ export default {
     }
   },
   methods: {
+    showMedium(medium) {
+      log('show medium', medium)
+    },
     onUploadPreview(file) {
       log('in onUploadPreview')
       this.file = file
@@ -182,13 +202,16 @@ export default {
       if (this.isMediaBookType(activeMedium)) {
         this.saveBookFile().then(() => {
           this.$toast.success('Book updated')
+          this.closeDialog()
         })
       } else if (this.isMediaImageType(activeMedium)) {
         this.saveImageFile().then(() => {
           this.$toast.success('Image updated')
+          this.closeDialog()
         })
       } else if (this.isMediaRichType(activeMedium)) {
         EventBus.$emit('rich-text-save')
+        this.closeDialog()
       }
     },
     saveImageFile() {
@@ -288,6 +311,9 @@ export default {
       } else {
         return ''
       }
+    },
+    closeDialog() {
+      this.$emit('close')
     }
   }
 }
