@@ -10,7 +10,7 @@
     :is-rich-text-enabled="isRichTextEnabled"
     @on-upload-preview="onUploadPreview"
     @save="saveMedia"
-    @close="$emit('close')"
+    @close="closeDialog()"
   >
     <template #toolbar-custom-items="slotProps">
       <v-divider
@@ -202,13 +202,16 @@ export default {
       if (this.isMediaBookType(activeMedium)) {
         this.saveBookFile().then(() => {
           this.$toast.success('Book updated')
+          this.closeDialog()
         })
       } else if (this.isMediaImageType(activeMedium)) {
         this.saveImageFile().then(() => {
           this.$toast.success('Image updated')
+          this.closeDialog()
         })
       } else if (this.isMediaRichType(activeMedium)) {
         EventBus.$emit('rich-text-save')
+        this.closeDialog()
       }
     },
     saveImageFile() {
@@ -308,6 +311,9 @@ export default {
       } else {
         return ''
       }
+    },
+    closeDialog() {
+      this.$emit('close')
     }
   }
 }

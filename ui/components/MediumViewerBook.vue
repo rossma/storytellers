@@ -18,9 +18,9 @@
     />
     <v-card v-if="!isPdf(mutableFileType) && !isEpub(mutableFileType)" flat>
       <v-responsive :aspect-ratio="16/9">
-        <v-card-title>
-          There aren't any uploaded books yet
-        </v-card-title>
+        <v-card-text>
+          Use the upload button to add a book to your page
+        </v-card-text>
       </v-responsive>
     </v-card>
     <!--    </v-flex>-->

@@ -64,14 +64,14 @@
             </v-tooltip>
           </v-flex>
         </v-layout>
+      </v-card-title>
+      <v-card-text>
         <v-layout wrap>
           <v-flex x12 mt-1 ml-4 text-center>
             No content created for this page, start by uploading or creating one using the controls above
           </v-flex>
         </v-layout>
-      </v-card-title>
-      <!--      <v-card-text>-->
-      <!--      </v-card-text>-->
+      </v-card-text>
     </v-card>
     <v-card
       v-else
@@ -81,33 +81,28 @@
         <page-detail-rich-text
           v-if="pageRichTextSrc"
           :page="page"
+          :src="pageRichTextSrc"
           :user="user"
         />
-        <page-detail-book
-          v-if="pageBookSrc"
+        <page-detail-book-pdf
+          v-if="pageBookSrc && isPdf"
           :page="page"
+          :src="pageBookSrc"
+          :user="user"
+        />
+        <page-detail-book-epub
+          v-if="pageBookSrc && isEpub"
+          :page="page"
+          :src="pageBookSrc"
           :user="user"
         />
         <page-detail-image
           v-if="pageImageSrc"
           :page="page"
+          :src="pageImageSrc"
           :user="user"
         />
       </v-card-text>
-    </v-card>
-    <br>
-    <v-card flat>
-      <!--<v-card-text class="text-center">-->
-      <v-img
-        v-show="pageImageSrc"
-        :src="pageImageSrc"
-        @click.stop="openPageMediumDialog(3)"
-      />
-      <v-img
-        v-show="!pageImageSrc"
-        src="/img/missing-image.png"
-        @click.stop="openPageMediumDialog(3)"
-      />
       <v-card-actions
         v-if="page.public"
         class="black"
@@ -130,7 +125,6 @@
           <v-icon>mdi-comment-outline</v-icon>
         </v-btn>
       </v-card-actions>
-      <!--</v-card-text>-->
     </v-card>
     <page-contribution-list
       v-if="page.invite"
@@ -163,11 +157,13 @@
 <script>
 import debug from 'debug'
 import { updatePage } from '~/api/service/page'
+import FileUtils from '~/utils/file'
 import PageMediumViewer from '~/components/PageMediumViewer'
 import PageComments from '~/components/PageComments'
 import PageContributionList from './PageContributionList'
 import PageDetailRichText from './PageDetailRichText'
-import PageDetailBook from './PageDetailBook'
+import PageDetailBookEpub from './PageDetailBookEpub'
+import PageDetailBookPdf from './PageDetailBookPdf'
 import PageDetailImage from './PageDetailImage'
 const log = debug('app:components/PageDetail')
 
@@ -178,7 +174,8 @@ export default {
     PageMediumViewer,
     PageComments,
     PageDetailRichText,
-    PageDetailBook,
+    PageDetailBookEpub,
+    PageDetailBookPdf,
     PageDetailImage
   },
   props: {
@@ -224,6 +221,19 @@ export default {
         return this.page.book.ref
       }
       return ''
+    },
+    bookType() {
+      if (this.page.book && this.page.book.contentType) {
+        return this.page.book.contentType
+      } else {
+        return ''
+      }
+    },
+    isEpub() {
+      return this.bookType && FileUtils.isEpub(this.bookType)
+    },
+    isPdf() {
+      return this.bookType && FileUtils.isPdf(this.bookType)
     },
     pageImageSrc: function() {
       if (this.page.image && this.page.image.ref) {
@@ -295,9 +305,9 @@ export default {
 }
 </script>
 
-<style>
-.v-image {
-  cursor: pointer;
-  max-height: 500px;
-}
+<style scoped>
+/*.v-image {*/
+/*  cursor: pointer;*/
+/*  max-height: 500px;*/
+/*}*/
 </style>

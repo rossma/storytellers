@@ -1,0 +1,161 @@
+<template>
+  <div>
+    <v-card
+      flat
+      @click.stop="dialog = true"
+    >
+      <v-layout
+        justify-center
+        class="pdf-thumbnail-container"
+      >
+        <pdf-page
+          v-if="pdfPages.length > 0"
+          :page="firstPage"
+          :canvasHeight="canvasHeightThumbnail"
+          :scale="scaleThumbnail"
+          class="pdf-thumbnail-document"
+          @errored="onPageErrored"
+          @rendered="onPageRendered"
+        />
+      </v-layout>
+    </v-card>
+
+    <v-dialog
+      v-model="dialog"
+      scrollable
+      fullscreen
+    >
+      <v-card>
+        <v-layout
+          justify-center
+          class="pdf-container"
+          tabindex="-1"
+        />
+        <pdf-page
+          v-for="pdfPage in pdfPages"
+          :key="pdfPage.pageNumber"
+          :page="pdfPage"
+          :scale="scale"
+          class="pdf-document"
+          @errored="onPageErrored"
+          @rendered="onPageRendered"
+        />
+      </v-card>
+    </v-dialog>
+  </div>
+</template>
+
+<script>
+import debug from 'debug'
+import range from 'lodash/range'
+import PdfPage from './PdfPage'
+const log = debug('app:components/PageDetailBookPdf')
+
+export default {
+  name: 'PageDetailBookPdf',
+  components: {
+    PdfPage
+  },
+  props: {
+    page: {
+      type: Object,
+      required: true
+    },
+    src: {
+      type: String,
+      required: true
+    },
+    user: {
+      type: Object,
+      required: true
+    }
+  },
+  data() {
+    return {
+      dialog: false,
+      scale: 2,
+      scaleThumbnail: 1,
+      canvasHeightThumbnail: 500,
+      pdf: undefined,
+      pdfPages: []
+    }
+  },
+  computed: {
+    firstPage: function() {
+      return this.pdfPages[0]
+    }
+  },
+  watch: {
+    pdf(pdf) {
+      log('inside pdf watch', pdf.numPages)
+      this.pdfPages = []
+      // log('range:', range(1, pdf.numPages))
+
+      const promises = range(1, pdf.numPages + 1).map(number => {
+        // log('inside range..........................', number)
+        const p = pdf.getPage(number)
+        // log('p:', p)
+        return p
+      })
+
+      Promise.all(promises).then(pdfPages => {
+        // log('in promises all then', pdfPages.length)
+        this.pdfPages = pdfPages
+      })
+    }
+  },
+  mounted: function() {
+    this.$nextTick(() => {
+      this.init()
+    })
+  },
+  methods: {
+    init() {
+      log('In pdf create book', this.src)
+
+      if (this.src) {
+        this.fetchPDF(this.src)
+          .then(pdf => {
+            log('pdf fetched')
+            this.pdf = pdf
+          })
+          .catch(error => {
+            log('error fetching pdf', error)
+          })
+      }
+    },
+    fetchPDF(url) {
+      log('fetch pdf', url)
+      return import('pdfjs-dist/webpack').then(pdfjs => pdfjs.getDocument(url))
+    },
+    onPageRendered(page) {
+      // log('on page rendered:', page)
+    },
+
+    onPageErrored({ text, response, page }) {
+      log('on page errored:', text, response, page)
+    }
+  }
+}
+</script>
+
+<style>
+.pdf-thumbnail-container {
+  background-color: #e2e2e2;
+  cursor: pointer;
+  /*max-height: 300px;*/
+}
+
+.pdf-thumbnail-document {
+  /*background-color: white;*/
+  /*color: black;*/
+  /*font-size: 1em;*/
+  /*max-height: 100%;*/
+}
+
+.pdf-container {
+}
+
+.pdf-document {
+}
+</style>

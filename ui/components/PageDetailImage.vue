@@ -1,6 +1,25 @@
 <template>
   <div>
-    page image
+    <v-img
+      :src="src"
+      class="image-thumbnail"
+      @click.stop="dialog = true"
+    />
+    <v-dialog
+      v-model="dialog"
+      scrollable
+      fullscreen
+    >
+      <v-card>
+        <v-layout
+          justify-center
+          class="image-container"
+          tabindex="-1"
+        >
+          <v-img :src="src" />
+        </v-layout>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -10,11 +29,14 @@
 
 export default {
   name: 'PageDetailImage',
-  components: {
-  },
+  components: {},
   props: {
     page: {
       type: Object,
+      required: true
+    },
+    src: {
+      type: String,
       required: true
     },
     user: {
@@ -24,14 +46,12 @@ export default {
   },
   data() {
     return {
-
+      dialog: false
     }
   },
-  computed: {
-
-  },
+  computed: {},
   methods: {
-
+    openImageDialog() {}
   }
 }
 </script>
@@ -40,5 +60,21 @@ export default {
 .v-image {
   /*cursor: pointer;*/
   /*max-height: 500px;*/
+}
+.image-container {
+  /*display: block;*/
+  /*overflow-y: scroll;*/
+  /*height: 100vh;*/
+}
+
+.image-container img {
+  /*margin: 0 auto;*/
+  /*display: block;*/
+  /*max-width: 100%;*/
+}
+
+.image-thumbnail {
+  cursor: pointer;
+  max-height: 500px;
 }
 </style>

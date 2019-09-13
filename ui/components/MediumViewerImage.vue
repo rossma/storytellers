@@ -16,9 +16,9 @@
 <!--    >-->
     <v-card v-show="!mutableSrc" flat>
       <v-responsive :aspect-ratio="16/9">
-        <v-card-title style="flex-direction: column">
-          There aren't any uploaded images yet
-        </v-card-title>
+        <v-card-text style="flex-direction: column">
+          Use the upload button to add an image to your page
+        </v-card-text>
       </v-responsive>
     </v-card>
   </v-layout>
