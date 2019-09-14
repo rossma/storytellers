@@ -262,24 +262,5 @@ export default {
 </script>
 
 <style scoped>
-.jbtn-file {
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
 
-.jbtn-file input[type='file'] {
-  position: absolute;
-  top: 0;
-  right: 0;
-  min-width: 100%;
-  min-height: 100%;
-  font-size: 100px;
-  text-align: right;
-  filter: alpha(opacity=0);
-  opacity: 0;
-  outline: none;
-  cursor: inherit;
-  display: block;
-}
 </style>

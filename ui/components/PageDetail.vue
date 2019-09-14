@@ -85,19 +85,19 @@
           :user="user"
         />
         <page-detail-book-pdf
-          v-if="pageBookSrc && isPdf"
+          v-else-if="pageBookSrc && isPdf"
           :page="page"
           :src="pageBookSrc"
           :user="user"
         />
         <page-detail-book-epub
-          v-if="pageBookSrc && isEpub"
+          v-else-if="pageBookSrc && isEpub"
           :page="page"
           :src="pageBookSrc"
           :user="user"
         />
         <page-detail-image
-          v-if="pageImageSrc"
+          v-else-if="pageImageSrc"
           :page="page"
           :src="pageImageSrc"
           :user="user"

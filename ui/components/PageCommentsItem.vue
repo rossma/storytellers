@@ -2,7 +2,6 @@
   <div>
     <v-list-item
       :key="index"
-      avatar
       ripple
       class="comment-pamel"
     >
