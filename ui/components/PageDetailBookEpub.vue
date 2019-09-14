@@ -11,7 +11,8 @@
           <div
             id="epub-thumbnail-viewer"
             ref="epub-thumbnail-viewer"
-            class="single epub-thumbnail-document"
+            :class="thumbnailClass"
+            class="single"
           />
         </v-layout>
       </v-responsive>
@@ -32,7 +33,8 @@
           <div
             id="epub-viewer"
             ref="epub-viewer"
-            class="scrolled epub-viewer"
+            :class="viewerClass"
+            class="scrolled"
           />
           <a
             v-show="hasPrev"
@@ -102,7 +104,22 @@ export default {
       showme: false
     }
   },
-  computed: {},
+  computed: {
+    thumbnailClass: function() {
+      if (this.$vuetify.breakpoint.name === 'xs') {
+        return 'epub-thumbnail-document-xs'
+      } else {
+        return 'epub-thumbnail-document'
+      }
+    },
+    viewerClass: function() {
+      if (this.$vuetify.breakpoint.name === 'xs') {
+        return 'epub-viewer-xs'
+      } else {
+        return 'epub-viewer'
+      }
+    }
+  },
   watch: {},
   mounted: function() {
     this.$nextTick(() => {
@@ -256,6 +273,10 @@ export default {
   z-index: 9999;
 }
 
+.epub-thumbnail-document, .epub-thumbnail-document-xs {
+
+}
+
 .epub-thumbnail-document {
   /*background-color: white;*/
   /*color: black;*/
@@ -264,11 +285,29 @@ export default {
   max-width: 600px;
 }
 
+
+.epub-thumbnail-document-xs {
+  /*background-color: white;*/
+  /*color: black;*/
+  /*font-size: 1em;*/
+  /*max-height: 100%;*/
+  max-width: 400px;
+}
+
 .epub-container {
+}
+
+.epub-viewer, .epub-viewer {
+
 }
 
 .epub-viewer {
   max-width: 60em;
+  /*max-height:100%;*/
+}
+
+.epub-viewer-xs {
+  max-width: 40em;
   /*max-height:100%;*/
 }
 
