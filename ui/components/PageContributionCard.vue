@@ -133,23 +133,6 @@ export default {
       )
       log(`childPage:${this.childPage}`)
       this.$emit('open-viewer', this.childPage)
-      // if (pageOid) {
-      //   this.$router.push(`/story/${pageOid}`)
-      // } else {
-      //   // in the event no page id is defined in cover take the first page
-      //   findPagesByStory(storyOid)
-      //     .then(pages => {
-      //       const page = pages.sort((a, b) => a.page - b.page)[0]
-      //       if (page) {
-      //         this.$router.push(`/story/${page.id}`)
-      //       } else {
-      //         this.$toast.error('Page does not exist')
-      //       }
-      //     })
-      //     .catch(error => {
-      //       this.$toast.error(error.message)
-      //     })
-      // }
     },
     like() {
       log('in like', this.liked)

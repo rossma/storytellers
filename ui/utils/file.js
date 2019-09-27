@@ -12,5 +12,30 @@ export default {
   },
   isPdf: type => {
     return type && type.includes(PDF_TYPE)
+  },
+  pageRichTextSrc: page => {
+    if (page.richText && page.richText.ref) {
+      return page.richText.ref
+    }
+    return ''
+  },
+  pageBookSrc: page => {
+    if (page.book && page.book.ref) {
+      return page.book.ref
+    }
+    return ''
+  },
+  bookType: page => {
+    if (page.book && page.book.contentType) {
+      return page.book.contentType
+    } else {
+      return ''
+    }
+  },
+  pageImageSrc: page => {
+    if (page.image && page.image.ref) {
+      return page.image.ref
+    }
+    return ''
   }
 }

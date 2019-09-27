@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-card
+      v-if="showThumbnail"
       flat
     >
       <v-responsive :aspect-ratio="16/9">
@@ -19,7 +20,7 @@
     </v-card>
 
     <v-dialog
-      v-model="dialog"
+      v-model="mutableDialog"
       eager
       fullscreen
     >
@@ -60,15 +61,24 @@
 <script>
 import { Book, Rendition } from 'epubjs'
 import debug from 'debug'
+// import { EventBus } from '~/utils/event-bus.js'
 const log = debug('app:components/PageDetailBookEpub')
 
 export default {
   name: 'PageDetailBookEpub',
   components: {},
   props: {
+    dialog: {
+      type: Boolean,
+      default: false
+    },
     page: {
       type: Object,
       required: true
+    },
+    showThumbnail: {
+      type: Boolean,
+      default: true
     },
     src: {
       type: String,
@@ -81,7 +91,7 @@ export default {
   },
   data() {
     return {
-      dialog: false,
+      mutableDialog: this.dialog,
       book: null,
       display: null,
       // mutableBookSrc: null,
@@ -123,8 +133,17 @@ export default {
   watch: {},
   mounted: function() {
     this.$nextTick(() => {
+      // EventBus.$on(`open-page-detail-book-epub-dialog`, () => {
+      //   log('in open-page-detail-book-epub-dialog')
+      //   this.dialog = true
+      //   this.init()
+      // })
+
       this.init()
     })
+  },
+  beforeDestroy() {
+    // EventBus.$off(`open-page-detail-book-epub-dialog`)
   },
   methods: {
     init() {
@@ -151,7 +170,7 @@ export default {
 
       this.renditionThumbnail.on('click', () => {
         this.initDialogRendition()
-        this.dialog = true
+        this.mutableDialog = true
       })
     },
     initDialogRendition() {
