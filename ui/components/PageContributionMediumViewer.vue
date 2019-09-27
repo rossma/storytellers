@@ -5,10 +5,10 @@
     :title="story.title"
     :theme="'secondary'"
     :user="user"
-    :initial-medium="activeMedium"
-    :is-book-enabled="!readOnly || !!bookSrc"
-    :is-image-enabled="!readOnly || !!imageSrc"
-    :is-rich-text-enabled="!readOnly || !!richTextSrc"
+    :initial-medium="allSelectedMedium ? selectedMedium : activeMedium"
+    :is-book-enabled="isBookEnabled"
+    :is-image-enabled="isImageEnabled"
+    :is-rich-text-enabled="isRichTextEnabled"
     :can-delete="canDelete"
     @on-upload-preview="onUploadPreview"
     @save="saveMediaDialog"
@@ -117,6 +117,14 @@ export default {
       type: Number,
       default: 3
     },
+    selectedMedium: {
+      type: Number,
+      default: undefined
+    },
+    pagesRef: {
+      type: Object,
+      required: true
+    },
     dialog: {
       type: Boolean,
       default: false
@@ -126,10 +134,6 @@ export default {
       default: 'contribution'
     },
     contribution: {
-      type: Object,
-      required: true
-    },
-    pagesRef: {
       type: Object,
       required: true
     },
@@ -160,6 +164,18 @@ export default {
   },
   computed: {
     ...mapGetters('story', ['story']),
+    allSelectedMedium: function() {
+      return this.selectedMedium === undefined
+    },
+    isBookEnabled: function() {
+      return this.allSelectedMedium || this.isMediaBookType(this.selectedMedium)
+    },
+    isImageEnabled: function() {
+      return this.allSelectedMedium || this.isMediaImageType(this.selectedMedium)
+    },
+    isRichTextEnabled: function() {
+      return this.allSelectedMedium || this.isMediaRichType(this.selectedMedium)
+    },
     imageSrc: function() {
       if (this.contribution.image && this.contribution.image.ref) {
         return this.contribution.image.ref

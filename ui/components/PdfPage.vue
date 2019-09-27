@@ -12,7 +12,11 @@ export default {
       type: Number,
       required: true
     },
-    canvasHeight: {
+    height: {
+      type: Number,
+      default: 0
+    },
+    width: {
       type: Number,
       default: 0
     }
@@ -24,31 +28,38 @@ export default {
     },
 
     canvasStyle() {
-      const {
-        width: actualSizeWidth,
-        height: actualSizeHeight
-      } = this.actualSizeViewport
-      const pixelRatio = window.devicePixelRatio || 1
-      // const pixelRatio = 1
-      const [pixelWidth, pixelHeight] = [actualSizeWidth, actualSizeHeight].map(
-        dim => Math.ceil(dim / pixelRatio)
-      )
-      log(
-        `window.devicePixelRatio: ${
-          window.devicePixelRatio
-        } pixel ratio: ${pixelRatio} actualSizeWidth: ${actualSizeWidth}px actualSizeHeight: ${actualSizeHeight}px width: ${pixelWidth}px; height: ${pixelHeight}px;`
-      )
-      return `width: ${pixelWidth}px; height: ${pixelHeight}px;`
+      let style = `padding-left: 0; padding-right: 0;
+                    margin-left: auto; margin-right: auto;
+                    display: block; max-width: 1000px;`
+      if (this.height > 0) {
+        style = style + ` height: ${this.height}px;`
+      } else {
+        const {
+          width: actualSizeWidth,
+          height: actualSizeHeight
+        } = this.actualSizeViewport
+
+        const pixelRatio = window.devicePixelRatio || 1
+        // const pixelRatio = 1
+        const [pixelWidth, pixelHeight] = [
+          actualSizeWidth,
+          actualSizeHeight
+        ].map(dim => Math.ceil(dim / pixelRatio))
+        log(
+          `window.devicePixelRatio: ${
+            window.devicePixelRatio
+          } pixel ratio: ${pixelRatio} actualSizeWidth: ${actualSizeWidth}px actualSizeHeight: ${actualSizeHeight}px width: ${pixelWidth}px; height: ${pixelHeight}px;`
+        )
+        style = style + ` width: ${pixelWidth}px; height: ${pixelHeight}px;`
+      }
+      return style
     },
 
     canvasAttrs() {
       let { width, height } = this.viewport
       ;[width, height] = [width, height].map(dim => Math.ceil(dim))
 
-      if (this.canvasHeight > 0) height = this.canvasHeight
-
-      // const style = this.canvasStyle
-      const style = '' // removed style attribute for now...
+      const style = this.canvasStyle
 
       return {
         width,

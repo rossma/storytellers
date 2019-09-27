@@ -1,8 +1,9 @@
 <template>
   <div>
     <v-card
+      v-if="showThumbnail"
       flat
-      @click.stop="dialog = true"
+      @click.stop="mutableDialog = true"
     >
       <v-layout
         justify-center
@@ -23,7 +24,7 @@
     </v-card>
 
     <v-dialog
-      v-model="dialog"
+      v-model="mutableDialog"
       scrollable
       fullscreen
     >
@@ -45,16 +46,24 @@
 <script>
 import Vue from 'vue'
 import debug from 'debug'
+// import { EventBus } from '~/utils/event-bus.js'
 const log = debug('app:components/PageDetailRichText')
 
 export default {
   name: 'PageDetailRichText',
-  components: {
-  },
+  components: {},
   props: {
+    dialog: {
+      type: Boolean,
+      default: false
+    },
     page: {
       type: Object,
       required: true
+    },
+    showThumbnail: {
+      type: Boolean,
+      default: true
     },
     src: {
       type: String,
@@ -67,7 +76,7 @@ export default {
   },
   data() {
     return {
-      dialog: false,
+      mutableDialog: this.dialog,
       editorContent: '',
       editorOption: {},
       compiled: ''
@@ -75,13 +84,23 @@ export default {
   },
   computed: {
     editor() {
+      log('what am i doing in here someone tell me please?!!!!!')
       return this.$refs.textEditor.quill
     }
   },
   mounted: function() {
     this.$nextTick(() => {
+      // EventBus.$on(`open-page-detail-rich-text-dialog`, () => {
+      //   log('in open-page-detail-rich-text-dialog')
+      //   this.dialog = true
+      //   this.init()
+      // })
+
       this.init()
     })
+  },
+  beforeDestroy() {
+    // EventBus.$off(`open-page-detail-rich-text-dialog`)
   },
   methods: {
     init() {

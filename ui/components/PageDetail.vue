@@ -157,7 +157,7 @@
 <script>
 import debug from 'debug'
 import { updatePage } from '~/api/service/page'
-import FileUtils from '~/utils/file'
+import PageMixin from '~/mixins/PageMixin'
 import PageMediumViewer from '~/components/PageMediumViewer'
 import PageComments from '~/components/PageComments'
 import PageContributionList from './PageContributionList'
@@ -178,6 +178,7 @@ export default {
     PageDetailBookPdf,
     PageDetailImage
   },
+  mixins: [PageMixin],
   props: {
     page: {
       type: Object,
@@ -211,39 +212,24 @@ export default {
       return this.pageRichTextSrc || this.pageBookSrc || this.pageImageSrc
     },
     pageRichTextSrc: function() {
-      if (this.page.richText && this.page.richText.ref) {
-        return this.page.richText.ref
-      }
-      return ''
+      return this.getPageRichTextSrc(this.page)
     },
     pageBookSrc: function() {
-      if (this.page.book && this.page.book.ref) {
-        return this.page.book.ref
-      }
-      return ''
+      return this.getPageBookSrc(this.page)
     },
-    bookType() {
-      if (this.page.book && this.page.book.contentType) {
-        return this.page.book.contentType
-      } else {
-        return ''
-      }
+    bookType: function() {
+      return this.getBookType(this.page)
     },
-    isEpub() {
-      return this.bookType && FileUtils.isEpub(this.bookType)
+    isEpub: function() {
+      return this.getIsEpub(this.bookType)
     },
-    isPdf() {
-      return this.bookType && FileUtils.isPdf(this.bookType)
+    isPdf: function() {
+      log('hello:', this.bookType)
+      return this.getIsPdf(this.bookType)
     },
     pageImageSrc: function() {
-      if (this.page.image && this.page.image.ref) {
-        return this.page.image.ref
-      }
-      return ''
+      return this.getPageImageSrc(this.page)
     },
-    // currentImageOid: function() {
-    //   return this.page.image && this.page.image.filename
-    // },
     liked: {
       get() {
         log('in liked get', this.page.likes)
