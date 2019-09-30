@@ -1,96 +1,120 @@
 <template>
   <div>
-    <v-form
-      ref="form"
-      v-model="valid"
-      class="text-right"
-      lazy-validation
+    <v-card
+      class="mx-auto"
+      flat
     >
-      <v-card flat>
-        <v-card-text>
-          <v-container
-            v-if="editable"
-            fluid
-          >
-            <v-layout>
-              <v-flex xs-2>
-                <v-tooltip top>
-                  <template #activator="{ on }">
-                    <div
-                      class="jbtn-file"
-                      v-on="on"
+      <v-container
+        v-if="editable"
+        class="pa-2"
+        fluid
+      >
+        <v-form
+          ref="form"
+          v-model="valid"
+          class="text-right"
+          lazy-validation
+        >
+          <v-layout>
+            <v-flex
+              xs-4
+            >
+              <v-tooltip top>
+                <template #activator="{ on }">
+                  <div
+                    class="jbtn-file"
+                    v-on="on"
+                  >
+                    <v-img
+                      :src="coverImageSrc"
+                      aspect-ratio="0.5"
+                      max-width="200"
+                      max-height="200"
+                      class="cover-image"
+                    />
+                    <input
+                      type="file"
+                      @change="coverImageSelected"
                     >
-                      <v-img
-                        :src="coverImageSrc"
-                        aspect-ratio="0.5"
-                        max-width="200"
-                        max-height="200"
-                        class="cover-image"
-                      />
-                      <input
-                        type="file"
-                        @change="coverImageSelected"
-                      >
-                    </div>
-                  </template>
-                  <span>Upload Cover Image</span>
-                </v-tooltip>
-              </v-flex>
-              <v-flex xs10>
-                <v-text-field
-                  v-model="mutableStory.title"
-                  label="Title"
-                  required
-                />
-                <v-textarea
-                  v-model="mutableStory.summary"
-                  outlined
-                  name="summary"
-                  label="Summary"
-                />
-              </v-flex>
-            </v-layout>
-          </v-container>
-          <div v-else>
-            {{ mutableStory.summary }}
-          </div>
-        </v-card-text>
-      </v-card>
-      <v-tooltip top>
-        <template #activator="{ on }">
-          <v-btn
-            v-if="storyExists && editable"
-            color="negative"
-            class="mr-1"
-            v-on="on"
-            @click.stop="deleteDialog = true"
-          >
-            <v-icon float-left>
-              mdi-delete
-            </v-icon>
-            delete
-          </v-btn>
-        </template>
-        <span>Delete Story</span>
-      </v-tooltip>
-      <v-tooltip top>
-        <template #activator="{ on }">
-          <v-btn
-            v-if="editable"
-            :disabled="!valid"
-            class="primary"
-            v-on="on"
-            @click="submit"
-          >
-            <v-icon float-left>
-              mdi-content-save-outline
-            </v-icon>
-            save
-          </v-btn>
-        </template>
-        <span>Save Story</span>
-      </v-tooltip>
-    </v-form>
+                  </div>
+                </template>
+                <span>Upload Cover Image</span>
+              </v-tooltip>
+            </v-flex>
+            <v-flex xs8>
+              <v-text-field
+                v-model="mutableStory.title"
+                label="Title"
+                required
+              />
+              <v-textarea
+                v-model="mutableStory.summary"
+                outlined
+                name="summary"
+                label="Summary"
+              />
+            </v-flex>
+          </v-layout>
+          <v-card-actions>
+            <v-spacer />
+            <v-tooltip top>
+              <template #activator="{ on }">
+                <v-btn
+                  v-if="storyExists"
+                  color="negative"
+                  class="mr-1"
+                  v-on="on"
+                  @click.stop="deleteDialog = true"
+                >
+                  <v-icon float-left>
+                    mdi-delete
+                  </v-icon>
+                  delete
+                </v-btn>
+              </template>
+              <span>Delete Story</span>
+            </v-tooltip>
+            <v-tooltip top>
+              <template #activator="{ on }">
+                <v-btn
+                  :disabled="!valid"
+                  class="primary"
+                  v-on="on"
+                  @click="submit"
+                >
+                  <v-icon float-left>
+                    mdi-content-save-outline
+                  </v-icon>
+                  save
+                </v-btn>
+              </template>
+              <span>Save Story</span>
+            </v-tooltip>
+          </v-card-actions>
+        </v-form>
+      </v-container>
+      <v-container
+        v-else
+        fluid
+      >
+        <v-layout pl-2>
+          <v-flex xs-4>
+            <v-img
+              :src="coverImageSrc"
+              aspect-ratio="0.5"
+              max-width="200"
+              max-height="200"
+              class="cover-image"
+            />
+          </v-flex>
+          <v-flex xs-8>
+            <v-card-text class="subtitle-1">
+              {{ mutableStory.summary }}
+            </v-card-text>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-card>
     <story-summary-delete-dialog
       :story="mutableStory"
       :dialog="deleteDialog"
@@ -313,5 +337,9 @@ export default {
 <style>
 .cover-image {
   /*max-height: 300px;*/
+}
+.jbtn-file {
+  max-width: 200px;
+  max-height: 200px;
 }
 </style>

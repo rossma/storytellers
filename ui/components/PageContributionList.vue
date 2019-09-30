@@ -121,7 +121,7 @@
     </v-flex>
     <portal to="contribution-medium-viewer-dialog">
       <page-contribution-medium-viewer
-        v-if="pageMediumDialog"
+        v-if="pageMediumDialog && user.uid === selectedChildPage.uid"
         :key="viewerKey"
         :active-medium="activeMedium"
         :selected-medium="selectedMedium"
@@ -156,34 +156,38 @@
     >
       <v-card-text>
         <page-detail-rich-text
-          v-if="pageDetailRichTextDialog"
+          v-if="pageDetailRichTextDialog && user.uid !== selectedChildPage.uid"
           :dialog="pageDetailRichTextDialog"
           :page="selectedChildPage"
           :src="selectedChildPageSrc"
+          :theme="'secondary'"
           :user="user"
           :show-thumbnail="false"
         />
         <page-detail-book-pdf
-          v-if="pageDetailBookPdfDialog"
+          v-if="pageDetailBookPdfDialog && user.uid !== selectedChildPage.uid"
           :dialog="pageDetailBookPdfDialog"
           :page="selectedChildPage  "
           :src="selectedChildPageSrc"
+          :theme="'secondary'"
           :user="user"
           :show-thumbnail="false"
         />
         <page-detail-book-epub
-          v-if="pageDetailBookEpubDialog"
+          v-if="pageDetailBookEpubDialog && user.uid !== selectedChildPage.uid"
           :dialog="pageDetailBookEpubDialog"
           :page="selectedChildPage"
           :src="selectedChildPageSrc"
+          :theme="'secondary'"
           :user="user"
           :show-thumbnail="false"
         />
         <page-detail-image
-          v-if="pageDetailImageDialog"
+          v-if="pageDetailImageDialog && user.uid !== selectedChildPage.uid"
           :dialog="pageDetailImageDialog"
           :page="selectedChildPage"
           :src="selectedChildPageSrc"
+          :theme="'secondary'"
           :user="user"
           :show-thumbnail="false"
         />
@@ -202,7 +206,7 @@ import { findUserByOid } from '~/api/service/user'
 import PageContributionCard from '~/components/PageContributionCard'
 import PageContributionMediumViewer from '~/components/PageContributionMediumViewer'
 import PageComments from '~/components/PageComments'
-import PageDetailRichText from './PageDetailRichText'
+  import PageDetailRichText from './PageDetailRichText'
 import PageDetailBookEpub from './PageDetailBookEpub'
 import PageDetailBookPdf from './PageDetailBookPdf'
 import PageDetailImage from './PageDetailImage'
@@ -299,15 +303,12 @@ export default {
     },
     loadSelectedChildPage() {
       log('in load selected child page', this.collaborations)
-
       if (this.isPageInitFromChild()) {
         log('child page selected')
 
         this.openMediumViewerForPage(
           this.collaborations[this.page.selectedPageOid]
         )
-      } else {
-        this.pageMediumDialog = false
       }
     },
     isPageInitFromChild() {
@@ -379,6 +380,7 @@ export default {
     openMediumViewerForPage(page) {
       log('Open medium viewer for page', page.id)
 
+      this.pageMediumDialog = false
       this.pageDetailRichTextDialog = false
       this.pageDetailBookEpubDialog = false
       this.pageDetailBookPdfDialog = false

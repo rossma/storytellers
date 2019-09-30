@@ -158,18 +158,24 @@ export default {
     EventBus.$off('storyEvent')
   },
   methods: {
-    ...mapActions('page', ['savePages']),
+    ...mapActions('page', ['savePages', 'saveActivePage']),
+    ...mapActions('chapter', ['saveActiveChapter']),
     loadChapters(story) {
       findChaptersByStory(story.id)
         .then(chapters => {
           this.chapters = chapters
-            .map(chapter => {
+            .sort((a, b) => a.chapter - b.chapter)
+            .map((chapter, index) => {
+              log('in chapter loop', index)
               if (story.activePage && story.activePage.chapterOid) {
                 chapter.active = chapter.id === story.activePage.chapterOid
+                if (chapter.active) {
+                  log('active chapter', index)
+                  this.saveActiveChapter({ index: ++index, chapter: chapter })
+                }
               }
               return chapter
             })
-            .sort((a, b) => a.chapter - b.chapter)
           return findPagesByStory(story.id)
         })
         .then(pages => {
@@ -178,9 +184,14 @@ export default {
             .filter(page => {
               return typeof page.parentPagesOid === 'undefined'
             })
-            .map(page => {
+            .sort((a, b) => a.page - b.page)
+            .map((page, index) => {
               if (story.activePage) {
                 page.active = page.id === story.activePage.id
+                if (page.active) {
+                  log('active page', index, page)
+                  this.saveActivePage({ index: ++index, page: page })
+                }
               }
               return page
             })
@@ -190,8 +201,11 @@ export default {
     },
     chapterPages(chapterOid) {
       return this.pages
-        .filter(p => {
-          return p.chapterOid === chapterOid && (this.uid === p.uid || p.public)
+        .filter(page => {
+          return (
+            page.chapterOid === chapterOid &&
+            (this.uid === page.uid || page.public)
+          )
         })
         .sort((a, b) => a.page - b.page)
     },
@@ -257,11 +271,11 @@ export default {
   margin-top: 0px;
 }
 
-.chapter-name-in-txt>.v-input__control>.v-input__slot:before {
+.chapter-name-in-txt > .v-input__control > .v-input__slot:before {
   border-style: none;
 }
 
-.chapter-name-in-txt>.v-input__control>.v-input__slot:after {
+.chapter-name-in-txt > .v-input__control > .v-input__slot:after {
   border-style: none;
 }
 

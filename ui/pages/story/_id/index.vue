@@ -213,6 +213,8 @@ export default {
         this.initAuthorUser(this.page.uid)
         this.initStory(this.page.storyOid)
         this.initChapter(this.page.chapterOid)
+
+        // todo save page to store
       } else {
         this.$toast.error('User not authorised to view this page')
       }
@@ -251,6 +253,8 @@ export default {
           this.chapter.name = chapterDoc.data().name
           this.chapter.storyOid = chapterDoc.data().storyOid
           this.chapter.uid = chapterDoc.data().uid
+
+          // todo save chpater to store
         } else {
           this.$toast.error('Chapter does not exist')
         }
