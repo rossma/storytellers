@@ -26,10 +26,17 @@
     >
       <!--      <v-responsive :aspect-ratio="16/9">-->
       <v-card flat>
+        <v-btn
+          fab
+          icon
+          fixed
+          @click="mutableDialog = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
         <v-layout
           justify-center
+          fill-height
           class="epub-container"
-          tabindex="-1"
         >
           <div
             id="epub-viewer"
@@ -83,6 +90,10 @@ export default {
     src: {
       type: String,
       required: true
+    },
+    theme: {
+      type: String,
+      default: 'primary'
     },
     user: {
       type: Object,

@@ -26,10 +26,17 @@
       fullscreen
     >
       <v-card>
+        <v-btn
+          fab
+          icon
+          fixed
+          @click="mutableDialog = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
         <v-layout
-          justify-center
+          justify-start
+          fill-height
           class="pdf-container"
-          tabindex="-1"
         />
         <pdf-page
           v-for="pdfPage in pdfPages"
@@ -73,6 +80,10 @@ export default {
     src: {
       type: String,
       required: true
+    },
+    theme: {
+      type: String,
+      default: 'primary'
     },
     user: {
       type: Object,

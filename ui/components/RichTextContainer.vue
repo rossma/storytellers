@@ -187,19 +187,24 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+
 .editor-container {
-  margin-top: 0px;
+  padding-top: 1px;
   /*border: 5px solid purple;*/
-  height: 100%;
+  height: 90vh;
 }
 
 .quill-editor {
   background-color: white;
   color: black;
   /*border: 20px solid red;*/
-  height: 100%;
+  /*height: 90vh;*/
   width: 60em;
+}
+
+.ql-container.ql-snow {
+  border: none!important;
 }
 
 .ql-editor {

@@ -29,8 +29,16 @@
       fullscreen
     >
       <v-card>
+        <v-btn
+          fab
+          icon
+          fixed
+          @click="mutableDialog = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
         <v-layout
           justify-center
+          fill-height
           class="rich-text-container"
         >
           <component
@@ -68,6 +76,10 @@ export default {
     src: {
       type: String,
       required: true
+    },
+    theme: {
+      type: String,
+      default: 'primary'
     },
     user: {
       type: Object,

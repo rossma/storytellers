@@ -11,8 +11,15 @@
       fullscreen
     >
       <v-card>
+        <v-btn
+          fab
+          icon
+          fixed
+          @click="mutableDialog = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
         <v-layout
-          justify-center
+          justify-start
           class="image-container"
         >
           <v-img :src="src" />
@@ -46,6 +53,10 @@ export default {
     src: {
       type: String,
       required: true
+    },
+    theme: {
+      type: String,
+      default: 'primary'
     },
     user: {
       type: Object,

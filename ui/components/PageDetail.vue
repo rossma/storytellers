@@ -77,6 +77,12 @@
       v-else
       flat
     >
+      <v-card-title
+        class="page-detail-title subtitle-2 mb-2">
+        {{ activeChapterName }}
+        <v-spacer></v-spacer>
+        Page - {{ activeChapter.index }} - {{ activePageNumber }}
+      </v-card-title>
       <v-card-text>
         <page-detail-rich-text
           v-if="pageRichTextSrc"
@@ -156,6 +162,7 @@
 
 <script>
 import debug from 'debug'
+import { mapGetters } from 'vuex'
 import { updatePage } from '~/api/service/page'
 import PageMixin from '~/mixins/PageMixin'
 import PageMediumViewer from '~/components/PageMediumViewer'
@@ -208,6 +215,8 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('page', ['activePage']),
+    ...mapGetters('chapter', ['activeChapter']),
     contentExists: function() {
       return this.pageRichTextSrc || this.pageBookSrc || this.pageImageSrc
     },
@@ -229,6 +238,22 @@ export default {
     },
     pageImageSrc: function() {
       return this.getPageImageSrc(this.page)
+    },
+    activePageNumber: function() {
+      if (this.activePage && this.activePage.page) {
+        return this.activePage.page.page
+      } else {
+        return undefined
+      }
+    },
+    activeChapterName: function() {
+      if (this.activeChapter && this.activeChapter.chapter) {
+        return this.activeChapter.chapter.name
+      } else if (this.activeChapter) {
+        return this.activeChapter.index
+      } else {
+        return ''
+      }
     },
     liked: {
       get() {
@@ -296,4 +321,6 @@ export default {
 /*  cursor: pointer;*/
 /*  max-height: 500px;*/
 /*}*/
+.page-detail-title {
+}
 </style>

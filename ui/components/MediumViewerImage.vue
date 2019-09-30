@@ -8,6 +8,7 @@
       v-show="mutableSrc"
       :src="mutableSrc"
       class="card-img-top"
+      :aspect-ratio="16/9"
     >
 <!--    <img-->
 <!--      v-show="!mutableSrc"-->
@@ -88,14 +89,15 @@ export default {
 </script>
 <style scoped>
 .medium-viewer-image-container {
-  display: block;
-  overflow-y: scroll;
-  height: 100vh;
+  /*display: block;*/
+  /*overflow-y: scroll;*/
+  /*height: 100vh;*/
 }
 
 .medium-viewer-image-container img {
-  margin: 0 auto;
-  display: block;
-  max-width: 100%;
+  /*margin: 0 auto;*/
+  /*display: block;*/
+  /*max-width: 100%;*/
 }
+
 </style>
