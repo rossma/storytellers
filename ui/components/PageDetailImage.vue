@@ -1,20 +1,26 @@
 <template>
-  <div>
+  <div v-if="showThumbnail">
     <v-img
       :src="src"
       class="image-thumbnail"
-      @click.stop="dialog = true"
+      @click.stop="mutableDialog = true"
     />
     <v-dialog
-      v-model="dialog"
+      v-model="mutableDialog"
       scrollable
       fullscreen
     >
       <v-card>
+        <v-btn
+          fab
+          icon
+          fixed
+          @click="mutableDialog = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
         <v-layout
-          justify-center
+          justify-start
           class="image-container"
-          tabindex="-1"
         >
           <v-img :src="src" />
         </v-layout>
@@ -26,18 +32,31 @@
 <script>
 // import debug from 'debug'
 // const log = debug('app:components/PageDetailImage')
+// import { EventBus } from '~/utils/event-bus.js'
 
 export default {
   name: 'PageDetailImage',
   components: {},
   props: {
+    dialog: {
+      type: Boolean,
+      default: false
+    },
     page: {
       type: Object,
       required: true
     },
+    showThumbnail: {
+      type: Boolean,
+      default: true
+    },
     src: {
       type: String,
       required: true
+    },
+    theme: {
+      type: String,
+      default: 'primary'
     },
     user: {
       type: Object,
@@ -46,10 +65,20 @@ export default {
   },
   data() {
     return {
-      dialog: false
+      mutableDialog: this.dialog
     }
   },
   computed: {},
+  mounted: function() {
+    this.$nextTick(() => {
+      // EventBus.$on(`open-page-detail-image-dialog`, () => {
+      //   this.dialog = true
+      // })
+    })
+  },
+  beforeDestroy() {
+    // EventBus.$off(`open-page-detail-image-dialog`)
+  },
   methods: {
     openImageDialog() {}
   }

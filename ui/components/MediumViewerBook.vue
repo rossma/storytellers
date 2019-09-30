@@ -87,12 +87,12 @@ export default {
 </script>
 <style>
 .medium-viewer-book-container {
-  overflow-y: scroll;
-  height: 100vh;
+  /*overflow-y: scroll;*/
+  /*height: 100vh;*/
 }
 
 .medium-viewer-book-container img {
-  margin: 0 auto;
-  display: block;
+  /*margin: 0 auto;*/
+  /*display: block;*/
 }
 </style>

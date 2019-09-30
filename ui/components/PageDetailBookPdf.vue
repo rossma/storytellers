@@ -1,8 +1,9 @@
 <template>
   <div>
     <v-card
+      v-if="showThumbnail"
       flat
-      @click.stop="dialog = true"
+      @click.stop="mutableDialog = true"
     >
       <v-layout
         justify-center
@@ -11,7 +12,7 @@
         <pdf-page
           v-if="pdfPages.length > 0"
           :page="firstPage"
-          :canvasHeight="canvasHeightThumbnail"
+          :height="canvasHeightThumbnail"
           :scale="scaleThumbnail"
           class="pdf-thumbnail-document"
           @errored="onPageErrored"
@@ -21,15 +22,21 @@
     </v-card>
 
     <v-dialog
-      v-model="dialog"
-      scrollable
+      v-model="mutableDialog"
       fullscreen
     >
       <v-card>
+        <v-btn
+          fab
+          icon
+          fixed
+          @click="mutableDialog = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
         <v-layout
-          justify-center
+          justify-start
+          fill-height
           class="pdf-container"
-          tabindex="-1"
         />
         <pdf-page
           v-for="pdfPage in pdfPages"
@@ -49,6 +56,7 @@
 import debug from 'debug'
 import range from 'lodash/range'
 import PdfPage from './PdfPage'
+// import { EventBus } from '~/utils/event-bus.js'
 const log = debug('app:components/PageDetailBookPdf')
 
 export default {
@@ -57,13 +65,25 @@ export default {
     PdfPage
   },
   props: {
+    dialog: {
+      type: Boolean,
+      default: false
+    },
     page: {
       type: Object,
       required: true
     },
+    showThumbnail: {
+      type: Boolean,
+      default: true
+    },
     src: {
       type: String,
       required: true
+    },
+    theme: {
+      type: String,
+      default: 'primary'
     },
     user: {
       type: Object,
@@ -72,7 +92,7 @@ export default {
   },
   data() {
     return {
-      dialog: false,
+      mutableDialog: this.dialog,
       scale: 2,
       scaleThumbnail: 1,
       canvasHeightThumbnail: 500,
@@ -106,8 +126,17 @@ export default {
   },
   mounted: function() {
     this.$nextTick(() => {
+      // EventBus.$on(`open-page-detail-book-pdf-dialog`, () => {
+      //   log('in open-page-detail-book-pdf-dialog')
+      //   this.dialog = true
+      //   this.init()
+      // })
+
       this.init()
     })
+  },
+  beforeDestroy() {
+    // EventBus.$off(`open-page-detail-book-pdf-dialog`)
   },
   methods: {
     init() {

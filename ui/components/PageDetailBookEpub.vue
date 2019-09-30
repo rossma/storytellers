@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-card
+      v-if="showThumbnail"
       flat
     >
       <v-responsive :aspect-ratio="16/9">
@@ -11,28 +12,37 @@
           <div
             id="epub-thumbnail-viewer"
             ref="epub-thumbnail-viewer"
-            class="single epub-thumbnail-document"
+            :class="thumbnailClass"
+            class="single"
           />
         </v-layout>
       </v-responsive>
     </v-card>
 
     <v-dialog
-      v-model="dialog"
+      v-model="mutableDialog"
       eager
       fullscreen
     >
       <!--      <v-responsive :aspect-ratio="16/9">-->
       <v-card flat>
+        <v-btn
+          fab
+          icon
+          fixed
+          @click="mutableDialog = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
         <v-layout
           justify-center
+          fill-height
           class="epub-container"
-          tabindex="-1"
         >
           <div
             id="epub-viewer"
             ref="epub-viewer"
-            class="scrolled epub-viewer"
+            :class="viewerClass"
+            class="scrolled"
           />
           <a
             v-show="hasPrev"
@@ -58,19 +68,32 @@
 <script>
 import { Book, Rendition } from 'epubjs'
 import debug from 'debug'
+// import { EventBus } from '~/utils/event-bus.js'
 const log = debug('app:components/PageDetailBookEpub')
 
 export default {
   name: 'PageDetailBookEpub',
   components: {},
   props: {
+    dialog: {
+      type: Boolean,
+      default: false
+    },
     page: {
       type: Object,
       required: true
     },
+    showThumbnail: {
+      type: Boolean,
+      default: true
+    },
     src: {
       type: String,
       required: true
+    },
+    theme: {
+      type: String,
+      default: 'primary'
     },
     user: {
       type: Object,
@@ -79,7 +102,7 @@ export default {
   },
   data() {
     return {
-      dialog: false,
+      mutableDialog: this.dialog,
       book: null,
       display: null,
       // mutableBookSrc: null,
@@ -102,12 +125,36 @@ export default {
       showme: false
     }
   },
-  computed: {},
+  computed: {
+    thumbnailClass: function() {
+      if (this.$vuetify.breakpoint.name === 'xs') {
+        return 'epub-thumbnail-document-xs'
+      } else {
+        return 'epub-thumbnail-document'
+      }
+    },
+    viewerClass: function() {
+      if (this.$vuetify.breakpoint.name === 'xs') {
+        return 'epub-viewer-xs'
+      } else {
+        return 'epub-viewer'
+      }
+    }
+  },
   watch: {},
   mounted: function() {
     this.$nextTick(() => {
+      // EventBus.$on(`open-page-detail-book-epub-dialog`, () => {
+      //   log('in open-page-detail-book-epub-dialog')
+      //   this.dialog = true
+      //   this.init()
+      // })
+
       this.init()
     })
+  },
+  beforeDestroy() {
+    // EventBus.$off(`open-page-detail-book-epub-dialog`)
   },
   methods: {
     init() {
@@ -134,7 +181,7 @@ export default {
 
       this.renditionThumbnail.on('click', () => {
         this.initDialogRendition()
-        this.dialog = true
+        this.mutableDialog = true
       })
     },
     initDialogRendition() {
@@ -256,6 +303,10 @@ export default {
   z-index: 9999;
 }
 
+.epub-thumbnail-document, .epub-thumbnail-document-xs {
+
+}
+
 .epub-thumbnail-document {
   /*background-color: white;*/
   /*color: black;*/
@@ -264,11 +315,29 @@ export default {
   max-width: 600px;
 }
 
+
+.epub-thumbnail-document-xs {
+  /*background-color: white;*/
+  /*color: black;*/
+  /*font-size: 1em;*/
+  /*max-height: 100%;*/
+  max-width: 400px;
+}
+
 .epub-container {
+}
+
+.epub-viewer, .epub-viewer {
+
 }
 
 .epub-viewer {
   max-width: 60em;
+  /*max-height:100%;*/
+}
+
+.epub-viewer-xs {
+  max-width: 40em;
   /*max-height:100%;*/
 }
 

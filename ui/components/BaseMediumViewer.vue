@@ -4,7 +4,6 @@
     hide-overlay
     persistent
     fullscreen
-    content-class="mydialog"
     transition="dialog-bottom-transition"
   >
     <v-card class="dialog-container">
@@ -301,18 +300,17 @@ span.v-tooltip {
 }
 
 .dialog-toolbar {
-  z-index: 10;
+  /*z-index: 10;*/
 }
 
 .dialog-content {
-  /*border: 2px solid cyan;*/
-  display: block;
-  position: absolute;
-  top: 0;
-  padding-top: 49px;
-  height: 100%;
-  width: 100%;
-  z-index: 1;
-  overflow: hidden;
+  /*display: block;*/
+  /*position: absolute;*/
+  /*top: 0;*/
+  /*padding-top: 49px;*/
+  /*height: 100%;*/
+  /*width: 100%;*/
+  /*z-index: 1;*/
+  /*overflow: hidden;*/
 }
 </style>

@@ -27,7 +27,71 @@
         </v-tooltip>
       </v-toolbar>
 
-      <v-card>
+      <v-card v-if="Object.entries(collaborations).length === 0 && collaborations.constructor === Object" flat>
+        <v-card-title>
+          <v-layout wrap>
+            <v-flex x4 mt-1 ml-4 text-center>
+              <v-tooltip bottom>
+                <template #activator="{ on }">
+                  <v-btn
+                    large
+                    text
+                    v-on="on"
+                    @click.stop="openMediumViewerNewPage(1)"
+                  >
+                    <v-icon large>
+                      mdi-card-text-outline
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>Rich Text</span>
+              </v-tooltip>
+            </v-flex>
+            <v-flex x4 mt-1 ml-4 text-center>
+              <v-tooltip bottom>
+                <template #activator="{ on }">
+                  <v-btn
+                    large
+                    text
+                    v-on="on"
+                    @click.stop="openMediumViewerNewPage(2)"
+                  >
+                    <v-icon large>
+                      mdi-book-outline
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>Words</span>
+              </v-tooltip>
+            </v-flex>
+            <v-flex x4 mt-1 ml-4 text-center>
+              <v-tooltip bottom>
+                <template #activator="{ on }">
+                  <v-btn
+                    large
+                    text
+                    v-on="on"
+                    @click.stop="openMediumViewerNewPage(3)"
+                  >
+                    <v-icon large>
+                      mdi-brush
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>Pictures</span>
+              </v-tooltip>
+            </v-flex>
+          </v-layout>
+        </v-card-title>
+        <v-card-text>
+          <v-layout wrap>
+            <v-flex x12 mt-1 ml-4 text-center>
+              No collaborations created for this page, be the first by uploading or creating one using the controls above
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+      </v-card>
+      <v-card v-else flat>
         <v-container
           fluid
           grid-list-md
@@ -51,27 +115,16 @@
                 @open-comments="openCommentsDialog"
               />
             </v-flex>
-            <v-flex v-if="!collaborations || collaborations.length === 0">
-              There aren't any collaborations yet, why not add one?
-              <v-btn
-                icon
-                color="secondary"
-                @click="openMediumViewerNewPage()"
-              >
-                <v-icon>
-                  mdi-plus-circle-outline
-                </v-icon>
-              </v-btn>
-            </v-flex>
           </v-layout>
         </v-container>
       </v-card>
     </v-flex>
     <portal to="contribution-medium-viewer-dialog">
       <page-contribution-medium-viewer
-        v-if="pageMediumDialog"
+        v-if="pageMediumDialog && user.uid === selectedChildPage.uid"
         :key="viewerKey"
         :active-medium="activeMedium"
+        :selected-medium="selectedMedium"
         :dialog="pageMediumDialog"
         :contribution="selectedChildPage"
         :pages-ref="pagesRef"
@@ -96,19 +149,67 @@
       @increment="newComment"
       @close="commentsDialog = false"
     />
+
+    <v-card
+      :key="pageDetailDialogKey"
+      flat
+    >
+      <v-card-text>
+        <page-detail-rich-text
+          v-if="pageDetailRichTextDialog && user.uid !== selectedChildPage.uid"
+          :dialog="pageDetailRichTextDialog"
+          :page="selectedChildPage"
+          :src="selectedChildPageSrc"
+          :theme="'secondary'"
+          :user="user"
+          :show-thumbnail="false"
+        />
+        <page-detail-book-pdf
+          v-if="pageDetailBookPdfDialog && user.uid !== selectedChildPage.uid"
+          :dialog="pageDetailBookPdfDialog"
+          :page="selectedChildPage  "
+          :src="selectedChildPageSrc"
+          :theme="'secondary'"
+          :user="user"
+          :show-thumbnail="false"
+        />
+        <page-detail-book-epub
+          v-if="pageDetailBookEpubDialog && user.uid !== selectedChildPage.uid"
+          :dialog="pageDetailBookEpubDialog"
+          :page="selectedChildPage"
+          :src="selectedChildPageSrc"
+          :theme="'secondary'"
+          :user="user"
+          :show-thumbnail="false"
+        />
+        <page-detail-image
+          v-if="pageDetailImageDialog && user.uid !== selectedChildPage.uid"
+          :dialog="pageDetailImageDialog"
+          :page="selectedChildPage"
+          :src="selectedChildPageSrc"
+          :theme="'secondary'"
+          :user="user"
+          :show-thumbnail="false"
+        />
+      </v-card-text>
+    </v-card>
   </v-layout>
 </template>
 
 <script>
-import { IMAGE_TYPE, RICH_TEXT_TYPE } from '~/utils/file'
-// import { EventBus } from '~/utils/event-bus.js'
 import debug from 'debug'
-import MediumViewerMixin from '../mixins/MediumViewerMixin'
+// import { EventBus } from '~/utils/event-bus.js'
+import MediumViewerMixin from '~/mixins/MediumViewerMixin'
+import PageMixin from '~/mixins/PageMixin'
 import { findPagesByParent, getPagesRef } from '~/api/service/page'
 import { findUserByOid } from '~/api/service/user'
 import PageContributionCard from '~/components/PageContributionCard'
 import PageContributionMediumViewer from '~/components/PageContributionMediumViewer'
 import PageComments from '~/components/PageComments'
+  import PageDetailRichText from './PageDetailRichText'
+import PageDetailBookEpub from './PageDetailBookEpub'
+import PageDetailBookPdf from './PageDetailBookPdf'
+import PageDetailImage from './PageDetailImage'
 
 const log = debug('app:components/PageContributionList')
 
@@ -117,9 +218,13 @@ export default {
   components: {
     PageContributionCard,
     PageContributionMediumViewer,
-    PageComments
+    PageComments,
+    PageDetailRichText,
+    PageDetailBookEpub,
+    PageDetailBookPdf,
+    PageDetailImage,
   },
-  mixins: [MediumViewerMixin],
+  mixins: [MediumViewerMixin, PageMixin],
   props: {
     page: {
       type: Object,
@@ -137,6 +242,7 @@ export default {
   data() {
     return {
       activeMedium: 3,
+      selectedMedium: null,
       collaborations: {},
       childUserDetails: {},
       origin: 'contribution',
@@ -154,10 +260,16 @@ export default {
         userDisplayName: null,
         comments: null
       },
+      selectedChildPageSrc: '',
       pageMediumDialog: this.initialDialogState,
+      pageDetailRichTextDialog: false,
+      pageDetailBookEpubDialog: false,
+      pageDetailBookPdfDialog: false,
+      pageDetailImageDialog: false,
       readOnly: true,
       dialogKey: 0,
       viewerKey: 0,
+      pageDetailDialogKey: 0,
       commentsDialog: false
     }
   },
@@ -191,15 +303,12 @@ export default {
     },
     loadSelectedChildPage() {
       log('in load selected child page', this.collaborations)
-
       if (this.isPageInitFromChild()) {
         log('child page selected')
 
         this.openMediumViewerForPage(
           this.collaborations[this.page.selectedPageOid]
         )
-      } else {
-        this.pageMediumDialog = false
       }
     },
     isPageInitFromChild() {
@@ -226,6 +335,10 @@ export default {
       // have to set the root el to have overflow hidden to hide vertical scrollbar on modal open
       document.documentElement.classList.add('overflow-y-hidden')
     },
+    reRenderPageDetailDialog() {
+      // force rerender
+      this.pageDetailDialogKey += 1
+    },
     closeMediumDialog() {
       document.documentElement.classList.remove('overflow-y-hidden')
       this.pageMediumDialog = false
@@ -234,7 +347,8 @@ export default {
       // force rerender
       this.dialogKey += 1
     },
-    openMediumViewerNewPage() {
+    openMediumViewerNewPage(mediumType) {
+      this.selectedMedium = mediumType
       this.readOnly = false
       this.activeMedium = 3
       this.pageMediumDialog = true
@@ -265,14 +379,52 @@ export default {
     },
     openMediumViewerForPage(page) {
       log('Open medium viewer for page', page.id)
+
+      this.pageMediumDialog = false
+      this.pageDetailRichTextDialog = false
+      this.pageDetailBookEpubDialog = false
+      this.pageDetailBookPdfDialog = false
+      this.pageDetailImageDialog = false
+
       this.readOnly = true
       this.selectedChildPage = page
 
       this.reRenderMediumViewer()
+      this.reRenderPageDetailDialog()
 
       this.activeMedium = this.getActiveMedium(page)
+      this.selectedMedium = this.activeMedium
 
-      this.pageMediumDialog = true
+      if (page.id && this.user.uid === page.uid) {
+        // open editable medium dialog
+        this.pageMediumDialog = true
+      } else {
+        if (this.getPageRichTextSrc(page)) {
+          log('a')
+          this.selectedChildPageSrc = this.getPageRichTextSrc(page)
+          this.pageDetailRichTextDialog = true
+          // EventBus.$emit('open-page-detail-rich-text-dialog')
+        } else if (this.getPageBookSrc(page)) {
+          log('b')
+          this.selectedChildPageSrc = this.getPageBookSrc(page)
+          if (this.getIsEpub(this.getBookType(page))) {
+            log('c')
+            this.pageDetailBookEpubDialog = true
+            // EventBus.$emit('open-page-detail-book-epub-dialog')
+          } else if (this.getIsPdf(this.getBookType(page))) {
+            log('d')
+            this.pageDetailBookPdfDialog = true
+            // EventBus.$emit('open-page-detail-book-pdf-dialog')
+          }
+        } else if (this.getPageImageSrc(page)) {
+          log('e')
+          this.pageDetailImageDialog = true
+          this.selectedChildPageSrc = this.getPageImageSrc(page)
+          // EventBus.$emit('open-page-detail-image-dialog')
+        } else {
+          log('end')
+        }
+      }
     },
     openCommentsDialog(page) {
       log('Open comments for page', page.id)
@@ -283,46 +435,13 @@ export default {
     getActiveMedium(page) {
       if (page.image && page.image.ref) {
         return this.mediaImageType
-      }
-
-      if (page.book && page.book.ref && page.book.contentType) {
+      } else if (page.book && page.book.ref && page.book.contentType) {
         return this.mediaBookType
-      }
-
-      if (page.richText && page.richText.ref) {
+      } else if (page.richText && page.richText.ref) {
         return this.mediaRichTextType
       }
       log("Couldn't find active medium for page")
       return 3
-    },
-    getPageMediumType(page) {
-      log('page:', page.book.contentType)
-      if (page.image && page.image.ref) {
-        return IMAGE_TYPE
-      }
-
-      if (page.book && page.book.ref && page.book.contentType) {
-        return page.book.contentType
-      }
-
-      if (page.richText && page.richText.ref) {
-        return RICH_TEXT_TYPE
-      }
-      return undefined
-    },
-    getPageMediumSrc(page) {
-      if (page.image && page.image.ref) {
-        return page.image.ref
-      }
-
-      if (page.book && page.book.ref) {
-        return page.book.ref
-      }
-
-      if (page.richText && page.richText.ref) {
-        return page.richText.ref
-      }
-      return undefined
     },
     addContribution(page) {
       log('Adding page to contribution', page)

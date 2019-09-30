@@ -46,7 +46,7 @@ export function findPagesByUser(userOid) {
 
 export function findPagesByStory(storyOid) {
   log(`Finding pages by story:[${storyOid}]`)
-  return findPages(DB.collection('pages').where('storyOid', '==', storyOid))
+  return findPages(DB.collection('pages').where('storyOid', '==', storyOid).orderBy('chapterOid'))
 }
 
 export function findPageByOid(pageOid) {

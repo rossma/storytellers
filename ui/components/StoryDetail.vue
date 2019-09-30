@@ -17,7 +17,7 @@ x`<template>
           @click="showUserProfile()"
           class="text-right"
         >
-          <h4 class="primary--text">
+          <h4 class="primary--text subtitle-1">
             {{ author.displayName }}
           </h4>
         </v-col>

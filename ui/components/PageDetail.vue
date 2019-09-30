@@ -77,6 +77,12 @@
       v-else
       flat
     >
+      <v-card-title
+        class="page-detail-title subtitle-2 mb-2">
+        {{ activeChapterName }}
+        <v-spacer></v-spacer>
+        Page - {{ activeChapter.index }} - {{ activePageNumber }}
+      </v-card-title>
       <v-card-text>
         <page-detail-rich-text
           v-if="pageRichTextSrc"
@@ -85,19 +91,19 @@
           :user="user"
         />
         <page-detail-book-pdf
-          v-if="pageBookSrc && isPdf"
+          v-else-if="pageBookSrc && isPdf"
           :page="page"
           :src="pageBookSrc"
           :user="user"
         />
         <page-detail-book-epub
-          v-if="pageBookSrc && isEpub"
+          v-else-if="pageBookSrc && isEpub"
           :page="page"
           :src="pageBookSrc"
           :user="user"
         />
         <page-detail-image
-          v-if="pageImageSrc"
+          v-else-if="pageImageSrc"
           :page="page"
           :src="pageImageSrc"
           :user="user"
@@ -156,8 +162,9 @@
 
 <script>
 import debug from 'debug'
+import { mapGetters } from 'vuex'
 import { updatePage } from '~/api/service/page'
-import FileUtils from '~/utils/file'
+import PageMixin from '~/mixins/PageMixin'
 import PageMediumViewer from '~/components/PageMediumViewer'
 import PageComments from '~/components/PageComments'
 import PageContributionList from './PageContributionList'
@@ -178,6 +185,7 @@ export default {
     PageDetailBookPdf,
     PageDetailImage
   },
+  mixins: [PageMixin],
   props: {
     page: {
       type: Object,
@@ -207,43 +215,46 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('page', ['activePage']),
+    ...mapGetters('chapter', ['activeChapter']),
     contentExists: function() {
       return this.pageRichTextSrc || this.pageBookSrc || this.pageImageSrc
     },
     pageRichTextSrc: function() {
-      if (this.page.richText && this.page.richText.ref) {
-        return this.page.richText.ref
-      }
-      return ''
+      return this.getPageRichTextSrc(this.page)
     },
     pageBookSrc: function() {
-      if (this.page.book && this.page.book.ref) {
-        return this.page.book.ref
-      }
-      return ''
+      return this.getPageBookSrc(this.page)
     },
-    bookType() {
-      if (this.page.book && this.page.book.contentType) {
-        return this.page.book.contentType
+    bookType: function() {
+      return this.getBookType(this.page)
+    },
+    isEpub: function() {
+      return this.getIsEpub(this.bookType)
+    },
+    isPdf: function() {
+      log('hello:', this.bookType)
+      return this.getIsPdf(this.bookType)
+    },
+    pageImageSrc: function() {
+      return this.getPageImageSrc(this.page)
+    },
+    activePageNumber: function() {
+      if (this.activePage && this.activePage.page) {
+        return this.activePage.page.page
+      } else {
+        return undefined
+      }
+    },
+    activeChapterName: function() {
+      if (this.activeChapter && this.activeChapter.chapter) {
+        return this.activeChapter.chapter.name
+      } else if (this.activeChapter) {
+        return this.activeChapter.index
       } else {
         return ''
       }
     },
-    isEpub() {
-      return this.bookType && FileUtils.isEpub(this.bookType)
-    },
-    isPdf() {
-      return this.bookType && FileUtils.isPdf(this.bookType)
-    },
-    pageImageSrc: function() {
-      if (this.page.image && this.page.image.ref) {
-        return this.page.image.ref
-      }
-      return ''
-    },
-    // currentImageOid: function() {
-    //   return this.page.image && this.page.image.filename
-    // },
     liked: {
       get() {
         log('in liked get', this.page.likes)
@@ -310,4 +321,6 @@ export default {
 /*  cursor: pointer;*/
 /*  max-height: 500px;*/
 /*}*/
+.page-detail-title {
+}
 </style>

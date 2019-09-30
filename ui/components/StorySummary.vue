@@ -1,73 +1,120 @@
 <template>
   <div>
-    <v-form
-      ref="form"
-      v-model="valid"
-      class="text-right"
-      lazy-validation
+    <v-card
+      class="mx-auto"
+      flat
     >
-      <v-card flat>
-        <v-card-text>
-          <v-container
-            v-if="editable"
-            fluid
-          >
-            <v-layout>
-              <v-flex xs12>
-                <v-text-field
-                  v-model="mutableStory.title"
-                  label="Title"
-                  required
-                />
-                <v-textarea
-                  v-model="mutableStory.summary"
-                  name="summary"
-                  label="Summary"
-                  outlined
-                />
-              </v-flex>
-            </v-layout>
-          </v-container>
-          <div v-else>
-            {{ mutableStory.summary }}
-          </div>
-        </v-card-text>
-      </v-card>
-      <v-tooltip top>
-        <template #activator="{ on }">
-          <v-btn
-            v-if="storyExists && editable"
-            color="negative"
-            class="mr-1"
-            v-on="on"
-            @click.stop="deleteDialog = true"
-          >
-            <v-icon float-left>
-              mdi-delete
-            </v-icon>
-            delete
-          </v-btn>
-        </template>
-        <span>Delete Story</span>
-      </v-tooltip>
-      <v-tooltip top>
-        <template #activator="{ on }">
-          <v-btn
-            v-if="editable"
-            :disabled="!valid"
-            v-on="on"
-            class="primary"
-            @click="submit"
-          >
-            <v-icon float-left>
-              mdi-content-save-outline
-            </v-icon>
-            save
-          </v-btn>
-        </template>
-        <span>Save Story</span>
-      </v-tooltip>
-    </v-form>
+      <v-container
+        v-if="editable"
+        class="pa-2"
+        fluid
+      >
+        <v-form
+          ref="form"
+          v-model="valid"
+          class="text-right"
+          lazy-validation
+        >
+          <v-layout>
+            <v-flex
+              xs-4
+            >
+              <v-tooltip top>
+                <template #activator="{ on }">
+                  <div
+                    class="jbtn-file"
+                    v-on="on"
+                  >
+                    <v-img
+                      :src="coverImageSrc"
+                      aspect-ratio="0.5"
+                      max-width="200"
+                      max-height="200"
+                      class="cover-image"
+                    />
+                    <input
+                      type="file"
+                      @change="coverImageSelected"
+                    >
+                  </div>
+                </template>
+                <span>Upload Cover Image</span>
+              </v-tooltip>
+            </v-flex>
+            <v-flex xs8>
+              <v-text-field
+                v-model="mutableStory.title"
+                label="Title"
+                required
+              />
+              <v-textarea
+                v-model="mutableStory.summary"
+                outlined
+                name="summary"
+                label="Summary"
+              />
+            </v-flex>
+          </v-layout>
+          <v-card-actions>
+            <v-spacer />
+            <v-tooltip top>
+              <template #activator="{ on }">
+                <v-btn
+                  v-if="storyExists"
+                  color="negative"
+                  class="mr-1"
+                  v-on="on"
+                  @click.stop="deleteDialog = true"
+                >
+                  <v-icon float-left>
+                    mdi-delete
+                  </v-icon>
+                  delete
+                </v-btn>
+              </template>
+              <span>Delete Story</span>
+            </v-tooltip>
+            <v-tooltip top>
+              <template #activator="{ on }">
+                <v-btn
+                  :disabled="!valid"
+                  class="primary"
+                  v-on="on"
+                  @click="submit"
+                >
+                  <v-icon float-left>
+                    mdi-content-save-outline
+                  </v-icon>
+                  save
+                </v-btn>
+              </template>
+              <span>Save Story</span>
+            </v-tooltip>
+          </v-card-actions>
+        </v-form>
+      </v-container>
+      <v-container
+        v-else
+        fluid
+      >
+        <v-layout pl-2>
+          <v-flex xs-4>
+            <v-img
+              :src="coverImageSrc"
+              aspect-ratio="0.5"
+              max-width="200"
+              max-height="200"
+              class="cover-image"
+            />
+          </v-flex>
+          <v-flex xs-8>
+            <v-card-text class="subtitle-1">
+              {{ mutableStory.summary }}
+            </v-card-text>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-card>
     <story-summary-delete-dialog
       :story="mutableStory"
       :dialog="deleteDialog"
@@ -80,6 +127,8 @@
 import { mapGetters, mapActions } from 'vuex'
 import { findPreviewsByStory, updatePreview } from '~/api/service/preview'
 import { addStory, updateStory } from '~/api/service/story'
+import { uploadImage } from '~/api/service/image'
+
 import stringUtils from '~/utils/string'
 import debug from 'debug'
 import StorySummaryDeleteDialog from './StorySummaryDeleteDialog'
@@ -101,7 +150,10 @@ export default {
         return {
           id: null,
           title: '',
-          summary: ''
+          summary: '',
+          cover: {
+            ref: null
+          }
         }
       }
     },
@@ -112,6 +164,8 @@ export default {
   },
   data() {
     return {
+      newCoverImageFile: null,
+      coverImageClientUrl: null,
       currentPageOid: null,
       currentChapterOid: null,
       deleteDialog: false,
@@ -119,34 +173,81 @@ export default {
         id: null,
         summary: null,
         title: null,
-        uid: null
+        uid: null,
+        cover: {
+          ref: null
+        }
       },
       valid: true
     }
   },
   computed: {
-    ...mapGetters('auth', ['uid'])
+    ...mapGetters('auth', ['uid']),
+    coverImageSrc: function() {
+      if (this.coverImageClientUrl) {
+        return this.coverImageClientUrl
+      } else if (this.mutableStory.cover.ref) {
+        return this.mutableStory.cover.ref
+      } else {
+        return '/img/missing-image.png'
+      }
+    }
   },
   created: function() {
     this.mutableStory = {
       id: this.story.id,
       summary: this.story.summary,
       title: this.story.title,
-      uid: this.story.uid
+      uid: this.story.uid,
+      cover: {
+        ref: this.story.cover.ref
+      }
     }
   },
   methods: {
     ...mapActions('story', ['saveStory']),
+    coverImageSelected(e) {
+      const imageFile = e.target.files[0]
+      const limit = 2000000
+      if (imageFile) {
+        if (imageFile.size > limit) {
+          this.$toast.error(
+            `The file is over the ${limit / 1000 / 1000}MB limit`
+          )
+        } else {
+          this.newCoverImageFile = imageFile
+          this.coverImageClientUrl = URL.createObjectURL(imageFile)
+        }
+      } else {
+        this.$toast.error('No cover image selected')
+      }
+    },
+    uploadCoverImage() {
+      if (this.newCoverImageFile) {
+        return uploadImage(this.newCoverImageFile).then(result => {
+          log('uploaded image:', result)
+
+          this.newCoverImageFile = null
+          return result.downloadUrl
+        })
+      } else {
+        return Promise.resolve(this.mutableStory.cover.ref || '')
+      }
+    },
     submit() {
       if (this.$refs.form.validate()) {
         log('Saving story:', this.mutableStory)
-        if (this.mutableStory.id) {
-          this.updateStory(this.mutableStory)
-        } else {
-          this.mutableStory.uid = this.uid
-          this.mutableStory.created = Date.now()
-          this.createStory(this.mutableStory)
-        }
+
+        this.uploadCoverImage().then(downloadUrl => {
+          this.mutableStory.cover.ref = downloadUrl
+          if (this.mutableStory.id) {
+            this.updateStory(this.mutableStory)
+          } else {
+            this.mutableStory.uid = this.uid
+            this.mutableStory.created = Date.now()
+            this.createStory(this.mutableStory)
+          }
+        })
       } else {
         this.$toast.error('Form validation failed')
       }
@@ -156,7 +257,10 @@ export default {
         title: mutableStory.title,
         summary: mutableStory.summary,
         uid: mutableStory.uid,
-        created: mutableStory.created
+        created: mutableStory.created,
+        cover: {
+          ref: mutableStory.cover.ref
+        }
       }
 
       const chapter = {
@@ -189,7 +293,10 @@ export default {
     updateStory(mutableStory) {
       const story = {
         title: mutableStory.title,
-        summary: mutableStory.summary
+        summary: mutableStory.summary,
+        cover: {
+          ref: mutableStory.cover.ref
+        }
       }
       updateStory(mutableStory.id, story)
         .then(() => {
@@ -227,3 +334,12 @@ export default {
   }
 }
 </script>
+<style>
+.cover-image {
+  /*max-height: 300px;*/
+}
+.jbtn-file {
+  max-width: 200px;
+  max-height: 200px;
+}
+</style>
