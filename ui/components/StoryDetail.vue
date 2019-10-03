@@ -22,7 +22,7 @@ x`<template>
           </h4>
         </v-col>
       </v-expansion-panel-header>
-      <v-expansion-panel-content>
+      <v-expansion-panel-content :class="expansionPanelContentClass">
         <story-summary
           :story="story"
           :editable="editable"
@@ -74,6 +74,15 @@ export default {
       default: false
     }
   },
+  computed: {
+    expansionPanelContentClass: function() {
+      if (this.$vuetify.breakpoint.name === 'xs') {
+        return 'expansion-panel-content-xs'
+      } else {
+        return 'expansion-panel-content'
+      }
+    }
+  },
   methods: {
     showUserProfile() {
       log(`show user profile for uid:${this.story.uid}`)
@@ -88,4 +97,7 @@ export default {
 </script>
 
 <style>
+.expansion-panel-content-xs > div {
+  padding-left: 10px;
+}
 </style>

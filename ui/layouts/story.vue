@@ -100,6 +100,7 @@
 </template>
 
 <script>
+import clonedeep from 'lodash.clonedeep'
 import { mapGetters, mapActions } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
 import ThePageFooter from '~/components/ThePageFooter'
@@ -171,7 +172,11 @@ export default {
                 chapter.active = chapter.id === story.activePage.chapterOid
                 if (chapter.active) {
                   log('active chapter', index)
-                  this.saveActiveChapter({ index: ++index, chapter: chapter })
+                  chapter.activeIndex = ++index
+                  this.saveActiveChapter({
+                    index: chapter.activeIndex,
+                    chapter: clonedeep(chapter)
+                  })
                 }
               }
               return chapter
@@ -217,6 +222,14 @@ export default {
       if (chapter.name !== event.target.value) {
         chapter.name = event.target.value
         updateChapterName(chapter.id, chapter.name)
+        log('capter is active:', chapter.active, chapter.activeIndex)
+        if (chapter.active && chapter.activeIndex) {
+          log('active chapter', chapter.activeIndex)
+          this.saveActiveChapter({
+            index: chapter.activeIndex,
+            chapter: clonedeep(chapter)
+          })
+        }
       }
     },
     addNewChapter() {

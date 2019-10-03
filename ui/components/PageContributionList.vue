@@ -420,6 +420,7 @@ export default {
           log('e')
           this.pageDetailImageDialog = true
           this.selectedChildPageSrc = this.getPageImageSrc(page)
+          log('e', this.selectedChildPageSrc)
           // EventBus.$emit('open-page-detail-image-dialog')
         } else {
           log('end')
