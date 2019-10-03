@@ -30,7 +30,7 @@ export default {
     canvasStyle() {
       let style = `padding-left: 0; padding-right: 0;
                     margin-left: auto; margin-right: auto;
-                    display: block; max-width: 1000px;`
+                    display: block;`
       if (this.height > 0) {
         style = style + ` height: ${this.height}px;`
       } else {
@@ -50,7 +50,7 @@ export default {
             window.devicePixelRatio
           } pixel ratio: ${pixelRatio} actualSizeWidth: ${actualSizeWidth}px actualSizeHeight: ${actualSizeHeight}px width: ${pixelWidth}px; height: ${pixelHeight}px;`
         )
-        style = style + ` width: ${pixelWidth}px; height: ${pixelHeight}px;`
+        style = `${style} width: ${pixelWidth}px; height: ${pixelHeight}px; max-width: 1000vw`
       }
       return style
     },

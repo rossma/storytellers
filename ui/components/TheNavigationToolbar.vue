@@ -12,7 +12,7 @@
             <nuxt-link to="/">
               <span v-on="on">
                 <v-icon>mdi-home</v-icon>
-                <span class="pl-4 home hidden-sm-and-down">Home</span>
+                <span class="pl-6 home">Home</span>
               </span>
             </nuxt-link>
           </template>
@@ -20,29 +20,28 @@
         </v-tooltip>
       </div>
       <v-divider light />
-      <v-avatar
-        v-if="photoUrl"
-      >
-        <img
-          :src="photoUrl"
-          alt="no photo"
-        >
-      </v-avatar>
-      <v-avatar
-        v-else
-        color="primary"
-      >
-        <v-icon>
-          mdi-account-circle
-        </v-icon>
-      </v-avatar>
       <v-list>
         <v-list-group
-          :prepend-icon="'mdi-account-circle'"
           no-action
           class="nav-account"
         >
           <template #activator>
+            <v-avatar
+              v-if="photoUrl"
+              size="36"
+              class="account-group-avatar"
+            >
+              <img :src="photoUrl">
+            </v-avatar>
+            <v-avatar
+              v-else
+              size="36"
+              class="account-group-avatar"
+            >
+              <v-icon>
+                mdi-account-circle
+              </v-icon>
+            </v-avatar>
             <v-list-item-title>{{ username }}</v-list-item-title>
           </template>
 
@@ -195,8 +194,11 @@ export default {
 }
 
 .v-avatar {
-  margin-top: 15px;
-  margin-left: 15px;
+  /*margin-top: 15px;*/
+  /*margin-left: 15px;*/
+}
+.account-group-avatar {
+  margin-right: 20px;
 }
 
 .home {

@@ -1,6 +1,7 @@
 <template>
-  <div v-if="showThumbnail">
+  <div>
     <v-img
+      v-if="showThumbnail"
       :src="src"
       class="image-thumbnail"
       @click.stop="mutableDialog = true"
@@ -22,7 +23,7 @@
           justify-start
           class="image-container"
         >
-          <v-img :src="src" />
+          <v-img :src="src" contain />
         </v-layout>
       </v-card>
     </v-dialog>

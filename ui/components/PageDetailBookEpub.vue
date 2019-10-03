@@ -42,7 +42,6 @@
             id="epub-viewer"
             ref="epub-viewer"
             :class="viewerClass"
-            class="scrolled"
           />
           <a
             v-show="hasPrev"
@@ -188,23 +187,30 @@ export default {
       // todo dont need to destroy book..component destroys it .. or move to destroy metbod
       // this.destroyBook()
 
+      // if (this.book) {
+      //   this.book.destroy()
+      // }
+      if (this.rendition) {
+        this.rendition.destroy()
+      }
+      this.book = new Book(this.src, {})
+
       this.rendition = new Rendition(this.book, {
         // flow: 'paginated',
-        flow: 'scrolled-doc',
-        method: 'continuous',
-        // method: 'scrolled',
-        width: '90%',
-        // height: '100%'
+        // flow: 'scrolled-doc',
+        // method: 'continuous',
+        manager: 'continuous',
+        flow: 'scrolled',
+        width: '100%',
+        height: '100%'
       })
-      log('book', this.book)
 
       const viewerEl = this.$refs['epub-viewer']
       this.rendition.attachTo(viewerEl)
-
-      // this.rendition.display()
-      const hash = window.location.hash.slice(2)
-      log('hash:', hash)
-      this.rendition.display(hash || undefined)
+      this.rendition.display()
+      // const hash = window.location.hash.slice(2)
+      // log('hash:', hash)
+      // this.rendition.display(hash || undefined)
 
       // this.book.ready.then(() => {
       //   const keyListener = e => {
@@ -254,15 +260,14 @@ export default {
       })
 
       // this.rendition.on('layout', function(layout) {
-      //   log('In Layout')
+      //   log('In Layout', this.book)
       //   log(layout.spread)
       // })
-
+      //
       // this.rendition.on('resize', function(width, height) {
       //   log('In resize')
       //   log('Resized to:', width, height)
       // })
-      // }
     },
     nextPage() {
       this.book.package.metadata.direction === 'rtl'
@@ -273,8 +278,7 @@ export default {
       this.book.package.metadata.direction === 'rtl'
         ? this.rendition.next()
         : this.rendition.prev()
-    }
-
+    },
     // destroyBookThumbnail() {
     //   if (this.book) {
     //     this.book.destroy()
@@ -315,7 +319,6 @@ export default {
   max-width: 600px;
 }
 
-
 .epub-thumbnail-document-xs {
   /*background-color: white;*/
   /*color: black;*/
@@ -326,19 +329,20 @@ export default {
 
 .epub-container {
 }
-
-.epub-viewer, .epub-viewer {
-
-}
-
 .epub-viewer {
-  max-width: 60em;
+  /*max-width: 60em;*/
   /*max-height:100%;*/
+
+  width: 60em;
+  margin: 0 auto;
+
 }
 
 .epub-viewer-xs {
-  max-width: 40em;
+  /*max-width: 40em;*/
   /*max-height:100%;*/
+  width: 60em;
+  margin: 0 auto;
 }
 
 </style>

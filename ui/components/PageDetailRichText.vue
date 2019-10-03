@@ -54,7 +54,6 @@
 <script>
 import Vue from 'vue'
 import debug from 'debug'
-// import { EventBus } from '~/utils/event-bus.js'
 const log = debug('app:components/PageDetailRichText')
 
 export default {
