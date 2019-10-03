@@ -195,7 +195,7 @@ export default {
                 page.active = page.id === story.activePage.id
                 if (page.active) {
                   log('active page', index, page)
-                  this.saveActivePage({ index: ++index, page: page })
+                  this.saveActivePage({ index: ++index, page: clonedeep(page) })
                 }
               }
               return page
