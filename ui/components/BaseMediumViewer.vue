@@ -44,6 +44,7 @@
                 >
                   <upload-button
                     :selected-callback="previewMediaFile"
+                    :acceptedFileTypes="acceptedFileTypes"
                     icon="mdi-cloud-upload-outline"
                   />
                 </span>
@@ -199,6 +200,15 @@ export default {
     }
   },
   computed: {
+    acceptedFileTypes: function() {
+      if (this.isImageEnabled) {
+        return 'image/*'
+      } else if (this.isBookEnabled) {
+        return 'application/pdf, application/epub+zip'
+      } else {
+        return ''
+      }
+    },
     enabledMediumTypeCount: function() {
       let count = 0
       if (this.isRichTextEnabled) count++

@@ -81,7 +81,7 @@
         class="page-detail-title subtitle-2 mb-2">
         {{ activeChapterName }}
         <v-spacer></v-spacer>
-        Page - {{ activeChapter.index }} - {{ activePageNumber }}
+        Page {{ activeChapter.index }} - {{ activePageNumber }}
       </v-card-title>
       <v-card-text>
         <page-detail-rich-text
@@ -233,7 +233,6 @@ export default {
       return this.getIsEpub(this.bookType)
     },
     isPdf: function() {
-      log('hello:', this.bookType)
       return this.getIsPdf(this.bookType)
     },
     pageImageSrc: function() {
@@ -247,10 +246,10 @@ export default {
       }
     },
     activeChapterName: function() {
-      if (this.activeChapter && this.activeChapter.chapter) {
+      if (this.activeChapter && this.activeChapter.chapter && this.activeChapter.chapter.name) {
         return this.activeChapter.chapter.name
       } else if (this.activeChapter) {
-        return this.activeChapter.index
+        return `Chapter ${this.activeChapter.index}`
       } else {
         return ''
       }

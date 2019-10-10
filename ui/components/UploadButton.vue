@@ -4,6 +4,7 @@
       id="selectFile"
       type="file"
       @change="fileSelected"
+      :accept="acceptedFileTypes"
     >
     <div class="btn__content">
       <v-icon>{{ icon }}</v-icon>
@@ -15,6 +16,10 @@
 <script>
 export default {
   props: {
+    acceptedFileTypes: {
+      type: String,
+      default: ''
+    },
     selectedCallback: {
       type: Function,
       default: null

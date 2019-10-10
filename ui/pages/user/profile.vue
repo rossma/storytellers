@@ -41,6 +41,7 @@
                           </v-icon>
                           <input
                             type="file"
+                            accept="image/*"
                             @change="profileImageSelected"
                           >
                         </v-avatar>
@@ -56,6 +57,7 @@
                           >
                           <input
                             type="file"
+                            accept="image/*"
                             @change="profileImageSelected"
                           >
                         </v-avatar>
@@ -208,16 +210,25 @@ export default {
       }
     },
     profileImageSelected(e) {
-      if (e.target.files[0]) {
-        log('profile image selected')
-        this.newProfileImageFile = e.target.files[0]
-        this.computedUser = {
-          photoUrl: URL.createObjectURL(this.newProfileImageFile),
-          displayName: this.formUser.displayName,
-          bio: this.formUser.bio
+      const imageFile = e.target.files[0]
+      const limit = 1000000
+      if (imageFile) {
+        if (imageFile.size > limit) {
+          this.$toast.error(
+            `The file is over the ${limit / 1000 / 1000}MB limit`
+          )
+        } else if (!imageFile.type.startsWith('image/')) {
+          this.$toast.error(`Please upload a valid image`)
+        } else {
+          this.newProfileImageFile = e.target.files[0]
+          this.computedUser = {
+            photoUrl: URL.createObjectURL(this.newProfileImageFile),
+            displayName: this.formUser.displayName,
+            bio: this.formUser.bio
+          }
         }
       } else {
-        this.$toast.error('No profile image selected')
+        this.$toast.error('No profile selected')
       }
     },
     uploadProfile() {

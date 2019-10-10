@@ -34,6 +34,7 @@
                     />
                     <input
                       type="file"
+                      accept="image/*"
                       @change="coverImageSelected"
                     >
                   </div>
