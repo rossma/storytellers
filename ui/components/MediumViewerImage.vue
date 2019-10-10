@@ -95,6 +95,7 @@ export default {
 }
 
 .medium-viewer-image-container img {
+  max-height: calc(100vh - 48px);
   /*margin: 0 auto;*/
   /*display: block;*/
   /*max-width: 100%;*/

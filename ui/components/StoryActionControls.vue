@@ -98,6 +98,7 @@
     </v-dialog>
     <page-publish
       :dialog="publishDialog"
+      :key="publishDialogKey"
       :page="page"
       :uid="user.uid"
       :user-display-name="user.data.displayName ? user.data.displayName : 'Anon'"
@@ -109,6 +110,7 @@
 </template>
 
 <script>
+import { EventBus } from '~/utils/event-bus.js'
 import PagePublish from '~/components/PagePublish'
 
 export default {
@@ -137,6 +139,7 @@ export default {
   data() {
     return {
       publishDialog: false,
+      publishDialogKey: 0,
       deletePageDialog: false,
       dial: {
         fab: false,
@@ -147,6 +150,17 @@ export default {
       isInvitePage: this.page.invite,
       isPublicPage: this.page.public
     }
+  },
+  mounted: function() {
+    this.$nextTick(() => {
+      EventBus.$on('story-image-file-key', () => {
+        console.log('dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd')
+        this.reRenderPublishDialog()
+      })
+    })
+  },
+  beforeDestroy() {
+    EventBus.$off('story-image-file-key')
   },
   methods: {
     canPublish() {
@@ -169,6 +183,10 @@ export default {
     onPublishComplete(isInvite) {
       this.isPublicPage = true
       this.isInvitePage = isInvite
+    },
+    reRenderPublishDialog() {
+      // force rerender
+      this.publishDialogKey += 1
     }
   }
 }
