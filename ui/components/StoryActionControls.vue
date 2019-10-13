@@ -123,10 +123,6 @@ export default {
       type: Object,
       required: true
     },
-    totalStoryPages: {
-      type: Number,
-      required: true
-    },
     editable: {
       type: Boolean,
       default: false
@@ -154,7 +150,6 @@ export default {
   mounted: function() {
     this.$nextTick(() => {
       EventBus.$on('story-image-file-key', () => {
-        console.log('dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd')
         this.reRenderPublishDialog()
       })
     })
@@ -178,7 +173,7 @@ export default {
       this.$emit('delete-page', this.page)
     },
     canDeletePage() {
-      return this.editable && this.totalStoryPages > 1
+      return this.editable
     },
     onPublishComplete(isInvite) {
       this.isPublicPage = true

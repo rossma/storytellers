@@ -18,28 +18,19 @@
         class="mx-2"
         vertical
       />
-      <v-item-group v-if="!readOnly" align-center>
-        <v-item v-if="isMediaImageType(slotProps.activeMedium)" align-center>
-          <v-tooltip bottom>
-            <template #activator="{ on }">
-              <v-checkbox
-                v-model="isCover"
-                :label="`Cover`"
-                class="toolbar-checkbox hidden-sm-and-down"
-                v-on="on"
-              />
-              <v-checkbox
-                v-model="isCover"
-                align-center
-                class="toolbar-checkbox hidden-md-and-up"
-                v-on="on"
-              />
-            </template>
-            <span class="hidden-sm-and-down">Cover</span>
-          </v-tooltip>
-        </v-item>
-        <v-item v-if="isMediaRichType(slotProps.activeMedium)" />
-      </v-item-group>
+      <span v-if="!readOnly && isMediaImageType(slotProps.activeMedium)" align-center>
+        <v-tooltip bottom>
+          <template #activator="{ on }">
+            <v-checkbox
+              v-model="isCover"
+              :label="coverCheckboxLabel"
+              class="toolbar-checkbox"
+              v-on="on"
+            />
+          </template>
+          <span class="hidden-sm-and-down">Cover</span>
+        </v-tooltip>
+      </span>
       <v-btn
         v-if="isMediaRichType(slotProps.activeMedium)"
         text
@@ -179,6 +170,16 @@ export default {
     },
     readOnly: function() {
       return this.page.uid !== this.user.uid
+    },
+    coverCheckboxLabel() {
+      if (
+        this.$vuetify.breakpoint.name === 'xs' ||
+        this.$vuetify.breakpoint.name === 'sm'
+      ) {
+        return ''
+      } else {
+        return 'Cover'
+      }
     }
   },
   methods: {

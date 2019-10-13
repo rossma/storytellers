@@ -12,11 +12,11 @@
             <nuxt-link to="/">
               <span v-on="on">
                 <v-icon>mdi-home</v-icon>
-                <span class="pl-6 home">Home</span>
+                <span class="pl-6 home">{{ homeTitle }}</span>
               </span>
             </nuxt-link>
           </template>
-          <span>Home</span>
+          <span>{{ homeTitle }}</span>
         </v-tooltip>
       </div>
       <v-divider light />
@@ -135,6 +135,16 @@ export default {
     // hasNavDrawerSlot () {
     //   return this.$slots['nav-drawer']
     // },
+    homeTitle() {
+      if (
+        this.$vuetify.breakpoint.name === 'xs' ||
+        this.$vuetify.breakpoint.name === 'sm'
+      ) {
+        return 'Storytellers'
+      } else {
+        return 'Home'
+      }
+    },
     drawer: {
       get() {
         return this.sidebar.visible

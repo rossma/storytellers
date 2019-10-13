@@ -17,7 +17,7 @@
           icon
           fixed
           @click="mutableDialog = false">
-          <v-icon>mdi-close</v-icon>
+          <v-icon>mdi-close-outline</v-icon>
         </v-btn>
         <v-layout
           justify-start
