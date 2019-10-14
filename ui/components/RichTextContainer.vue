@@ -13,12 +13,13 @@
     <component
       :is="compiled"
       v-show="readOnly || isPreview"
-      class="preview-container"
+      class="preview-container ql-editor"
     />
   </v-layout>
 </template>
 
 <script>
+
 import { EventBus } from '~/utils/event-bus.js'
 import Vue from 'vue'
 import debug from 'debug'
@@ -179,7 +180,7 @@ export default {
   color: black;
   /*border: 20px solid red;*/
   /*height: 90vh;*/
-  width: 60em;
+  width: 60rem;
 }
 
 .ql-container.ql-snow {
@@ -197,7 +198,7 @@ export default {
   padding: 20px 50px 20px 50px;
   background-color: #ffffff;
   color: #000000;
-  width: 60em;
+  width: 60rem;
   /*font-size: 21px;*/
 }
 

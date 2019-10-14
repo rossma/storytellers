@@ -27,6 +27,8 @@
       <!--      <v-responsive :aspect-ratio="16/9">-->
       <v-card flat>
         <v-btn
+          color="grey"
+          dark
           fab
           icon
           fixed

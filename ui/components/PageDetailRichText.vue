@@ -25,11 +25,13 @@
 
     <v-dialog
       v-model="mutableDialog"
-      scrollable
       fullscreen
+      hide-overflow
     >
       <v-card>
         <v-btn
+          color="grey"
+          dark
           fab
           icon
           fixed
@@ -164,6 +166,7 @@ export default {
 .rich-text-thumbnail-document {
   background-color: white;
   color: black;
+  overflow: hidden;
   /*font-size: 1em;*/
 }
 
@@ -173,12 +176,13 @@ export default {
 
 .rich-text-document {
   margin-top: 0px;
-  height: 100%;
+  /*height: 100%;*/
+  min-height: 100vh;
   padding: 20px 50px 20px 50px;
   background-color: #ffffff;
   color: #000000;
   font-size: 1.25em;
-  width: 60em;
+  width: 60rem;
 }
 
 .rich-text-document p {

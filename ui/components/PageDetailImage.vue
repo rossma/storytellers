@@ -13,11 +13,13 @@
     >
       <v-card>
         <v-btn
+          color="grey"
+          dark
           fab
           icon
           fixed
           @click="mutableDialog = false">
-          <v-icon>mdi-close-outline</v-icon>
+          <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-layout
           justify-start

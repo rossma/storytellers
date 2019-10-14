@@ -16,7 +16,7 @@
             <v-btn
               icon
               v-on="on"
-              @click="openMediumViewerNewPage()"
+              @click="openMediumViewerNewPage(3)"
             >
               <v-icon>
                 mdi-plus-circle-outline
@@ -349,8 +349,8 @@ export default {
     },
     openMediumViewerNewPage(mediumType) {
       this.selectedMedium = mediumType
+      this.activeMedium = mediumType
       this.readOnly = false
-      this.activeMedium = 3
       this.pageMediumDialog = true
       this.selectedChildPage = {
         id: null,

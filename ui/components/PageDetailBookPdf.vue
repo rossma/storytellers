@@ -27,6 +27,8 @@
     >
       <v-card>
         <v-btn
+          color="grey"
+          dark
           fab
           icon
           fixed
