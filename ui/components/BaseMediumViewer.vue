@@ -194,14 +194,13 @@ export default {
     return {
       activeMedium: 3,
       fileType: null
-      // hasImageChanged: false,
-      // hasBookChanged: false,
-      // richTextPreview: false
     }
   },
   computed: {
     acceptedFileTypes: function() {
-      if (this.isImageEnabled) {
+      if (this.isImageEnabled && this.isBookEnabled) {
+        return 'image/*, application/pdf, application/epub+zip'
+      } else if (this.isImageEnabled) {
         return 'image/*'
       } else if (this.isBookEnabled) {
         return 'application/pdf, application/epub+zip'

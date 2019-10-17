@@ -20,7 +20,7 @@
           <v-icon>mdi-launch</v-icon>
         </v-btn>
       </template>
-      <v-tooltip float-left>
+      <v-tooltip left :disabled="tooltipsDisabled" :value="tooltips">
         <template #activator="{ on }">
           <v-btn
             v-if="canPublish()"
@@ -35,7 +35,7 @@
         </template>
         <span>Publish Page</span>
       </v-tooltip>
-      <v-tooltip float-left>
+      <v-tooltip left :disabled="tooltipsDisabled" :value="tooltips">
         <template #activator="{ on }">
           <v-btn
             v-if="canInvite()"
@@ -50,7 +50,7 @@
         </template>
         <span>Invite Collaboration</span>
       </v-tooltip>
-      <v-tooltip float-left>
+      <v-tooltip left :disabled="tooltipsDisabled" :value="tooltips">
         <template #activator="{ on }">
           <v-btn
             v-if="canDeletePage()"
@@ -97,8 +97,8 @@
       </v-card>
     </v-dialog>
     <page-publish
-      :dialog="publishDialog"
       :key="publishDialogKey"
+      :dialog="publishDialog"
       :page="page"
       :uid="user.uid"
       :user-display-name="user.data.displayName ? user.data.displayName : 'Anon'"
@@ -134,6 +134,8 @@ export default {
   },
   data() {
     return {
+      tooltips: false,
+      tooltipsDisabled: false,
       publishDialog: false,
       publishDialogKey: 0,
       deletePageDialog: false,
@@ -145,6 +147,18 @@ export default {
       },
       isInvitePage: this.page.invite,
       isPublicPage: this.page.public
+    }
+  },
+  watch: {
+    dial(val) {
+      // quirky tooltip issue on fixed speed-dial
+      // seems like a hack...
+      this.tooltips = false
+      this.tooltipsDisabled = false
+      val &&
+        setTimeout(() => {
+          this.$nextTick(() => (this.tooltipsDisabled = true))
+        }, 250)
     }
   },
   mounted: function() {

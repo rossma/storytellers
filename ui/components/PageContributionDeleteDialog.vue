@@ -21,7 +21,7 @@
       <v-card-actions>
         <v-spacer />
         <v-btn
-          color="primary"
+          color="secondary"
           @click="deleteCurrentPage"
         >
           <v-icon float-left>

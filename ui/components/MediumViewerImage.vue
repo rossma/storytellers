@@ -1,15 +1,19 @@
 <template>
   <v-layout
+    align-center
     justify-center
-    class="medium-viewer-image-container"
-    tabindex="-1"
+    class="medium-viewer-image-container pt-6"
   >
-    <img
+    <v-img
       v-show="mutableSrc"
       :src="mutableSrc"
       class="card-img-top"
-      :aspect-ratio="16/9"
-    >
+      max-height="90vh"
+      max-width="100vh"
+      contain
+      :aspect-ratio="1"
+    />
+
 <!--    <img-->
 <!--      v-show="!mutableSrc"-->
 <!--      class="card-img-top"-->
@@ -48,7 +52,7 @@ export default {
   },
   data() {
     return {
-      mutableSrc: null
+      mutableSrc: undefined
     }
   },
   watch: {
@@ -94,11 +98,12 @@ export default {
   /*height: 100vh;*/
 }
 
-.medium-viewer-image-container img {
-  max-height: calc(100vh - 48px);
-  /*margin: 0 auto;*/
-  /*display: block;*/
-  /*max-width: 100%;*/
-}
+/*.medium-viewer-image-container img {*/
+/*  max-height: calc(100vh - 48px);*/
+/*  !*margin: 0 auto;*!*/
+/*  !*display: block;*!*/
+/*  !*max-width: 100%;*!*/
+/*}*/
+
 
 </style>

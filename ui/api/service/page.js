@@ -95,25 +95,6 @@ export function publishPage(preview) {
   return batch.commit()
 }
 
-export function setPageAndPreviewInviteState(pageOid, previewOid, isInvite) {
-  log(
-    `Setting page:[${pageOid}] and preview:[${previewOid}] invite state:[${isInvite}`
-  )
-
-  const batch = DB.batch()
-  const pagesRef = DB.collection('pages').doc(pageOid)
-  batch.update(pagesRef, {
-    invite: isInvite
-  })
-
-  const previewsRef = DB.collection('previews').doc(previewOid)
-  batch.update(previewsRef, {
-    invite: isInvite
-  })
-
-  return batch.commit()
-}
-
 export function deletePage(pageOid) {
   log(`Deleting page:[${pageOid}]`)
   const pagesRef = DB.collection('pages').doc(pageOid)

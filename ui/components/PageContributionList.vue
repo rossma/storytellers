@@ -16,7 +16,7 @@
             <v-btn
               icon
               v-on="on"
-              @click="openMediumViewerNewPage(3)"
+              @click="openMediumViewerNewPage(3, undefined)"
             >
               <v-icon>
                 mdi-plus-circle-outline
@@ -37,7 +37,7 @@
                     large
                     text
                     v-on="on"
-                    @click.stop="openMediumViewerNewPage(1)"
+                    @click.stop="openMediumViewerNewPage(1, 1)"
                   >
                     <v-icon large>
                       mdi-card-text-outline
@@ -54,7 +54,7 @@
                     large
                     text
                     v-on="on"
-                    @click.stop="openMediumViewerNewPage(2)"
+                    @click.stop="openMediumViewerNewPage(2, 2)"
                   >
                     <v-icon large>
                       mdi-book-outline
@@ -71,7 +71,7 @@
                     large
                     text
                     v-on="on"
-                    @click.stop="openMediumViewerNewPage(3)"
+                    @click.stop="openMediumViewerNewPage(3, 3)"
                   >
                     <v-icon large>
                       mdi-brush
@@ -347,8 +347,8 @@ export default {
       // force rerender
       this.dialogKey += 1
     },
-    openMediumViewerNewPage(mediumType) {
-      this.selectedMedium = mediumType
+    openMediumViewerNewPage(mediumType, selectedMedium) {
+      this.selectedMedium = selectedMedium
       this.activeMedium = mediumType
       this.readOnly = false
       this.pageMediumDialog = true

@@ -94,7 +94,6 @@
             <v-row>
               <v-col>
                 <v-textarea
-                  v-if="!isPublished"
                   v-model="summary"
                   auto-grow
                   filled
@@ -153,7 +152,6 @@ import stringUtils from '~/utils/string'
 import { mapGetters } from 'vuex'
 import {
   publishPage,
-  setPageAndPreviewInviteState,
   DEFAULT_WALLPAPERS
 } from '~/api/service/page'
 import { findImageByOid, uploadImage } from '~/api/service/image'
@@ -269,6 +267,11 @@ export default {
         return this.previewImages[this.previewImageCarousel - startingIndex]
       }
     },
+    publishAndInvite() {
+      log('page already published just need to send invitation')
+      this.inviteSwitch = true
+      this.publish()
+    },
     publish() {
       log('getSelectedPreviewImageSrc', this.getSelectedPreviewImageSrc())
 
@@ -322,14 +325,6 @@ export default {
         )
       }
     },
-    publishAndInvite() {
-      log('page already published just need to send invitation')
-      this.updatePageAndPreviewInviteState(
-        this.page.id,
-        this.page.previewOid,
-        true
-      )
-    },
     publishPagePreview(previewImageData) {
       let keywords = []
       let authorTags = []
@@ -373,32 +368,6 @@ export default {
           log('There was an error publishing page', error)
           this.$toast.error(error.message)
         })
-    },
-    updatePageAndPreviewInviteState(pageOid, previewOid, isInvite) {
-      log(
-        'Updating page and preview invite state',
-        pageOid,
-        previewOid,
-        isInvite
-      )
-      if (previewOid) {
-        setPageAndPreviewInviteState(pageOid, previewOid, isInvite)
-          .then(() => {
-            this.$emit('published', isInvite)
-            this.closeDialog()
-            this.$toast.success('Invitation sent')
-          })
-          .catch(error => {
-            log(
-              'There was an error setting the page and preview to invite',
-              error
-            )
-            this.$toast.error(error.message)
-          })
-      } else {
-        log('No published page found for page:', pageOid)
-        this.$toast.error('There was an error, no publish page found')
-      }
     },
     closeDialog() {
       this.$emit('close')
