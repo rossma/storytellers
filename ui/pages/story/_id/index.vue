@@ -286,7 +286,7 @@ export default {
         log('chapterPageCount:', chapterPageCount)
 
         if (this.totalStoryPages > 1 && chapterPageCount === 1) {
-          log('deleting whole chapter')
+          log('deleting whole chapter', page.chapterOid)
           return deleteChapter(page.chapterOid)
         } else {
           log('deleting page')
@@ -303,6 +303,7 @@ export default {
           return this.fetchNexPageOid(page)
         })
         .then(pageOid => {
+          log('routing to next pageOid', pageOid)
           this.$router.push(`/story/${pageOid}`)
         })
         .catch(error => {
@@ -314,7 +315,13 @@ export default {
       return pages.filter(page => page.chapterOid === chapterOid).length
     },
     fetchNexPageOid(currentPage) {
+      log('Fetching previous page if exist. page being deleted:', currentPage)
       if (this.totalStoryPages > 1) {
+        log(
+          'TotalStoryPages and mutablePages:',
+          this.totalStoryPages,
+          this.mutablePages
+        )
         this.mutablePages = this.mutablePages.filter(
           p => p.id !== currentPage.id
         )

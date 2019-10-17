@@ -53,6 +53,7 @@
                 outlined
                 name="summary"
                 label="Summary"
+                rows="10"
               />
             </v-flex>
           </v-layout>

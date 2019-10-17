@@ -25,7 +25,7 @@
       v-model="mutableDialog"
       fullscreen
     >
-      <v-card>
+      <v-card flat>
         <v-btn
           color="grey"
           dark

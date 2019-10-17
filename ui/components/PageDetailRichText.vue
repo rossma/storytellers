@@ -18,7 +18,7 @@
 
         <component
           :is="compiled"
-          class="pa-4 rich-text-thumbnail-document"
+          class="pa-10 rich-text-thumbnail-document"
         />
       </v-layout>
     </v-card>
@@ -28,7 +28,7 @@
       fullscreen
       hide-overflow
     >
-      <v-card>
+      <v-card flat>
         <v-btn
           color="grey"
           dark
@@ -45,7 +45,7 @@
         >
           <component
             :is="compiled"
-            class="pa-4 rich-text-document"
+            class="pa-12 rich-text-document"
           />
         </v-layout>
       </v-card>
