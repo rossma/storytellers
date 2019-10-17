@@ -128,7 +128,8 @@ export default {
         log(`story-book-file-key event received:`, bookDetails)
         this.page.book = {
           filename: bookDetails.filenameKey,
-          ref: bookDetails.bookSrc
+          ref: bookDetails.bookSrc,
+          contentType: bookDetails.contentType
         }
       })
 

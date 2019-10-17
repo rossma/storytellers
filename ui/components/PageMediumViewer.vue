@@ -268,7 +268,8 @@ export default {
           .then(result => {
             EventBus.$emit('story-book-file-key', {
               filenameKey: result.filenameKey,
-              bookSrc: result.downloadUrl
+              bookSrc: result.downloadUrl,
+              contentType: result.contentType
             })
             this.hasBookChanged = false
           })
