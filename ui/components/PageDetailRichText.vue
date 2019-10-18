@@ -160,7 +160,7 @@ export default {
 .rich-text-thumbnail-container {
   background-color: #e2e2e2;
   cursor: pointer;
-  max-height: 500px;
+  height: 500px;
 }
 
 .rich-text-thumbnail-document {

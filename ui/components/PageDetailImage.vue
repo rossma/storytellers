@@ -3,6 +3,7 @@
     <v-img
       v-if="showThumbnail"
       :src="src"
+      contain
       class="image-thumbnail"
       @click.stop="mutableDialog = true"
     />

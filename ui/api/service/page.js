@@ -72,7 +72,7 @@ export function addPage(page) {
     })
 }
 
-export function updatePage(pageOid, page) {
+  export function updatePage(pageOid, page) {
   log(`Updating page:[${pageOid} with:[${JSON.stringify(page)}]`)
   return DB.collection('pages')
     .doc(pageOid)
