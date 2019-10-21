@@ -49,12 +49,14 @@
         :src="imageSrc"
         :origin="origin"
       />
+
       <medium-viewer-book
         v-show="isMediaBookType(slotProps.activeMedium)"
         :src="bookSrc"
         :file-type="bookType"
         :origin="origin"
       />
+
       <medium-viewer-rich-text
         v-show="isMediaRichType(slotProps.activeMedium)"
         :read-only="readOnly"
@@ -62,19 +64,22 @@
         :origin="origin"
         @save="saveRichText"
       />
+
+      <page-contribution-save-dialog
+        :dialog="pageContributionSaveDialog"
+        @save="saveMedia"
+        @close="pageContributionSaveDialog = false"
+      />
+
+      <page-contribution-delete-dialog
+        :dialog="pageContributionDeleteDialog"
+        @delete="deleteMedia"
+        @close="pageContributionDeleteDialog = false"
+      />
+
+
     </template>
 
-    <page-contribution-save-dialog
-      :dialog="pageContributionSaveDialog"
-      @save="saveMedia"
-      @close="pageContributionSaveDialog = false"
-    />
-
-    <page-contribution-delete-dialog
-      :dialog="pageContributionDeleteDialog"
-      @delete="deleteMedia"
-      @close="pageContributionDeleteDialog = false"
-    />
   </base-medium-viewer>
 </template>
 

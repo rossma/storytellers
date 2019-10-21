@@ -1,41 +1,53 @@
 <template>
-  <!--  <v-layout-->
-  <!--    class="editor-container"-->
-  <!--  >-->
   <v-layout
     fluid
     justify-center
     class="editor-container"
   >
-    <!--    <v-layout-->
-    <!--    justify-center-->
-    <!--    class="medium-viewer-rich-container"-->
-    <!--  >-->
-    <!--      <v-flex xs12>-->
-
-    <!--  <div class="editor-container">-->
     <quill-editor
       v-show="!readOnly && !isPreview"
       ref="textEditor"
       v-model="editorContent"
       :options="editorOption"
     />
-
     <component
       :is="compiled"
       v-show="readOnly || isPreview"
-      class="preview-container"
+      class="preview-container ql-editor"
     />
-    <!--      </v-flex>-->
   </v-layout>
-<!--  </div>-->
 </template>
 
 <script>
+
 import { EventBus } from '~/utils/event-bus.js'
 import Vue from 'vue'
 import debug from 'debug'
 const log = debug('app:components/RichTextContainer')
+
+const toolbarOptions = [
+  ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+  ['blockquote', 'code-block'],
+  // [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+  // [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+  [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+  // [{ 'direction': 'rtl' }],                         // text direction
+
+  // [{ 'size': [{'small': '0.75em'}, {'normal': '1em'}, {'large': '1.5em'}, {'huge': '2em'}] }],  // custom dropdown
+  // [{ 'size': ['small', 'false', 'large', 'huge'] }],  // custom dropdown
+  // [{ 'size': ['24px', '26px', '28px'] }],  // custom dropdown
+  //  [{ 'size': ['14px', '26px', '38px', '48px'] }],  // custom dropdown
+  [{ 'size': ['0.75em', '1em', '1.5em', '2em'] }],  // custom dropdown
+  // [{ 'size': [] }],  // dropdown with defaults from theme
+  // [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+  [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+  [{ 'font': [] }],
+  [{ 'align': [] }],
+  ['link', 'image'],
+  ['clean']                                         // remove formatting button
+]
 
 export default {
   name: 'RichTextContainer',
@@ -63,7 +75,16 @@ export default {
         placeholder: 'Once upon a time...',
         theme: 'snow',
         modules: {
-          // imageResize: true
+          toolbar: toolbarOptions,
+          imageDrop: true,
+          imageResize: {
+            displayStyles: {
+              backgroundColor: 'black',
+              border: 'none',
+              color: 'white'
+            },
+            modules: [ 'Resize', 'DisplaySize', 'Toolbar' ]
+          }
         }
       },
       isPreview: false
@@ -73,11 +94,6 @@ export default {
     editor() {
       return this.$refs.textEditor.quill
     }
-    // htmlComponent: function() {
-    //   return {
-    //     template: `<div>${this.tmp}</div>`
-    //   }
-    // }
   },
   mounted: function() {
     log('mounted', this.editor)
@@ -108,26 +124,11 @@ export default {
     EventBus.$off('rich-text-save')
   },
   methods: {
-    // async setContentFromUrl(url) {
-    //   log('in setContentFromUrl')
-    //   const data = await this.$axios.$get(url)
-    //   log('data:', data)
-    //   this.deltaStr = data
-    // },
     init() {
       const Quill = require('quill')
       const Delta = Quill.import('delta')
 
       this.configureEditor(new Delta())
-
-      // const str = {
-      //   ops: [
-      //     { insert: 'd\ndddddddddd' },
-      //     { insert: '\n', attributes: { header: 1 } },
-      //     { insert: 'ddddddd', attributes: { bold: true } },
-      //     { retain: 1, attributes: { header: null } }
-      //   ]
-      // }
 
       if (this.src) {
         this.getContentFromUrl(this.src).then(val => {
@@ -157,42 +158,21 @@ export default {
       this.editor.on('text-change', function(delta) {
         // log('on editor change', delta)
         change = change.compose(delta)
-        // log('change', change)
-        // log('toString', JSON.stringify(change))
       })
     },
     preview(html) {
       log('previewing html', html)
       this.compiled = Vue.compile(`<div>${html}</div>`)
     }
-    // save(pageOid, contents) {
-    //   log('Saving Rich Text')
-    //
-    //   uploadPageRichText(pageOid, contents)
-    //     .then(result => {
-    //       EventBus.$emit('story-rich-text-file-key', {
-    //         filenameKey: result.filenameKey,
-    //         richTextSrc: result.downloadUrl
-    //       })
-    //     })
-    //     .catch(error => {
-    //       log('There was an error uploading rich text ', error)
-    //       this.$toast.error(error.message)
-    //     })
-    //     .then(() => {
-    //       this.$toast.success('Story was save successfully')
-    //     })
-    // }
   }
 }
 </script>
 
 <style>
-
 .editor-container {
   padding-top: 1px;
   /*border: 5px solid purple;*/
-  height: 90vh;
+  height: 89vh;
 }
 
 .quill-editor {
@@ -200,27 +180,66 @@ export default {
   color: black;
   /*border: 20px solid red;*/
   /*height: 90vh;*/
-  width: 60em;
+  width: 60rem;
 }
 
 .ql-container.ql-snow {
-  border: none!important;
+  border: none !important;
 }
 
 .ql-editor {
   background-color: white;
+  font-size: 21px;
 }
 
 .preview-container {
-  margin-top: 0px;
-  height: 100%;
+  /*margin-top: 0px;*/
+  height: 93vh;
   padding: 20px 50px 20px 50px;
   background-color: #ffffff;
   color: #000000;
-  width: 60em;
+  width: 60rem;
+  /*font-size: 21px;*/
 }
 
 .preview-container p {
   margin-bottom: 0px;
 }
+
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="0.75em"]::before {
+  content: 'Small';
+  font-size: 0.75em !important;
+}
+
+.ql-picker-label[data-value="0.75em"]::before {
+  content: 'Small' !important;
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="1em"]::before {
+  content: 'Normal';
+  font-size: 1em !important;
+}
+
+.ql-picker-label[data-value="1em"]::before {
+  content: 'Normal' !important;
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="1.5em"]::before {
+  content: 'Large';
+  font-size: 1.5em !important;
+}
+
+.ql-picker-label[data-value="1.5em"]::before {
+  content: 'Large' !important;
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="2em"]::before {
+  content: 'Huge';
+  font-size: 2em !important;
+}
+
+.ql-picker-label[data-value="2em"]::before {
+  content: 'Huge' !important;
+}
+
 </style>

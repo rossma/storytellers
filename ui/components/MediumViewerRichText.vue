@@ -1,12 +1,12 @@
 <template>
-  <no-ssr>
+  <client-only placeholder="Loading...">
     <rich-text-container
       :read-only="readOnly"
       :origin="origin"
       :src="src"
       @save="saveContent"
     />
-  </no-ssr>
+  </client-only>
 </template>
 
 <script>

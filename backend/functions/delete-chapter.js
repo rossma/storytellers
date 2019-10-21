@@ -15,7 +15,7 @@ exports.handler = async (snap, context, database) => {
 
   const pagesRef = database
     .collection('pages')
-    .where('storyOid', '==', deletedValue.storyOid)
+    .where('chapterOid', '==', chapterOid)
   await commonDB.deleteCollection(database, pagesRef, BATCH_SIZE)
 
   return console.log('post delete chapter tasks complete')

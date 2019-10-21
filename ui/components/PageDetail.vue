@@ -76,6 +76,7 @@
     <v-card
       v-else
       flat
+      :key="pageDetailKey"
     >
       <v-card-title
         class="page-detail-title subtitle-2 mb-2">
@@ -95,6 +96,7 @@
           :page="page"
           :src="pageBookSrc"
           :user="user"
+          :key="pageDetailKey"
         />
         <page-detail-book-epub
           v-else-if="pageBookSrc && isEpub"
@@ -145,7 +147,7 @@
         :selected-medium="selectedMedium"
         :story-cover="storyCover"
         :user="user"
-        @close="pageMediumDialog = false"
+        @close="closePageMediumDialog()"
       />
     </portal>
     <page-comments
@@ -211,6 +213,7 @@ export default {
       selectedPageCollaboration: {
         image: null
       },
+      pageDetailKey: 0,
       initialChildDialog: this.page.id !== this.page.selectedPageOid
     }
   },
@@ -294,6 +297,10 @@ export default {
     }
   },
   methods: {
+    closePageMediumDialog() {
+      this.pageDetailKey += 1
+      this.pageMediumDialog = false
+    },
     like() {
       log('in like', this.liked)
       this.liked = !this.liked

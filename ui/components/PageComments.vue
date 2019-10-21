@@ -38,7 +38,7 @@
                   filled
                   :color="theme"
                   label="Comment"
-                  rows="1"
+                  rows="2"
                 />
               </v-flex>
             </v-layout>

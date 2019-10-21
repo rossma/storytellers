@@ -21,7 +21,6 @@
         <story-action-controls
           :page="page"
           :editable="isEditable"
-          :total-story-pages="totalStoryPages"
           :user="user"
           @delete-page="deletePage"
         />
@@ -34,7 +33,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import { EventBus } from '~/utils/event-bus.js'
 import { deleteChapter, findChapterByOid } from '~/api/service/chapter'
-import { deletePage, findPageByOid } from '~/api/service/page'
+import { addPage, deletePage, findPageByOid } from '~/api/service/page'
 import { findUserByOid } from '~/api/service/user'
 import { deleteCover, findStoryByOid } from '~/api/service/story'
 import clonedeep from 'lodash.clonedeep'
@@ -129,7 +128,8 @@ export default {
         log(`story-book-file-key event received:`, bookDetails)
         this.page.book = {
           filename: bookDetails.filenameKey,
-          ref: bookDetails.bookSrc
+          ref: bookDetails.bookSrc,
+          contentType: bookDetails.contentType
         }
       })
 
@@ -264,6 +264,8 @@ export default {
       return this.page.public || this.page.uid === this.user.uid
     },
     deletePage(page) {
+      log('delete:', page)
+
       const deleteStoryCover = () => {
         if (this.story.cover && this.story.cover.pageOid === page.id) {
           log('in deleteCover for story:', this.story.id)
@@ -284,8 +286,8 @@ export default {
 
         log('chapterPageCount:', chapterPageCount)
 
-        if (chapterPageCount === 1) {
-          log('deleting whole chapter')
+        if (this.totalStoryPages > 1 && chapterPageCount === 1) {
+          log('deleting whole chapter', page.chapterOid)
           return deleteChapter(page.chapterOid)
         } else {
           log('deleting page')
@@ -293,26 +295,55 @@ export default {
         }
       }
 
-      if (this.totalStoryPages > 1) {
-        deleteStoryCover()
-          .then(() => {
-            log('cover removed from page')
-            return runDelete()
-          })
-          .then(() => {
-            this.mutablePages = this.mutablePages.filter(p => p.id !== page.id)
-            this.$router.push(`/story/${this.mutablePages[0].id}`)
-          })
-          .catch(error => {
-            log('There was an error deleting the current page', error)
-            this.$toast.error(error.message)
-          })
-      } else {
-        this.$toast.error(`Can't delete page if it is the only one that exists`)
-      }
+      deleteStoryCover()
+        .then(() => {
+          log('cover removed from page')
+          return runDelete()
+        })
+        .then(() => {
+          return this.fetchNexPageOid(page)
+        })
+        .then(pageOid => {
+          log('routing to next pageOid', pageOid)
+          this.$router.push(`/story/${pageOid}`)
+        })
+        .catch(error => {
+          log('There was an error deleting the current page', error)
+          this.$toast.error(error.message)
+        })
     },
     chapterPageCount(pages, chapterOid) {
       return pages.filter(page => page.chapterOid === chapterOid).length
+    },
+    fetchNexPageOid(currentPage) {
+      log('Fetching previous page if exist. page being deleted:', currentPage)
+      if (this.totalStoryPages > 1) {
+        log(
+          'TotalStoryPages and mutablePages:',
+          this.totalStoryPages,
+          this.mutablePages
+        )
+        this.mutablePages = this.mutablePages.filter(
+          p => p.id !== currentPage.id
+        )
+        return Promise.resolve(this.mutablePages[0].id)
+      } else {
+        log('Just deleted only page. Creating new one')
+        return this.addNewPage(currentPage.chapterOid)
+      }
+    },
+    addNewPage(chapterOid) {
+      return addPage({
+        storyOid: this.story.id,
+        chapterOid: chapterOid,
+        page: 1,
+        uid: this.uid,
+        invite: false,
+        public: false
+      }).then(page => {
+        log(`Page Document written with ID:${page.id}`)
+        return Promise.resolve(page.id)
+      })
     }
   }
 }

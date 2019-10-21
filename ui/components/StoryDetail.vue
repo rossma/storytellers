@@ -3,7 +3,8 @@ x`<template>
     <v-expansion-panel>
       <v-expansion-panel-header class="header">
         <v-col
-          class="expansion-header-icon">
+          class="expansion-header-icon"
+        >
           <v-icon
             large
             float-left
@@ -11,15 +12,20 @@ x`<template>
             mdi-typewriter
           </v-icon>
         </v-col>
-        <v-col><h2>{{ story.title }}</h2></v-col>
+        <v-col><span class="headline">{{ story.title }}</span></v-col>
         <v-col
           v-show="author.displayName"
-          @click="showUserProfile()"
           class="text-right"
         >
-          <h4 class="primary--text subtitle-1">
-            {{ author.displayName }}
-          </h4>
+          <v-hover v-slot:default="{ hover }">
+            <span
+              :elevation="hover ? 12 : 2"
+              :class="hover ? 'primary--text subtitle-1' : 'subtitle-1'"
+              @click="showUserProfile()"
+            >
+              {{ author.displayName }}
+            </span>
+          </v-hover>
         </v-col>
       </v-expansion-panel-header>
       <v-expansion-panel-content :class="expansionPanelContentClass">

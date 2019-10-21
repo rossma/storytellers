@@ -3,6 +3,7 @@
     <v-img
       v-if="showThumbnail"
       :src="src"
+      contain
       class="image-thumbnail"
       @click.stop="mutableDialog = true"
     />
@@ -10,9 +11,12 @@
       v-model="mutableDialog"
       scrollable
       fullscreen
+      hide-overlay
     >
-      <v-card>
+      <v-card fill-height dark>
         <v-btn
+          color="grey"
+          dark
           fab
           icon
           fixed
@@ -20,10 +24,16 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-layout
-          justify-start
+          dark
+          align-center
+          justify-center
           class="image-container"
         >
-          <v-img :src="src" contain />
+          <v-img
+            :src="src"
+            max-height="100vh"
+            max-width="100vh"
+            contain />
         </v-layout>
       </v-card>
     </v-dialog>

@@ -95,11 +95,10 @@ export default {
         }
       },
       set(val) {
-        log('in liked set')
+        log('in liked set', val, this.childPage.likes)
         if (!this.childPage.likes) {
-          this.childPage.likes = []
+          this.$set(this.childPage, 'likes', [])
         }
-
         if (val) {
           if (!this.childPage.likes.includes(this.user.uid)) {
             this.childPage.likes.push(this.user.uid)

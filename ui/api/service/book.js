@@ -24,7 +24,8 @@ export function uploadPageBook(pageOid, bookFile) {
     return batch.commit().then(() => {
       return Promise.resolve({
         filenameKey: pageBookData.book.filename,
-        downloadUrl: pageBookData.book.ref
+        downloadUrl: pageBookData.book.ref,
+        contentType: pageBookData.book.contentType
       })
     })
   })

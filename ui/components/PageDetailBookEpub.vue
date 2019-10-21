@@ -4,7 +4,7 @@
       v-if="showThumbnail"
       flat
     >
-      <v-responsive :aspect-ratio="16/9">
+<!--      <v-responsive :aspect-ratio="16/9"> this leaves many empty spaces below -->
         <v-layout
           justify-center
           class="epub-thumbnail-container"
@@ -16,7 +16,7 @@
             class="single"
           />
         </v-layout>
-      </v-responsive>
+<!--      </v-responsive>-->
     </v-card>
 
     <v-dialog
@@ -27,6 +27,8 @@
       <!--      <v-responsive :aspect-ratio="16/9">-->
       <v-card flat>
         <v-btn
+          color="grey"
+          dark
           fab
           icon
           fixed

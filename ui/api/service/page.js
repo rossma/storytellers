@@ -72,7 +72,7 @@ export function addPage(page) {
     })
 }
 
-export function updatePage(pageOid, page) {
+  export function updatePage(pageOid, page) {
   log(`Updating page:[${pageOid} with:[${JSON.stringify(page)}]`)
   return DB.collection('pages')
     .doc(pageOid)
@@ -91,25 +91,6 @@ export function publishPage(preview) {
 
   const previewsRef = DB.collection('previews').doc()
   batch.set(previewsRef, preview)
-
-  return batch.commit()
-}
-
-export function setPageAndPreviewInviteState(pageOid, previewOid, isInvite) {
-  log(
-    `Setting page:[${pageOid}] and preview:[${previewOid}] invite state:[${isInvite}`
-  )
-
-  const batch = DB.batch()
-  const pagesRef = DB.collection('pages').doc(pageOid)
-  batch.update(pagesRef, {
-    invite: isInvite
-  })
-
-  const previewsRef = DB.collection('previews').doc(previewOid)
-  batch.update(previewsRef, {
-    invite: isInvite
-  })
 
   return batch.commit()
 }
