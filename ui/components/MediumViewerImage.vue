@@ -84,6 +84,7 @@ export default {
 
       reader.onloadend = () => {
         this.mutableSrc = reader.result
+        this.$emit('image-updated', this.mutableSrc)
       }
 
       reader.readAsDataURL(file)

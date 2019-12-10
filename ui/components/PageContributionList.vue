@@ -37,6 +37,23 @@
                     large
                     text
                     v-on="on"
+                    @click.stop="openMediumViewerNewPage(4, 4)"
+                  >
+                    <v-icon large>
+                      mdi-comment-quote-outline
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>Quote</span>
+              </v-tooltip>
+            </v-flex>
+            <v-flex x4 mt-1 ml-4 text-center>
+              <v-tooltip bottom>
+                <template #activator="{ on }">
+                  <v-btn
+                    large
+                    text
+                    v-on="on"
                     @click.stop="openMediumViewerNewPage(1, 1)"
                   >
                     <v-icon large>
@@ -57,7 +74,7 @@
                     @click.stop="openMediumViewerNewPage(2, 2)"
                   >
                     <v-icon large>
-                      mdi-book-outline
+                      mdi-book-open-page-variant
                     </v-icon>
                   </v-btn>
                 </template>
@@ -151,6 +168,7 @@
     />
 
     <v-card
+      v-if="Object.entries(collaborations).length > 0"
       :key="pageDetailDialogKey"
       flat
     >
@@ -191,6 +209,15 @@
           :user="user"
           :show-thumbnail="false"
         />
+<!--        <page-detail-quote-->
+<!--          :dialog="pageQuoteDialog && user.uid !== selectedChildPage.uid"-->
+<!--          :page="selectedChildPage"-->
+<!--          :src="selectedChildPageSrc"-->
+<!--          :user="user"-->
+<!--          :theme="'secondary'"-->
+<!--          @close="pageQuoteDialog = false"-->
+<!--          @saved="onQuoteSaved"-->
+<!--        />-->
       </v-card-text>
     </v-card>
   </v-layout>
@@ -206,10 +233,11 @@ import { findUserByOid } from '~/api/service/user'
 import PageContributionCard from '~/components/PageContributionCard'
 import PageContributionMediumViewer from '~/components/PageContributionMediumViewer'
 import PageComments from '~/components/PageComments'
-  import PageDetailRichText from './PageDetailRichText'
+import PageDetailRichText from './PageDetailRichText'
 import PageDetailBookEpub from './PageDetailBookEpub'
 import PageDetailBookPdf from './PageDetailBookPdf'
 import PageDetailImage from './PageDetailImage'
+// import PageDetailQuote from './PageDetailQuote'
 
 const log = debug('app:components/PageContributionList')
 
@@ -223,6 +251,7 @@ export default {
     PageDetailBookEpub,
     PageDetailBookPdf,
     PageDetailImage,
+    // PageDetailQuote,
   },
   mixins: [MediumViewerMixin, PageMixin],
   props: {
@@ -256,6 +285,7 @@ export default {
           filename: null
         },
         richText: {},
+        quote: {},
         summary: null,
         userDisplayName: null,
         comments: null
@@ -266,11 +296,13 @@ export default {
       pageDetailBookEpubDialog: false,
       pageDetailBookPdfDialog: false,
       pageDetailImageDialog: false,
+      pageDetailQuoteDialog: false,
       readOnly: true,
       dialogKey: 0,
       viewerKey: 0,
       pageDetailDialogKey: 0,
-      commentsDialog: false
+      commentsDialog: false,
+      // pageQuoteDialog: false
     }
   },
   computed: {
@@ -347,6 +379,15 @@ export default {
       // force rerender
       this.dialogKey += 1
     },
+    // openPageQuoteDialog() {
+    //   this.pageQuoteDialog = true
+    // },
+    onQuoteSaved(quote) {
+      // log('in quote saved', quote)
+      // EventBus.$emit('story-page-quote-save', quote)
+      // this.pageDetailKey += 1
+      // this.pageQuoteDialog = false
+    },
     openMediumViewerNewPage(mediumType, selectedMedium) {
       this.selectedMedium = selectedMedium
       this.activeMedium = mediumType
@@ -367,6 +408,7 @@ export default {
           ref: null
         },
         richText: {},
+        quote: {},
         parentPagesOid: this.page.id,
         // parentPagesRef: null, // todo?
         summary: null,
@@ -385,6 +427,7 @@ export default {
       this.pageDetailBookEpubDialog = false
       this.pageDetailBookPdfDialog = false
       this.pageDetailImageDialog = false
+      this.pageDetailQuoteDialog = false
 
       this.readOnly = true
       this.selectedChildPage = page
@@ -400,30 +443,26 @@ export default {
         this.pageMediumDialog = true
       } else {
         if (this.getPageRichTextSrc(page)) {
-          log('a')
           this.selectedChildPageSrc = this.getPageRichTextSrc(page)
           this.pageDetailRichTextDialog = true
           // EventBus.$emit('open-page-detail-rich-text-dialog')
         } else if (this.getPageBookSrc(page)) {
-          log('b')
           this.selectedChildPageSrc = this.getPageBookSrc(page)
           if (this.getIsEpub(this.getBookType(page))) {
-            log('c')
             this.pageDetailBookEpubDialog = true
             // EventBus.$emit('open-page-detail-book-epub-dialog')
           } else if (this.getIsPdf(this.getBookType(page))) {
-            log('d')
             this.pageDetailBookPdfDialog = true
             // EventBus.$emit('open-page-detail-book-pdf-dialog')
           }
         } else if (this.getPageImageSrc(page)) {
-          log('e')
           this.pageDetailImageDialog = true
           this.selectedChildPageSrc = this.getPageImageSrc(page)
-          log('e', this.selectedChildPageSrc)
           // EventBus.$emit('open-page-detail-image-dialog')
-        } else {
-          log('end')
+        } else if (this.getPageQuoteSrc(page)) {
+          this.pageDetailQuoteDialog = true
+          this.selectedChildPageSrc = this.getPageQuoteSrc(page)
+          // EventBus.$emit('open-page-detail-image-dialog')
         }
       }
     },

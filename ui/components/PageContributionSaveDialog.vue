@@ -5,7 +5,7 @@
     width="600px"
   >
     <v-card>
-      <v-toolbar 
+      <v-toolbar
         color="secondary"
       >
         <v-toolbar-title>Save and Publish Page Collaboration</v-toolbar-title>

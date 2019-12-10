@@ -45,6 +45,10 @@
     </template>
 
     <template #content-container="slotProps">
+      <medium-viewer-quote
+        v-show="isMediaQuoteType(slotProps.activeMedium)"
+        v-model="quote"
+      />
       <medium-viewer-image
         v-show="isMediaImageType(slotProps.activeMedium)"
         :src="imageSrc"
@@ -72,8 +76,10 @@ import MediumViewerMixin from '../mixins/MediumViewerMixin'
 import BaseMediumViewer from '~/components/BaseMediumViewer'
 import MediumViewerBook from '~/components/MediumViewerBook'
 import MediumViewerImage from '~/components/MediumViewerImage'
+import MediumViewerQuote from '~/components/MediumViewerQuote'
 import { uploadPageBook } from '~/api/service/book'
 import { uploadPageImage } from '~/api/service/image'
+import { updatePage } from '~/api/service/page'
 import { uploadPageRichText } from '~/api/service/rich-text'
 import MediumViewerRichText from '~/components/MediumViewerRichText'
 import { deleteCover, updateStory } from '~/api/service/story'
@@ -86,6 +92,7 @@ export default {
     BaseMediumViewer,
     MediumViewerBook,
     MediumViewerImage,
+    MediumViewerQuote,
     MediumViewerRichText
   },
   mixins: [MediumViewerMixin],
@@ -124,7 +131,12 @@ export default {
       isCover: false,
       isRichTextPreview: false,
       hasBookChanged: false,
-      hasImageChanged: false
+      hasImageChanged: false,
+      quote: {
+        src: '',
+        background: '',
+        color: ''
+      }
     }
   },
   computed: {
@@ -141,6 +153,13 @@ export default {
       return this.isMediaRichType(this.selectedMedium)
       // && (!this.readOnly || !!this.richTextSrc)
     },
+
+    // quoteSrc: function() {
+    //   if (this.page.quote && this.page.quote.src) {
+    //     return this.page.quote.src
+    //   }
+    //   return ''
+    // },
     imageSrc: function() {
       if (this.page.image && this.page.image.ref) {
         return this.page.image.ref
@@ -213,6 +232,21 @@ export default {
       } else if (this.isMediaRichType(activeMedium)) {
         EventBus.$emit('rich-text-save')
         this.closeDialog()
+      } else if (this.isMediaQuoteType(activeMedium)) {
+        this.saveQuote(this.quote)
+          .then(() => {
+            this.quote = {
+              src: '',
+              background: '',
+              color: ''
+            }
+            this.$toast.success('Quote added')
+            this.closeDialog()
+          })
+          .catch(err => {
+            log('Error adding quote', err)
+            this.$toast.error(`Error adding quote`)
+          })
       }
     },
     saveImageFile() {
@@ -298,6 +332,16 @@ export default {
           .then(() => {
             this.$toast.success('Story was saved successfully')
           })
+      }
+    },
+    saveQuote(quote) {
+      log('Saving quote', quote)
+
+      if (quote) {
+        log('adding quote:', quote)
+        return updatePage(this.page.id, { quote: quote })
+      } else {
+        return Promise.reject(new Error('Quote is not initialised'))
       }
     },
     previewRichTextContent() {

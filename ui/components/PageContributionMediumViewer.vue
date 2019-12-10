@@ -6,6 +6,7 @@
     :theme="'secondary'"
     :user="user"
     :initial-medium="allSelectedMedium ? selectedMedium : activeMedium"
+    :is-quote-enabled="isQuoteEnabled"
     :is-book-enabled="isBookEnabled"
     :is-image-enabled="isImageEnabled"
     :is-rich-text-enabled="isRichTextEnabled"
@@ -44,10 +45,18 @@
     </template>
 
     <template #content-container="slotProps">
+      <medium-viewer-quote
+        v-show="isMediaQuoteType(slotProps.activeMedium)"
+        v-model="quote"
+        :origin="origin"
+        :theme="'secondary'"
+      />
+
       <medium-viewer-image
         v-show="isMediaImageType(slotProps.activeMedium)"
         :src="imageSrc"
         :origin="origin"
+        @image-updated="imageUpdated"
       />
 
       <medium-viewer-book
@@ -65,21 +74,29 @@
         @save="saveRichText"
       />
 
-      <page-contribution-save-dialog
-        :dialog="pageContributionSaveDialog"
-        @save="saveMedia"
-        @close="pageContributionSaveDialog = false"
+      <page-contribution-publish
+        :key="publishKey"
+        :dialog="publishDialog"
+        :contribution="contribution"
+        :quote="quote"
+        :image-src="imageSrc"
+        :uid="user.uid"
+        :user-display-name="user.data.displayName ? user.data.displayName : 'Anon'"
+        @close="publishDialog = false"
+        @publish="onPublishComplete"
       />
+      <!--      <page-contribution-save-dialog-->
+      <!--        :dialog="publishDialog"-->
+      <!--        @save="saveMedia"-->
+      <!--        @close="publishDialog = false"-->
+      <!--      />-->
 
       <page-contribution-delete-dialog
         :dialog="pageContributionDeleteDialog"
         @delete="deleteMedia"
         @close="pageContributionDeleteDialog = false"
       />
-
-
     </template>
-
   </base-medium-viewer>
 </template>
 
@@ -92,16 +109,16 @@ import MediumViewerMixin from '../mixins/MediumViewerMixin'
 import BaseMediumViewer from '~/components/BaseMediumViewer'
 import MediumViewerBook from '~/components/MediumViewerBook'
 import MediumViewerImage from '~/components/MediumViewerImage'
+import MediumViewerQuote from '~/components/MediumViewerQuote'
 import MediumViewerRichText from '~/components/MediumViewerRichText'
+import PageContributionPublish from '~/components/PageContributionPublish'
 import PageContributionDeleteDialog from '~/components/PageContributionDeleteDialog'
-import PageContributionSaveDialog from '~/components/PageContributionSaveDialog'
 import { uploadImage } from '~/api/service/image'
 import { uploadBook } from '~/api/service/book'
 import { uploadJson } from '~/api/service/rich-text'
 import {
   addPage,
-  deletePage,
-  getRandomPreviewWallpaper
+  deletePage
 } from '~/api/service/page'
 
 const log = debug('app:components/PageContributionMediumViewer')
@@ -112,9 +129,10 @@ export default {
     BaseMediumViewer,
     MediumViewerBook,
     MediumViewerImage,
+    MediumViewerQuote,
     MediumViewerRichText,
-    PageContributionDeleteDialog,
-    PageContributionSaveDialog
+    PageContributionPublish,
+    PageContributionDeleteDialog
   },
   mixins: [MediumViewerMixin],
   props: {
@@ -162,9 +180,15 @@ export default {
       isRichTextPreview: false,
       hasBookChanged: false,
       isReadOnly: true,
-      pageContributionSaveDialog: false,
+      publishDialog: false,
       pageContributionDeleteDialog: false,
-      savedPart: null
+      savedPart: null,
+      publishKey: 0,
+      quote: {
+        src: '',
+        background: '',
+        color: ''
+      }
     }
   },
   computed: {
@@ -172,20 +196,43 @@ export default {
     allSelectedMedium: function() {
       return this.selectedMedium === undefined
     },
+    isQuoteEnabled: function() {
+      return (
+        this.allSelectedMedium || this.isMediaQuoteType(this.selectedMedium)
+      )
+    },
     isBookEnabled: function() {
       return this.allSelectedMedium || this.isMediaBookType(this.selectedMedium)
     },
     isImageEnabled: function() {
-      return this.allSelectedMedium || this.isMediaImageType(this.selectedMedium)
+      return (
+        this.allSelectedMedium || this.isMediaImageType(this.selectedMedium)
+      )
     },
     isRichTextEnabled: function() {
       return this.allSelectedMedium || this.isMediaRichType(this.selectedMedium)
     },
-    imageSrc: function() {
-      if (this.contribution.image && this.contribution.image.ref) {
-        return this.contribution.image.ref
+    // quoteSrc: function() {
+    //   if (this.contribution.quote && this.contribution.quote.src) {
+    //     return this.contribution.quote.src
+    //   }
+    //   return ''
+    // },
+    imageSrc: {
+      get() {
+        log('in imageSrc.get', this.contribution.image)
+        if (this.contribution.image && this.contribution.image.ref) {
+          return this.contribution.image.ref
+        }
+        return ''
+      },
+      set(val) {
+        log('in previewImageSrc set', val)
+
+        if (val) {
+          this.contribution.image.ref = val
+        }
       }
-      return ''
     },
     bookSrc() {
       if (this.contribution.book && this.contribution.book.ref) {
@@ -228,56 +275,92 @@ export default {
     saveMediaDialog(activeMedium) {
       log('saveMediaDialog:', activeMedium)
       this.mediaToSave = activeMedium
-      this.pageContributionSaveDialog = true
+      this.publishDialog = true
     },
-    saveMedia(summary) {
-      log('in save media', this.mediaToSave, summary)
+    onPublishComplete(basePagePublishModel) {
+      log('in onPublishComplete', basePagePublishModel)
+      this.saveMedia(basePagePublishModel)
+    },
+    saveMedia(basePagePublishModel) {
+      log('in save media', this.mediaToSave, basePagePublishModel)
 
-      let keywords = []
-      let authorTags = []
-      keywords = stringUtils.findKeywords(summary)
-      authorTags = stringUtils.findAuthorTags(summary)
+      if (basePagePublishModel && basePagePublishModel.summary) {
+        // only need to save page, Create-page function will create the preview record in the background
+        let keywords = []
+        let authorTags = []
+        keywords = stringUtils.findKeywords(basePagePublishModel.summary)
+        authorTags = stringUtils.findAuthorTags(basePagePublishModel.summary)
 
-      const pageCollaborationPart = {
-        invite: false,
-        public: true,
-        chapterOid: this.contribution.chapterOid,
-        storyOid: this.contribution.storyOid,
-        richText: {},
-        parentPagesOid: this.contribution.parentPagesOid,
-        // parentPagesRef: this.contribution.parentPagesRef,
-        summary: summary,
-        keywords: keywords.map(keyword => keyword.toLowerCase()),
-        authorTags: authorTags,
-        uid: this.user.uid,
-        wallpaperUrl: getRandomPreviewWallpaper()
-      }
+        const pageCollaborationPart = {
+          invite: false,
+          public: true,
+          chapterOid: this.contribution.chapterOid,
+          storyOid: this.contribution.storyOid,
+          richText: {},
+          parentPagesOid: this.contribution.parentPagesOid,
+          // parentPagesRef: this.contribution.parentPagesRef,
+          summary: basePagePublishModel.summary,
+          keywords: keywords.map(keyword => keyword.toLowerCase()),
+          authorTags: authorTags,
+          uid: this.user.uid,
+          quote: this.quote.src ? this.quote : null,
+          background: {
+            color:
+              basePagePublishModel.background.type === 'color'
+                ? basePagePublishModel.background.val
+                : '#000000',
+            font: {
+              color:
+                basePagePublishModel.background.type === 'color'
+                  ? basePagePublishModel.background.fontColor
+                  : '#FFFFFF'
+            },
+          },
+          wallpaperUrl: basePagePublishModel.background.val
+        }
 
-      if (this.isMediaBookType(this.mediaToSave)) {
-        this.saveBookFile(pageCollaborationPart)
-          .then(page => {
-            log('Page created:', page)
-            this.addPageToList(this.enhancePage(page))
-            this.$toast.success('Book updated')
-          })
-          .catch(error => {
-            log('Error saving book', error)
-            this.$toast.error('Error saving book')
-          })
-      } else if (this.isMediaImageType(this.mediaToSave)) {
-        this.saveImageFile(pageCollaborationPart)
-          .then(page => {
-            log('Page created:', page)
-            this.addPageToList(this.enhancePage(page))
-            this.$toast.success('Image updated')
-          })
-          .catch(error => {
-            log('Error saving image', error)
-            this.$toast.error('Error saving image')
-          })
-      } else if (this.isMediaRichType(this.mediaToSave)) {
-        this.savedPart = pageCollaborationPart
-        EventBus.$emit('rich-text-save')
+        if (this.isMediaBookType(this.mediaToSave)) {
+          this.saveBookFile(pageCollaborationPart)
+            .then(page => {
+              log('Page created:', page)
+              this.addPageToList(this.enhancePage(page))
+              this.$toast.success('Book submitted')
+            })
+            .catch(error => {
+              log('Error saving book', error)
+              this.$toast.error('Error saving book')
+            })
+        } else if (this.isMediaImageType(this.mediaToSave)) {
+          this.saveImageFile(pageCollaborationPart)
+            .then(page => {
+              log('Page created:', page)
+              this.addPageToList(this.enhancePage(page))
+              this.$toast.success('Image submitted')
+            })
+            .catch(error => {
+              log('Error saving image', error)
+              this.$toast.error('Error saving image')
+            })
+        } else if (this.isMediaRichType(this.mediaToSave)) {
+          this.savedPart = pageCollaborationPart
+          EventBus.$emit('rich-text-save')
+        } else if (this.isMediaQuoteType(this.mediaToSave)) {
+          log('adding quote:', this.quote)
+          this.saveQuote(pageCollaborationPart)
+            .then(page => {
+              log('Page created:', page)
+              this.addPageToList(this.enhancePage(page))
+              this.$toast.success('Quote submitted')
+            })
+            .catch(error => {
+              log('Error saving image', error)
+              this.$toast.error('Error saving image')
+            })
+        }
+      } else {
+        this.$toast.error(
+          'Please enter a short summary of your page you are going to publish'
+        )
       }
     },
     saveBookFile(part) {
@@ -302,6 +385,20 @@ export default {
         })
       } else {
         return Promise.reject(new Error('File is not initialised'))
+      }
+    },
+    saveQuote(part) {
+      if (this.quote) {
+        const pageQuoteData = {
+          quote: this.quote
+        }
+
+        return addPage({
+          ...part,
+          ...pageQuoteData
+        })
+      } else {
+        return Promise.reject(new Error('Quote is not initialised'))
       }
     },
     saveImageFile(part) {
@@ -379,7 +476,7 @@ export default {
       }
     },
     addPageToList(page) {
-      this.pageContributionSaveDialog = false
+      this.publishDialog = false
       this.$emit('add', page)
     },
     deleteMedia() {
@@ -396,12 +493,21 @@ export default {
         })
     },
     deletePageFromList(pageOid) {
-      this.pageContributionSaveDialog = false
+      this.publishDialog = false
       this.$emit('delete', pageOid)
     },
     enhancePage(page) {
       page.userDisplayName = this.user.data.displayName
       return page
+    },
+    imageUpdated(src) {
+      log('Image upload updated:', src)
+      this.imageSrc = src
+      this.rePublishDialog()
+    },
+    rePublishDialog() {
+      // force rerender
+      this.publishKey += 1
     },
     close() {
       this.$emit('close')

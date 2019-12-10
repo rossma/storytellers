@@ -19,6 +19,23 @@
                   large
                   text
                   v-on="on"
+                  @click.stop="openPageMediumDialog(4)"
+                >
+                  <v-icon large>
+                    mdi-comment-quote-outline
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>Quote</span>
+            </v-tooltip>
+          </v-flex>
+          <v-flex x4 mt-1 ml-4 text-center>
+            <v-tooltip bottom>
+              <template #activator="{ on }">
+                <v-btn
+                  large
+                  text
+                  v-on="on"
                   @click.stop="openPageMediumDialog(1)"
                 >
                   <v-icon large>
@@ -39,7 +56,7 @@
                   @click.stop="openPageMediumDialog(2)"
                 >
                   <v-icon large>
-                    mdi-book-outline
+                    mdi-book-open-page-variant
                   </v-icon>
                 </v-btn>
               </template>
@@ -75,16 +92,23 @@
     </v-card>
     <v-card
       v-else
-      flat
       :key="pageDetailKey"
+      flat
     >
       <v-card-title
-        class="page-detail-title subtitle-2 mb-2">
+        class="page-detail-title subtitle-2 mb-2"
+      >
         {{ activeChapterName }}
-        <v-spacer></v-spacer>
-        Page {{ activeChapter.index }} - {{ activePageNumber }}
+        <v-spacer />
+        Page {{ activeChapter.index }}.{{ activePageNumber }}
       </v-card-title>
       <v-card-text>
+        <page-detail-quote
+          v-if="pageQuoteSrc"
+          :page="page"
+          :src="pageQuoteSrc"
+          :user="user"
+        />
         <page-detail-rich-text
           v-if="pageRichTextSrc"
           :page="page"
@@ -93,10 +117,10 @@
         />
         <page-detail-book-pdf
           v-else-if="pageBookSrc && isPdf"
+          :key="pageDetailKey"
           :page="page"
           :src="pageBookSrc"
           :user="user"
-          :key="pageDetailKey"
         />
         <page-detail-book-epub
           v-else-if="pageBookSrc && isEpub"
@@ -170,6 +194,7 @@ import PageMixin from '~/mixins/PageMixin'
 import PageMediumViewer from '~/components/PageMediumViewer'
 import PageComments from '~/components/PageComments'
 import PageContributionList from './PageContributionList'
+import PageDetailQuote from './PageDetailQuote'
 import PageDetailRichText from './PageDetailRichText'
 import PageDetailBookEpub from './PageDetailBookEpub'
 import PageDetailBookPdf from './PageDetailBookPdf'
@@ -182,6 +207,7 @@ export default {
     PageContributionList,
     PageMediumViewer,
     PageComments,
+    PageDetailQuote,
     PageDetailRichText,
     PageDetailBookEpub,
     PageDetailBookPdf,
@@ -221,7 +247,12 @@ export default {
     ...mapGetters('page', ['activePage']),
     ...mapGetters('chapter', ['activeChapter']),
     contentExists: function() {
-      return this.pageRichTextSrc || this.pageBookSrc || this.pageImageSrc
+      return (
+        this.pageQuoteSrc ||
+        this.pageRichTextSrc ||
+        this.pageBookSrc ||
+        this.pageImageSrc
+      )
     },
     pageRichTextSrc: function() {
       return this.getPageRichTextSrc(this.page)
@@ -241,6 +272,13 @@ export default {
     pageImageSrc: function() {
       return this.getPageImageSrc(this.page)
     },
+    pageQuoteSrc: function() {
+      if (this.page.quote && this.page.quote.src) {
+        return this.page.quote.src
+      } else {
+        return undefined
+      }
+    },
     activePageNumber: function() {
       if (this.activePage && this.activePage.page) {
         return this.activePage.page.page
@@ -249,7 +287,11 @@ export default {
       }
     },
     activeChapterName: function() {
-      if (this.activeChapter && this.activeChapter.chapter && this.activeChapter.chapter.name) {
+      if (
+        this.activeChapter &&
+        this.activeChapter.chapter &&
+        this.activeChapter.chapter.name
+      ) {
         return this.activeChapter.chapter.name
       } else if (this.activeChapter) {
         return `Chapter ${this.activeChapter.index}`
@@ -302,7 +344,6 @@ export default {
       this.pageMediumDialog = false
     },
     like() {
-      log('in like', this.liked)
       this.liked = !this.liked
       log('updating page', this.page.id, this.page.likes)
       updatePage(this.page.id, { likes: this.page.likes })
@@ -314,6 +355,11 @@ export default {
         this.page.comments = [comment]
       }
     },
+    // onQuoteSaved(quote) {
+    //   log('in quote saved', quote)
+    //   EventBus.$emit('story-page-quote-save', quote)
+    //   this.pageDetailKey += 1
+    // },
     openPageMediumDialog(mediumType) {
       this.selectedMedium = mediumType
       this.pageMediumDialog = true

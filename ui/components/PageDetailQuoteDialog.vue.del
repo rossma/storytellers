@@ -1,0 +1,119 @@
+<template>
+  <v-layout 
+    justify-center
+  >
+    <v-dialog
+      v-model="dialog"
+      persistent
+      width="600px"
+    >
+      <v-card>
+        <v-toolbar
+          :color="theme"
+        >
+          <v-toolbar-title>Quote</v-toolbar-title>
+          <v-spacer />
+          <v-btn
+            icon
+            @click="closeDialog()"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <v-card-text>
+          <page-detail-quote-capture v-model="quote" />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            :class="theme"
+            @click="save"
+          >
+            <v-icon float-left>
+              mdi-content-save-outline
+            </v-icon>
+            Submit
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-layout>
+</template>
+<script>
+import debug from 'debug'
+import { updatePage } from '~/api/service/page'
+import PageDetailQuoteCapture from '~/components/PageDetailQuoteCapture'
+const log = debug('app:components/PageDetailQuoteDialog')
+
+export default {
+  name: 'PageDetailQuoteDialog',
+  components: {
+    PageDetailQuoteCapture
+  },
+  props: {
+    dialog: {
+      type: Boolean,
+      default: false
+    },
+    pageId: {
+      type: String,
+      required: true
+    },
+    theme: {
+      type: String,
+      default: 'primary'
+    },
+    uid: {
+      type: String,
+      required: true
+    }
+  },
+  data() {
+    return {
+      quote: {
+        src: '',
+        background: '',
+        color: ''
+      },
+      quoteDialog: false
+    }
+  },
+  methods: {
+    save() {
+      if (this.quote) {
+        log('adding quote:', this.quote)
+
+        updatePage(this.pageId, { quote: this.quote } )
+          .then(() => {
+            this.$emit('saved', this.quote)
+            this.quote = {
+              src: '',
+              background: '',
+              color: ''
+            }
+          })
+          .catch(err => {
+            log('Error adding quote', err)
+            this.$toast.error(`Error adding quote`)
+          })
+      } else {
+        this.$toast.error('No quote was entered')
+      }
+    },
+    closeDialog() {
+      this.$emit('close', false)
+    }
+  }
+}
+</script>
+<style>
+.quote-block {
+  line-height: 200px;
+  overflow: hidden;
+}
+
+.quote-txt {
+  display: inline-block;
+  vertical-align: middle;
+}
+</style>

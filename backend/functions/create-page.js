@@ -6,6 +6,7 @@ const common = require('./common')
 exports.handler = async (newPagesDoc, context, database) => {
   console.log(`In onCreatePages:[${newPagesDoc.id}]`)
 
+  // if this page is part of a collaboration then we also publish preview
   if (newPagesDoc.data().parentPagesRef) {
     console.log(`Page document is child record`)
 
@@ -44,7 +45,28 @@ exports.handler = async (newPagesDoc, context, database) => {
     }
 
     console.log('story data:', storiesDoc.data())
-    console.log('newPagesDoc1:', newPagesDoc.id)
+    console.log('newPagesDoc id:', newPagesDoc.id)
+
+    let background = '#000000'
+    if (newPagesDoc.data().quote && newPagesDoc.data().quote.background) {
+      background = newPagesDoc.data().quote.background
+    } else if (
+      newPagesDoc.data().background &&
+      newPagesDoc.data().background.color
+    ) {
+      background = newPagesDoc.data().background.color
+    }
+
+    let fontColor = '#ffffff'
+    if (newPagesDoc.data().quote && newPagesDoc.data().quote.color) {
+      fontColor = newPagesDoc.data().quote.color
+    } else if (
+      newPagesDoc.data().background &&
+      newPagesDoc.data().background.font &&
+      newPagesDoc.data().background.font.color
+    ) {
+      fontColor = newPagesDoc.data().background.font.color
+    }
 
     // save record in the previews collection
     const preview = {
@@ -60,6 +82,9 @@ exports.handler = async (newPagesDoc, context, database) => {
       uid: user.uid,
       usersRef: usersRef,
       userDisplayName: user.displayName || '',
+      quote: newPagesDoc.data().quote ? newPagesDoc.data().quote.src : '',
+      fontColor: fontColor,
+      backgroundColor: background,
       previewImageUrl: imagePreviewUrl,
       imageFilenameOid: imageOid,
       created: Date.now(),
