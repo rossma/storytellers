@@ -26,12 +26,6 @@
             v-if="preview.previewImageUrl"
             :src="preview.previewImageUrl"
           />
-          <!--          <div-->
-          <!--            v-else-->
-          <!--            class="v-responsive v-image no-image"-->
-          <!--          >-->
-          <!--            {{ preview.summary }}-->
-          <!--          </div>-->
           <v-img
             v-else-if="preview.wallpaperUrl"
             :src="preview.wallpaperUrl"
@@ -41,16 +35,30 @@
                 fill-height
               >
                 <v-flex xs12 align-end flexbox>
-                  <span class="headline no-image-text">{{ preview.summary }}</span>
+                  <span style="white-space: pre-line" class="headline no-image-text">{{ preview.summary }}</span>
                 </v-flex>
               </v-layout>
             </v-container>
           </v-img>
+          <v-sheet
+            v-else-if="preview.backgroundColor"
+            :color="preview.backgroundColor"
+            height="300"
+            tile
+            justify-center
+          >
+            <div
+              class="quote-block text-center pa-2"
+              :class="preview.fontColor === '#000000' ? `black--text` : `white--text`"
+            >
+              <span class="quote-txt subtitle-1">{{ preview.quote ? preview.quote : preview.summary }}</span>
+            </div>
+          </v-sheet>
           <v-card-title>
             {{ preview.title }}
           </v-card-title>
           <v-card-text class="grey--text truncate">
-            {{ preview.summary }}
+            <span style="white-space: pre-line">{{ preview.summary }}</span>
           </v-card-text>
         </div>
       </v-badge>
@@ -164,5 +172,15 @@ export default {
   min-width: 0px;
   overflow-wrap: break-word;
   word-break: break-word;
+}
+
+.quote-block {
+  line-height: 300px;
+  overflow: hidden;
+}
+
+.quote-txt {
+  display: inline-block;
+  vertical-align: middle;
 }
 </style>

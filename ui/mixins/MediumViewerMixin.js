@@ -13,6 +13,9 @@ export default {
     },
     mediaImageType: function() {
       return 3
+    },
+    mediaQuoteType: function() {
+      return 4
     }
   },
   created: function() {
@@ -30,6 +33,9 @@ export default {
     })
   },
   methods: {
+    isMediaQuoteType(activeMedium) {
+      return activeMedium === this.mediaQuoteType
+    },
     isMediaBookType(activeMedium) {
       return activeMedium === this.mediaBookType
     },

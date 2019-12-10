@@ -19,6 +19,13 @@ export default {
     },
     getPageImageSrc(page) {
       return FileUtils.pageImageSrc(page)
+    },
+    getPageQuoteSrc(page) {
+      if (page.quote && page.quote.src) {
+        return page.quote.src
+      } else {
+        return ''
+      }
     }
   }
 }

@@ -78,6 +78,9 @@ export default {
           filename: null,
           ref: null
         },
+        quote: {
+          src: null
+        },
         previewOid: null
       },
       mutablePages: [],
@@ -141,6 +144,15 @@ export default {
         }
       })
 
+      EventBus.$on('story-page-quote-save', quote => {
+        log(`story-page-quote-save event received:`, quote)
+        this.page.quote = {
+          src: quote.src,
+          color: quote.color,
+          background: quote.background
+        }
+      })
+
       EventBus.$on('save-pages', pages => {
         log(`savePages event received:`, pages)
         this.mutablePages = this.pages.slice()
@@ -151,6 +163,7 @@ export default {
     EventBus.$off('story-image-file-key')
     EventBus.$off('story-book-file-key')
     EventBus.$off('story-rich-text-file-key')
+    EventBus.$off('story-page-quote-save')
     EventBus.$off('save-pages')
   },
   methods: {
@@ -201,6 +214,7 @@ export default {
         invite: pageData.invite,
         public: pageData.public,
         richText: pageData.richText,
+        quote: pageData.quote,
         storyOid: pageData.storyOid,
         uid: pageData.uid,
         previewOid: pageData.previewRef ? pageData.previewRef.id : undefined,

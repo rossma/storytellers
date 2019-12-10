@@ -57,4 +57,4 @@ firebase deploy --only functions:generateThumbnail
 ### create-page-collaboration
 > This function is triggered every time a record is added to the pageCollaborations collection.
 
-* firebase deploy --only functions:onCreatePageCollaboration
+* firebase deploy --only functions:onCreatePage

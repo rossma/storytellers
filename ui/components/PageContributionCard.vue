@@ -25,6 +25,20 @@
             </v-layout>
           </v-container>
         </v-img>
+        <v-sheet
+          v-else-if="backgroundColor"
+          :color="backgroundColor"
+          height="300"
+          tile
+          justify-center
+        >
+          <div
+            class="quote-block text-center pa-2"
+            :class="backgroundTextClass"
+          >
+            <span class="quote-txt subtitle-1">{{ childPage.quote && childPage.quote.src ? childPage.quote.src : childPage.summary }}</span>
+          </div>
+        </v-sheet>
         <v-card-title
           class="headline"
         >
@@ -33,7 +47,7 @@
           </nuxt-link>
         </v-card-title>
         <v-card-text class="grey--text truncate">
-          {{ childPage.summary }}
+          <span style="white-space: pre-line">{{ childPage.summary }}</span>
         </v-card-text>
       </div>
       <v-card-actions
@@ -123,6 +137,34 @@ export default {
       } else {
         return 0
       }
+    },
+    backgroundColor: function() {
+      if (this.childPage.quote && this.childPage.quote.background) {
+        return this.childPage.quote.background
+      } else if (this.childPage.background && this.childPage.background.color) {
+        return this.childPage.background.color
+      } else {
+        return null
+      }
+    },
+    backgroundFontColor: function() {
+      if (this.childPage.quote && this.childPage.quote.color) {
+        return this.childPage.quote.color
+      } else if (
+        this.childPage.background &&
+        this.childPage.background.font &&
+        this.childPage.background.font.color
+      ) {
+        return this.childPage.background.font.color
+      } else {
+        return `#ffffff`
+      }
+    },
+    backgroundTextClass: function() {
+      // todo ... handle font color
+      return this.backgroundFontColor === '#000000'
+        ? `black--text`
+        : `white--text`
     }
   },
   methods: {

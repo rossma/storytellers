@@ -18,12 +18,14 @@ function findPages(pagesRef) {
         image: { ...m.data().image },
         book: { ...m.data().book },
         richText: { ...m.data().richText },
+        quote: { ...m.data().quote },
         parentPagesOid: m.data().parentPagesOid,
         // parentPagesRef: m.data().parentPagesRef,
         parentPagesRef: `pages/${m.data().parentPagesOid}`,
         summary: m.data().summary,
         comments: m.data().comments,
         likes: m.data().likes,
+        background: { ...m.data().background },
         wallpaperUrl: m.data().wallpaperUrl
       }
       log('page:', page)

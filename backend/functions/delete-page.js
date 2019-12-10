@@ -19,25 +19,47 @@ exports.handler = async (snap, context, database, storage, bucketName) => {
   const bookFilename = common.getBookFilename(deletedValue.book)
   console.log(`bookFilename:${bookFilename}`)
   if (bookFilename) {
-    await removeFile(bucket, 'books', bookFilename)
+    try {
+      await removeFile(bucket, 'books', bookFilename)
+    } catch (e) {
+      console.log(
+        `Error removing file:[books/${bookFilename}] for rich text`,
+        e
+      )
+    }
   }
 
   const richTextsFilename = common.getRichTextFilename(deletedValue.richText)
   console.log(`richTextsFilename:${richTextsFilename}`)
   if (richTextsFilename) {
-    await removeFile(bucket, 'richTexts', richTextsFilename)
+    try {
+      await removeFile(bucket, 'richTexts', richTextsFilename)
+    } catch (e) {
+      console.log(
+        `Error removing file:[richTexts/${richTextsFilename}] for rich text`,
+        e
+      )
+    }
   }
 
   const imageFilename = common.getImageFilename(deletedValue.image)
   console.log(`imageFilename:${imageFilename}`)
   if (imageFilename) {
-    await common.deleteImageFromDB(database, imageFilename)
+    try {
+      await common.deleteImageFromDB(database, imageFilename)
+    } catch (e) {
+      console.log(`Error deleting image:[${imageFilename}] from DB`, e)
+    }
   }
 
   if (common.pageIsCoverToStory(database, pageOid, imageFilename)) {
     console.log('Page image is cover story')
     if (deletedValue.storyOid) {
-      await common.updateStoryCoverImage(database, deletedValue.storyOid)
+      try {
+        await common.updateStoryCoverImage(database, deletedValue.storyOid)
+      } catch (e) {
+        console.log(`Error updating story cover image`, e)
+      }
     }
   }
 

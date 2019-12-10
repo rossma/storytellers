@@ -44,7 +44,7 @@
                 >
                   <upload-button
                     :selected-callback="previewMediaFile"
-                    :acceptedFileTypes="acceptedFileTypes"
+                    :accepted-file-types="acceptedFileTypes"
                     icon="mdi-cloud-upload-outline"
                   />
                 </span>
@@ -61,6 +61,19 @@
               class="transparent"
               mandatory
             >
+              <v-tooltip bottom>
+                <template #activator="{ on }">
+                  <v-btn
+                    v-if="showQuoteToolbarBtn"
+                    :value="4"
+                    text
+                    v-on="on"
+                  >
+                    <v-icon>mdi-comment-quote-outline</v-icon>
+                  </v-btn>
+                </template>
+                <span>Quote</span>
+              </v-tooltip>
               <v-tooltip bottom>
                 <template #activator="{ on }">
                   <v-btn
@@ -82,7 +95,9 @@
                     text
                     v-on="on"
                   >
-                    <v-icon>mdi-book-outline</v-icon>
+                    <v-icon>
+                      mdi-book-open-page-variant
+                    </v-icon>
                   </v-btn>
                 </template>
                 <span>Words</span>
@@ -123,12 +138,12 @@
         fill-height
         class="dialog-content"
       >
-        <!--        <v-flex xs12 fill-height>-->
+        <v-flex xs12 fill-height>
         <slot
           name="content-container"
           :activeMedium="activeMedium"
         />
-        <!--        </v-flex>-->
+        </v-flex>
       </v-layout>
       <!--</v-responsive>-->
     </v-card>
@@ -158,6 +173,10 @@ export default {
       default: false
     },
     dialog: {
+      type: Boolean,
+      default: false
+    },
+    isQuoteEnabled: {
       type: Boolean,
       default: false
     },
@@ -214,6 +233,13 @@ export default {
       if (this.isBookEnabled) count++
       if (this.isImageEnabled) count++
       return count
+    },
+    showQuoteToolbarBtn: function() {
+      return (
+        this.enabledMediumTypeCount > 1 &&
+        this.isQuoteEnabled &&
+        !this.canDelete
+      )
     },
     showRichTextToolbarBtn: function() {
       return (

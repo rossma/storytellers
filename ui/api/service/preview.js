@@ -12,6 +12,9 @@ function findPreviews(previewsRef) {
         imageFilenameOid: m.data().imageFilenameOid,
         pageOid: m.data().pageOid,
         pagesRef: m.data().pagesRef,
+        quote: m.data().quote,
+        fontColor: m.data().fontColor,
+        backgroundColor: m.data().backgroundColor,
         previewImageUrl: m.data().previewImageUrl,
         wallpaperUrl: m.data().wallpaperUrl,
         storyOid: m.data().storyOid,
@@ -68,3 +71,7 @@ export function addPreview(preview) {
   log(`Adding preview:[${preview}]`)
   return DB.collection('previews').add(preview)
 }
+
+
+export const BACKGROUND_COLOURS = ['#26c6da', '#3f51b5', '#ffffff', '#000000', '#C2185B', '#ff8f00']
+

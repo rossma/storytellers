@@ -104,8 +104,7 @@ export default {
     return {
       comment: undefined,
       commentDialog: false,
-      mutableComments: [],
-      form: false
+      mutableComments: []
     }
   },
   created: function() {
