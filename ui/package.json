@@ -27,7 +27,7 @@
     "@nuxtjs/dotenv": "1.1.1",
     "@nuxtjs/pwa": "^2.6.0",
     "@nuxtjs/toast": "3.0.1",
-    "acorn": "^6.1.1",
+    "acorn": "^6.4.1",
     "ajv": "^6.10.0",
     "body-parser": "1.18.3",
     "child-process-promise": "^2.2.0",
