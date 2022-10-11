@@ -35,7 +35,7 @@
     "core-js": "2.5.7",
     "cross-env": "^5.2.0",
     "debug": "^4.1.1",
-    "epubjs": "0.3.73",
+    "epubjs": "0.3.93",
     "event-stream": "3.3.4",
     "express": "4.16.4",
     "express-session": "1.15.6",
