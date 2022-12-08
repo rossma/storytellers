@@ -37,7 +37,7 @@
     "debug": "^4.1.1",
     "epubjs": "0.3.73",
     "event-stream": "3.3.4",
-    "express": "4.16.4",
+    "express": "4.17.3",
     "express-session": "1.15.6",
     "firebase": "5.5.8",
     "firebase-admin": "~6.0.0",
